@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Casa Rustico Go",
+    "slug": "casa-rustico-go",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "scheme": "casarusticogo",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jrod042.casarusticogo",
+      "buildNumber": "1"
+    },
+    "android": {
+      "package": "com.jrod042.casarusticogo",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#14100C",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "brand": "Casa Rustico"
+    }
+  }
+}
