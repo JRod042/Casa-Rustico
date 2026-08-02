@@ -1,0 +1,77 @@
+{
+  "expo": {
+    "name": "Casa Rústico",
+    "slug": "casa-rustico",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "casarustico",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F7F3EC"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.casarustico.app",
+      "associatedDomains": ["applinks:rusticopr.com"]
+    },
+    "android": {
+      "package": "com.casarustico.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#3D342C",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "rusticopr.com",
+              "pathPrefix": "/products"
+            },
+            {
+              "scheme": "https",
+              "host": "rusticopr.com",
+              "pathPrefix": "/collections"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ],
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-web-browser",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#F7F3EC",
+          "image": "./assets/splash-icon.png"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "shopifyStoreDomain": "b84a47-3.myshopify.com",
+      "shopifyApiVersion": "2026-01",
+      "router": {
+        "origin": false
+      }
+    }
+  }
+}
