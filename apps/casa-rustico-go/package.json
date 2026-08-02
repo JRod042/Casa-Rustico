@@ -17,8 +17,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eas-build-pre-install": "node ./scripts/restore-assets.js",
-    "postinstall": "node ./scripts/restore-assets.js"
+    "eas-build-pre-install": "node ./scripts/restore-assets.js"
   },
   "private": true
 }
