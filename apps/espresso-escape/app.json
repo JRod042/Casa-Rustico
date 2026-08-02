@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Espresso Escape",
+    "slug": "espresso-escape",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "scheme": "espressoescape",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jrod042.espressoescape",
+      "buildNumber": "1"
+    },
+    "android": {
+      "package": "com.jrod042.espressoescape",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#1A120B",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "brand": "Casa Rustico"
+    }
+  }
+}
