@@ -1,9 +1,7 @@
 name: Build iOS
 
+# Manual only — free tier iOS builds are limited. Trigger from expo.dev when ready.
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch: {}
 
 jobs:
