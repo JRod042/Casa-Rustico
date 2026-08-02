@@ -10,7 +10,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.jrod042.casarusticogo",
-      "buildNumber": "1"
+      "buildNumber": "1",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.jrod042.casarusticogo",
@@ -26,7 +29,11 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "brand": "Casa Rustico"
-    }
+      "brand": "Casa Rustico",
+      "eas": {
+        "projectId": "25937717-3f2f-4793-af4d-79a12310f02a"
+      }
+    },
+    "owner": "jrod42"
   }
 }

@@ -10,7 +10,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.jrod042.espressoescape",
-      "buildNumber": "1"
+      "buildNumber": "1",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.jrod042.espressoescape",
@@ -26,7 +29,11 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "brand": "Casa Rustico"
-    }
+      "brand": "Casa Rustico",
+      "eas": {
+        "projectId": "016d7c24-a7df-4e0d-8e59-00a9d8db352c"
+      }
+    },
+    "owner": "jrod42"
   }
 }
