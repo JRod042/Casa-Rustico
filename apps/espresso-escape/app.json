@@ -7,6 +7,11 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "scheme": "espressoescape",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1A120B"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.jrod042.espressoescape",
