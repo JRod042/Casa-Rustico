@@ -33,6 +33,17 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "16.4",
+            "privacyManifestAggregationEnabled": false
+          }
+        }
+      ]
+    ],
     "extra": {
       "brand": "Casa Rustico",
       "eas": {
