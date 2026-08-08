@@ -26,6 +26,7 @@ Casa Rustico brand assets + dripshipper catalog
 
 | Repo | Use for |
 |------|---------|
+| [Appllama/top-welcome-screens](https://github.com/Appllama/top-welcome-screens) | Animated splash / welcome motion studies (GPL; educational only) |
 | [EvanBacon/Expo-Crossy-Road](https://github.com/EvanBacon/Expo-Crossy-Road) | Expo + Three.js game scaffolding |
 | [EvanBacon/pillar-valley](https://github.com/EvanBacon/pillar-valley) | Expo game polish / menus |
 | [k1rana/jokopi-react](https://github.com/k1rana/jokopi-react) | Coffee order / menu UX |
@@ -33,6 +34,15 @@ Casa Rustico brand assets + dripshipper catalog
 | [amahim/espresso-escape](https://github.com/amahim/espresso-escape) | Named coffee-store client/server split |
 
 Do **not** ship references as-is — study patterns only; product code lives in `apps/`.
+
+## First-launch welcome
+
+Both apps use a **Hallow-inspired** welcome (Appllama study): splash loader dissolve → brand-first final surface, once per install (AsyncStorage).
+
+- Go: `apps/casa-rustico-go/src/welcome/`
+- Escape: `apps/espresso-escape/src/welcome/`
+
+See `docs/WELCOME_SCREENS.md`. Clear the storage key (or reinstall) to replay.
 
 ## Local brand data to wire
 

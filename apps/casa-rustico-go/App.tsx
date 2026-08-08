@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import catalog from "./src/catalog.json";
+import { WelcomeGate } from "./src/welcome/WelcomeGate";
 
 type Bean = {
   id: string;
@@ -27,7 +28,7 @@ type Bean = {
  * Catalog seeded from dripshipper-single-origin.json.
  * Next: Shopify / checkout, loyalty, deep-link from Espresso Escape.
  */
-export default function App() {
+function ShopShell() {
   const items = catalog as Bean[];
   const [q, setQ] = useState("");
   const [selected, setSelected] = useState<Bean | null>(null);
@@ -89,18 +90,24 @@ export default function App() {
       <View style={styles.footer}>
         <Pressable
           style={styles.cta}
-          onPress={() =>
-            Linking.openURL("https://github.com/JRod042/Casa-Rustico")
-          }
+          onPress={() => Linking.openURL("https://rusticopr.com")}
         >
           <Text style={styles.ctaText}>
             {selected
               ? `Selected: ${selected.title}`
-              : `${items.length} origins · checkout next`}
+              : `${items.length} origins · open rusticopr.com`}
           </Text>
         </Pressable>
       </View>
     </SafeAreaView>
+  );
+}
+
+export default function App() {
+  return (
+    <WelcomeGate>
+      <ShopShell />
+    </WelcomeGate>
   );
 }
 

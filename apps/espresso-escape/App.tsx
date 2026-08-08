@@ -7,12 +7,13 @@ import {
   View,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { WelcomeGate } from "./src/welcome/WelcomeGate";
 
 /**
  * Espresso Escape — Casa Rustico casual game shell.
  * Next: port loop patterns from references/Expo-Crossy-Road + frantic barista timing.
  */
-export default function App() {
+function GameShell() {
   const [score, setScore] = useState(0);
   const [running, setRunning] = useState(false);
   const [message, setMessage] = useState(
@@ -74,6 +75,14 @@ export default function App() {
         Prototype shell · game engine next (see references/Expo-Crossy-Road)
       </Text>
     </SafeAreaView>
+  );
+}
+
+export default function App() {
+  return (
+    <WelcomeGate>
+      <GameShell />
+    </WelcomeGate>
   );
 }
 
