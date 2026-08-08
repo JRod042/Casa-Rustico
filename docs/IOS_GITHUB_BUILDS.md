@@ -4,6 +4,11 @@ These are **iOS** App Store apps (not Android-first).
 
 Hardening below mirrors fixes already proven on **Omni** (`JRod042/project-1` PRs #5–#8, #11).
 
+> **Still seeing `Failed to run eas build:internal`?**  
+> Merge [PR #2](https://github.com/JRod042/Casa-Rustico/pull/2) into `main` first. Until then, `main` has **no** profile named `internal`.  
+> Workaround on old `main`: use profile **`production`** (TestFlight) or **`preview`**.  
+> After merge, prefer `production` + Submit for TestFlight.
+
 ## Expo projects
 
 | App | Expo project | Base directory on GitHub | Bundle ID |
