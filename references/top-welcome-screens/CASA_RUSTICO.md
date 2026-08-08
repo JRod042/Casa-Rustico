@@ -9,7 +9,7 @@ Product welcome flows live in:
 - `apps/casa-rustico-go/src/welcome/`
 - `apps/espresso-escape/src/welcome/`
 
-Those implementations are original Casa Rústico branding. They borrow motion ideas (timed splash dissolve, staggered page reveal, progress pulse) documented in `docs/MOTION_SPEC.md`, not the branded replica components.
+Those implementations are original Casa Rústico branding. **Chosen study: Hallow** — timed splash color, pulsing dots, loader dissolve into a brand-first final surface (`docs/MOTION_SPEC.md`). Not the Hallow replica component or its assets.
 
 
 ## Slim clone note

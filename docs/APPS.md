@@ -37,12 +37,12 @@ Do **not** ship references as-is — study patterns only; product code lives in 
 
 ## First-launch welcome
 
-Both apps show an original Casa-branded welcome (splash + short pages) once, then persist via AsyncStorage:
+Both apps use a **Hallow-inspired** welcome (Appllama study): splash loader dissolve → brand-first final surface, once per install (AsyncStorage).
 
 - Go: `apps/casa-rustico-go/src/welcome/`
 - Escape: `apps/espresso-escape/src/welcome/`
 
-Clear the storage key (or reinstall) to replay.
+See `docs/WELCOME_SCREENS.md`. Clear the storage key (or reinstall) to replay.
 
 ## Local brand data to wire
 

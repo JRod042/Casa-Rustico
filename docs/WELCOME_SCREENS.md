@@ -2,19 +2,24 @@
 
 ## Study reference
 
-https://github.com/Appllama/top-welcome-screens — cloned at `references/top-welcome-screens/`.
+https://github.com/Appllama/top-welcome-screens — slim clone at `references/top-welcome-screens/`.
 
-- License: GPL-3.0 for Appllama’s original code
-- Educational / IP notice: see upstream `NOTICE.md`
-- We do **not** ship Duolingo, Strava, Hallow, or other branded replicas
+## Chosen study: **Hallow**
+
+Product welcomes follow the Hallow motion spec (`docs/MOTION_SPEC.md` in the reference):
+
+- ~0.23–0.47s splash color interpolate
+- dots appear ~1.23s; left→right pulse ~1.63–2.37s
+- loader dissolves ~2.77–3.03s into the final brand surface
+- interactions unlock after the dissolve
+
+Branding, scene, and CTAs are original Casa Rústico — not Hallow (or any other) third-party identity. See upstream `NOTICE.md`.
 
 ## Product implementation
 
-| App | Entry | Storage key |
-|-----|-------|-------------|
-| Casa Rustico Go | `WelcomeGate` → `CasaWelcome` | `@casa-rustico/go-welcome-v1` |
-| Espresso Escape | `WelcomeGate` → `EscapeWelcome` | `@casa-rustico/escape-welcome-v1` |
+| App | Component | Storage key |
+|-----|-----------|-------------|
+| Casa Rustico Go | `CasaWelcome` | `@casa-rustico/go-welcome-v1` |
+| Espresso Escape | `EscapeWelcome` | `@casa-rustico/escape-welcome-v1` |
 
-Motion ideas borrowed (reimplemented): timed splash dissolve, progress pulse, staggered page copy reveal, reduced-motion jump-to-pages.
-
-Stack: Expo SDK 57, Reanimated, LinearGradient, Fraunces + Source Sans 3, AsyncStorage.
+Stack: Expo SDK 57, Reanimated timeline, LinearGradient atmosphere, Fraunces + Source Sans 3, AsyncStorage first-run gate.

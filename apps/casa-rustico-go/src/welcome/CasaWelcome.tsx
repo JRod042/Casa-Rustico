@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  Linking,
   Pressable,
   StyleSheet,
   Text,
@@ -10,16 +11,10 @@ import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import Animated, {
   Easing,
-  FadeIn,
-  FadeInDown,
-  FadeInUp,
   interpolate,
+  interpolateColor,
   useAnimatedStyle,
   useReducedMotion,
-  useSharedValue,
-  withRepeat,
-  withSequence,
-  withTiming,
 } from "react-native-reanimated";
 import {
   Fraunces_600SemiBold,
@@ -32,19 +27,20 @@ import {
   useFonts,
 } from "@expo-google-fonts/source-sans-3";
 import { BeanMark } from "./BeanMark";
-import { goWelcomeSlides } from "./slides";
+import { segment, useWelcomeTimeline } from "./motion";
 import { goWelcomeTheme as t } from "./theme";
 
 type Props = {
   onFinished: () => void;
 };
 
-const SPLASH_MS = 2800;
+/** Hallow study timing: loader dissolve completes ~3.0s (docs/MOTION_SPEC). */
+const DURATION_MS = 4500;
+const INTERACT_MS = 3033;
 
 /**
- * Original Casa Rústico welcome.
- * Motion language studied from Appllama top-welcome-screens
- * (splash dissolve + staggered reveal) — copy, colors, and visuals are ours.
+ * Casa Rústico Go welcome — Hallow-inspired motion (Appllama study).
+ * Original brand scene, copy, and CTAs. No third-party identity.
  */
 export function CasaWelcome({ onFinished }: Props) {
   const [fontsLoaded] = useFonts({
@@ -55,339 +51,253 @@ export function CasaWelcome({ onFinished }: Props) {
     SourceSans3_700Bold,
   });
   const reducedMotion = useReducedMotion();
-  const { height, width } = useWindowDimensions();
-  const trackWidth = Math.max(120, width - 80);
-  const [phase, setPhase] = useState<"splash" | "pages">("splash");
-  const [page, setPage] = useState(0);
-  const progress = useSharedValue(0);
-  const pulse = useSharedValue(0);
-  const float = useSharedValue(0);
+  const { height } = useWindowDimensions();
+  const time = useWelcomeTimeline(DURATION_MS, true);
+  const [canInteract, setCanInteract] = useState(!!reducedMotion);
 
   useEffect(() => {
-    if (!fontsLoaded) return;
     if (reducedMotion) {
-      setPhase("pages");
+      setCanInteract(true);
       return;
     }
-    progress.value = 0;
-    progress.value = withTiming(1, {
-      duration: SPLASH_MS,
-      easing: Easing.linear,
-    });
-    pulse.value = withRepeat(
-      withSequence(
-        withTiming(1, { duration: 420, easing: Easing.inOut(Easing.quad) }),
-        withTiming(0, { duration: 420, easing: Easing.inOut(Easing.quad) })
-      ),
-      -1,
-      false
-    );
-    float.value = withRepeat(
-      withSequence(
-        withTiming(1, { duration: 2200, easing: Easing.inOut(Easing.sin) }),
-        withTiming(0, { duration: 2200, easing: Easing.inOut(Easing.sin) })
-      ),
-      -1,
-      false
-    );
-    const id = setTimeout(() => setPhase("pages"), SPLASH_MS);
+    const id = setTimeout(() => setCanInteract(true), INTERACT_MS);
     return () => clearTimeout(id);
-  }, [fontsLoaded, float, progress, pulse, reducedMotion]);
+  }, [reducedMotion]);
 
-  const splashStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(progress.value, [0, 0.82, 1], [1, 1, 0]),
+  const loaderStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(
+      time.value,
+      [233, 467],
+      ["#3A2418", "#2A1A12"]
+    ),
+    opacity: 1 - Easing.inOut(Easing.cubic)(segment(time.value, 2767, 3033)),
   }));
 
-  const barStyle = useAnimatedStyle(() => ({
-    width: Math.max(4, progress.value * trackWidth),
+  const dotsStyle = useAnimatedStyle(() => ({
+    opacity: time.value >= 1233 ? 1 : 0,
   }));
 
-  const dot0 = useAnimatedStyle(() => ({
-    opacity: 0.35 + pulse.value * 0.65,
-    transform: [{ scale: 1 + pulse.value * 0.35 }],
-  }));
-  const dot1 = useAnimatedStyle(() => {
-    const p = Math.sin((pulse.value + 0.33) * Math.PI);
-    return {
-      opacity: 0.35 + Math.abs(p) * 0.65,
-      transform: [{ scale: 1 + Math.abs(p) * 0.35 }],
-    };
+  const leftDotStyle = useAnimatedStyle(() => {
+    const pulse = Math.sin(segment(time.value, 1633, 2100) * Math.PI);
+    return { transform: [{ scale: 1 + pulse * 0.5 }] };
   });
-  const dot2 = useAnimatedStyle(() => {
-    const p = Math.sin((pulse.value + 0.66) * Math.PI);
-    return {
-      opacity: 0.35 + Math.abs(p) * 0.65,
-      transform: [{ scale: 1 + Math.abs(p) * 0.35 }],
-    };
+  const middleDotStyle = useAnimatedStyle(() => {
+    const pulse = Math.sin(segment(time.value, 1800, 2267) * Math.PI);
+    return { transform: [{ scale: 1 + pulse * 0.5 }] };
+  });
+  const rightDotStyle = useAnimatedStyle(() => {
+    const pulse = Math.sin(segment(time.value, 1933, 2400) * Math.PI);
+    return { transform: [{ scale: 1 + pulse * 0.5 }] };
   });
 
-  const stackStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateY: interpolate(float.value, [0, 1], [0, -10]) },
-      { rotate: `${interpolate(float.value, [0, 1], [-2, 2])}deg` },
-    ],
+  const versionStyle = useAnimatedStyle(() => ({
+    opacity: segment(time.value, 1400, 1467),
+  }));
+
+  const finalStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      segment(time.value, 2767, 3200),
+      [0, 1],
+      [0, 1]
+    ),
   }));
 
   if (!fontsLoaded) {
     return <View style={[styles.root, { backgroundColor: t.bg }]} />;
   }
 
-  const slide = goWelcomeSlides[page];
-  const isLast = page >= goWelcomeSlides.length - 1;
-
   return (
-    <View style={styles.root}>
+    <View style={styles.root} testID="welcome-casa-hallow">
       <StatusBar style="light" />
-      <LinearGradient
-        colors={["#2A1A12", t.bg, "#0C0907"]}
-        locations={[0, 0.45, 1]}
-        style={StyleSheet.absoluteFill}
-      />
-      <View style={[styles.atmosphere, { height: height * 0.42 }]}>
+
+      {/* Final welcome surface */}
+      <Animated.View style={[StyleSheet.absoluteFill, finalStyle]}>
         <LinearGradient
-          colors={["rgba(232,184,109,0.18)", "rgba(107,63,42,0.05)", "transparent"]}
+          colors={["#4A2C1A", "#1A120C", "#0C0907"]}
+          locations={[0, 0.42, 1]}
           style={StyleSheet.absoluteFill}
         />
-        <Animated.View style={[styles.stack, stackStyle]}>
-          <View style={[styles.panel, styles.panelBack]} />
-          <View style={[styles.panel, styles.panelMid]} />
-          <View style={[styles.panel, styles.panelFront]}>
-            <Text style={styles.panelLabel}>Casa Rústico</Text>
-            <Text style={styles.panelMeta}>Go · specialty</Text>
-          </View>
-        </Animated.View>
-      </View>
+        <LinearGradient
+          colors={["transparent", "rgba(20,16,12,0.55)", "#140F0C"]}
+          locations={[0.35, 0.62, 1]}
+          style={[styles.floor, { height: height * 0.55, bottom: 0 }]}
+        />
 
-      {phase === "splash" ? (
-        <Animated.View style={[styles.splash, splashStyle]}>
-          <BeanMark size={88} />
-          <Text style={styles.brandSplash}>CASA RÚSTICO</Text>
-          <Text style={styles.brandSub}>Go</Text>
-          <View style={styles.dots}>
-            <Animated.View style={[styles.dot, dot0]} />
-            <Animated.View style={[styles.dot, dot1]} />
-            <Animated.View style={[styles.dot, dot2]} />
-          </View>
-          <View style={styles.track}>
-            <Animated.View style={[styles.fill, barStyle]} />
-          </View>
-        </Animated.View>
-      ) : (
-        <View style={styles.pages}>
-          <Animated.Text
-            key={`eye-${slide.id}`}
-            entering={reducedMotion ? undefined : FadeIn.duration(280)}
-            style={styles.eyebrow}
-          >
-            {slide.eyebrow}
-          </Animated.Text>
-          <Animated.Text
-            key={`title-${slide.id}`}
-            entering={
-              reducedMotion ? undefined : FadeInDown.duration(420).springify()
-            }
-            style={styles.title}
-          >
-            {slide.title}
-          </Animated.Text>
-          <Animated.Text
-            key={`body-${slide.id}`}
-            entering={
-              reducedMotion ? undefined : FadeInUp.duration(480).delay(80)
-            }
-            style={styles.body}
-          >
-            {slide.body}
-          </Animated.Text>
-
-          <View style={styles.pager}>
-            {goWelcomeSlides.map((s, i) => (
-              <View
-                key={s.id}
-                style={[styles.pageDot, i === page && styles.pageDotOn]}
-              />
-            ))}
-          </View>
-
-          <View style={styles.actions}>
-            {!isLast ? (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Skip welcome"
-                onPress={onFinished}
-                style={styles.skip}
-              >
-                <Text style={styles.skipText}>Skip</Text>
-              </Pressable>
-            ) : (
-              <View style={styles.skip} />
-            )}
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={isLast ? "Enter Casa Rustico Go" : "Next"}
-              onPress={() => {
-                if (isLast) onFinished();
-                else setPage((p) => p + 1);
-              }}
-              style={styles.cta}
-            >
-              <Text style={styles.ctaText}>
-                {isLast ? "Enter the shop" : "Continue"}
-              </Text>
-            </Pressable>
+        <View style={[styles.sceneStack, { top: height * 0.14 }]}>
+          <View style={styles.bagBack} />
+          <View style={styles.bagMid} />
+          <View style={styles.bagFront}>
+            <BeanMark size={56} />
+            <Text style={styles.bagLabel}>Single origin</Text>
           </View>
         </View>
-      )}
+
+        <Text style={styles.wordmark}>Casa Rústico</Text>
+        <Text style={styles.tagline}>Specialty coffee · ship ready</Text>
+
+        <View style={styles.actions}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Enter Casa Rustico Go"
+            disabled={!canInteract}
+            onPress={onFinished}
+            style={[styles.primary, !canInteract && styles.disabled]}
+          >
+            <Text style={styles.primaryText}>Enter the shop</Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Open rusticopr.com"
+            disabled={!canInteract}
+            onPress={() => Linking.openURL("https://rusticopr.com")}
+            style={styles.secondary}
+          >
+            <Text style={styles.secondaryText}>Visit rusticopr.com</Text>
+          </Pressable>
+        </View>
+      </Animated.View>
+
+      {/* Splash loader (Hallow-style dissolve) */}
+      <Animated.View
+        pointerEvents="none"
+        style={[StyleSheet.absoluteFill, styles.loader, loaderStyle]}
+      >
+        <View style={styles.glyphWrap}>
+          <BeanMark size={96} />
+        </View>
+        <Animated.View style={[styles.dots, dotsStyle]}>
+          <Animated.View style={[styles.dot, leftDotStyle]} />
+          <Animated.View style={[styles.dot, middleDotStyle]} />
+          <Animated.View style={[styles.dot, rightDotStyle]} />
+        </Animated.View>
+        <Animated.Text style={[styles.version, versionStyle]}>
+          Casa Rústico Go
+        </Animated.Text>
+      </Animated.View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: t.bg },
-  atmosphere: {
+  floor: { position: "absolute", left: 0, right: 0 },
+  sceneStack: {
+    position: "absolute",
+    left: 36,
+    right: 36,
+    height: 200,
+    alignItems: "center",
+  },
+  bagBack: {
     position: "absolute",
     top: 0,
-    left: 0,
-    right: 0,
-    overflow: "hidden",
+    width: "78%",
+    height: 140,
+    borderRadius: 20,
+    backgroundColor: "#2A1C14",
+    opacity: 0.5,
+    transform: [{ scale: 0.92 }],
   },
-  stack: {
+  bagMid: {
     position: "absolute",
-    left: 28,
-    right: 28,
-    bottom: 24,
-    height: 170,
+    top: 24,
+    width: "86%",
+    height: 140,
+    borderRadius: 20,
+    backgroundColor: "#322418",
+    opacity: 0.75,
+    transform: [{ scale: 0.96 }],
   },
-  panel: {
+  bagFront: {
     position: "absolute",
-    left: 0,
-    right: 0,
-    height: 120,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: t.line,
-    backgroundColor: t.panel,
-  },
-  panelBack: { top: 0, transform: [{ scale: 0.92 }], opacity: 0.45 },
-  panelMid: { top: 22, transform: [{ scale: 0.96 }], opacity: 0.7 },
-  panelFront: {
     top: 48,
-    paddingHorizontal: 20,
-    paddingVertical: 22,
-    backgroundColor: "#241C14",
+    width: "94%",
+    height: 150,
+    borderRadius: 22,
+    borderWidth: 1,
     borderColor: t.brand,
-  },
-  panelLabel: {
-    color: t.ink,
-    fontFamily: "Fraunces_700Bold",
-    fontSize: 22,
-  },
-  panelMeta: {
-    marginTop: 6,
-    color: t.muted,
-    fontFamily: "SourceSans3_400Regular",
-    fontSize: 14,
-  },
-  splash: {
-    flex: 1,
+    backgroundColor: "#24180F",
     alignItems: "center",
     justifyContent: "center",
-    paddingBottom: 40,
+    gap: 10,
   },
-  brandSplash: {
-    marginTop: 28,
-    color: t.brand,
-    letterSpacing: 4,
-    fontSize: 13,
-    fontFamily: "SourceSans3_700Bold",
-  },
-  brandSub: {
-    marginTop: 8,
-    color: t.ink,
-    fontSize: 44,
-    fontFamily: "Fraunces_700Bold",
-  },
-  dots: { flexDirection: "row", gap: 10, marginTop: 28 },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: t.glow,
-  },
-  track: {
-    position: "absolute",
-    bottom: 48,
-    left: 40,
-    right: 40,
-    height: 3,
-    borderRadius: 2,
-    backgroundColor: t.line,
-    overflow: "hidden",
-  },
-  fill: {
-    height: "100%",
-    backgroundColor: t.brand,
-    borderRadius: 2,
-  },
-  pages: {
-    flex: 1,
-    justifyContent: "flex-end",
-    paddingHorizontal: 24,
-    paddingBottom: 36,
-  },
-  eyebrow: {
-    color: t.brand,
-    letterSpacing: 2,
-    textTransform: "uppercase",
-    fontSize: 12,
-    fontFamily: "SourceSans3_700Bold",
-    marginBottom: 12,
-  },
-  title: {
-    color: t.ink,
-    fontSize: 34,
-    lineHeight: 40,
-    fontFamily: "Fraunces_700Bold",
-    marginBottom: 14,
-  },
-  body: {
+  bagLabel: {
     color: t.muted,
+    fontFamily: "SourceSans3_600SemiBold",
+    fontSize: 14,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  wordmark: {
+    position: "absolute",
+    left: 24,
+    right: 24,
+    bottom: 248,
+    color: t.ink,
+    fontFamily: "Fraunces_700Bold",
+    fontSize: 42,
+    textAlign: "center",
+    letterSpacing: -0.5,
+  },
+  tagline: {
+    position: "absolute",
+    left: 32,
+    right: 32,
+    bottom: 208,
+    color: t.brand,
+    fontFamily: "SourceSans3_600SemiBold",
     fontSize: 16,
-    lineHeight: 24,
-    fontFamily: "SourceSans3_400Regular",
-    marginBottom: 28,
-    maxWidth: 360,
+    textAlign: "center",
   },
-  pager: { flexDirection: "row", gap: 8, marginBottom: 22 },
-  pageDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: t.line,
-  },
-  pageDotOn: { width: 22, backgroundColor: t.brand },
   actions: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    position: "absolute",
+    left: 24,
+    right: 24,
+    bottom: 48,
     gap: 12,
   },
-  skip: { minWidth: 64, paddingVertical: 14 },
-  skipText: {
+  primary: {
+    backgroundColor: t.accent,
+    borderRadius: 16,
+    paddingVertical: 17,
+    alignItems: "center",
+  },
+  primaryText: {
+    color: "#FFF8F0",
+    fontFamily: "SourceSans3_700Bold",
+    fontSize: 17,
+  },
+  secondary: {
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  secondaryText: {
     color: t.muted,
     fontFamily: "SourceSans3_600SemiBold",
     fontSize: 15,
   },
-  cta: {
-    flex: 1,
-    backgroundColor: t.accent,
-    borderRadius: 14,
-    paddingVertical: 16,
+  disabled: { opacity: 0.55 },
+  loader: {
     alignItems: "center",
+    justifyContent: "center",
   },
-  ctaText: {
-    color: "#FFF8F0",
-    fontFamily: "SourceSans3_700Bold",
-    fontSize: 16,
+  glyphWrap: { marginBottom: 28 },
+  dots: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 20,
+  },
+  dot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "#FFF8F0",
+  },
+  version: {
+    position: "absolute",
+    bottom: 56,
+    color: "rgba(245,230,211,0.7)",
+    fontFamily: "SourceSans3_400Regular",
+    fontSize: 15,
   },
 });
