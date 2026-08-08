@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# Fail fast before spending an EAS iOS build minute.
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+EXPECTED_BUNDLE_ID="com.jrod042.espressoescape"
+
+[[ -f app.json ]] || { echo "missing app.json"; exit 1; }
+[[ -f eas.json ]] || { echo "missing eas.json"; exit 1; }
+[[ -f package.json ]] || { echo "missing package.json"; exit 1; }
+[[ -f assets/icon.png ]] || { echo "missing assets/icon.png"; exit 1; }
+
+EXPECTED_BUNDLE_ID="$EXPECTED_BUNDLE_ID" node <<'NODE'
+const app = require('./app.json');
+const eas = require('./eas.json');
+const pkg = require('./package.json');
+const expected = process.env.EXPECTED_BUNDLE_ID;
+const bid = app.expo?.ios?.bundleIdentifier;
+const bn = app.expo?.ios?.buildNumber;
+
+if (!pkg.dependencies?.expo) throw new Error('package.json missing expo');
+if (bid !== expected) throw new Error(`bundleIdentifier ${bid} != ${expected}`);
+if (typeof bn !== 'string' || !/^\d+$/.test(bn)) {
+  throw new Error(`ios.buildNumber must be digit string, got ${JSON.stringify(bn)}`);
+}
+if (!eas.build?.production) throw new Error('eas.json missing production profile');
+if (!eas.build?.internal) throw new Error('eas.json missing internal profile');
+if (eas.build.production.autoIncrement) {
+  throw new Error('autoIncrement is not supported — use npm run bump:ios');
+}
+const env = eas.build.production.env || {};
+if (env.EXPO_USE_PRECOMPILED_MODULES !== '0') {
+  throw new Error('production env must set EXPO_USE_PRECOMPILED_MODULES=0');
+}
+const plugins = app.expo.plugins || [];
+const buildProps = plugins.find((p) => Array.isArray(p) && p[0] === 'expo-build-properties');
+if (!buildProps?.[1]?.ios || buildProps[1].ios.privacyManifestAggregationEnabled !== false) {
+  throw new Error('expo-build-properties must set privacyManifestAggregationEnabled: false');
+}
+console.log('config ok', { bid, bn, profiles: Object.keys(eas.build) });
+NODE
+
+npx expo config --type public --json >/tmp/ee-expo-config.json
+node <<'NODE'
+const c = require('/tmp/ee-expo-config.json');
+if (c.ios?.bundleIdentifier !== 'com.jrod042.espressoescape') {
+  throw new Error('expo config bundle mismatch: ' + c.ios?.bundleIdentifier);
+}
+console.log('expo config ok', c.ios.bundleIdentifier, 'buildNumber', c.ios.buildNumber);
+NODE
+
+echo "preflight-ios: PASS"
