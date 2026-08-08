@@ -4,20 +4,55 @@
     "appVersionSource": "local"
   },
   "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m-medium",
+        "image": "latest",
+        "simulator": false
+      },
+      "android": {
+        "image": "latest",
+        "buildType": "apk"
+      },
+      "env": {
+        "EAS_BUILD_NO_EXPO_GO_WARNING": "true",
+        "EXPO_USE_PRECOMPILED_MODULES": "0"
+      }
+    },
+    "internal": {
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m-medium",
+        "image": "latest",
+        "simulator": false
+      },
+      "android": {
+        "image": "latest",
+        "buildType": "apk"
+      },
+      "env": {
+        "EAS_BUILD_NO_EXPO_GO_WARNING": "true",
+        "EXPO_USE_PRECOMPILED_MODULES": "0"
+      }
+    },
     "preview": {
-      "distribution": "internal"
+      "extends": "internal"
     },
     "production": {
       "distribution": "store",
       "ios": {
         "resourceClass": "m-medium",
-        "image": "latest"
+        "image": "latest",
+        "simulator": false
       },
       "android": {
         "image": "latest"
       },
       "env": {
-        "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
+        "EAS_BUILD_NO_EXPO_GO_WARNING": "true",
+        "EXPO_USE_PRECOMPILED_MODULES": "0"
       }
     }
   },
