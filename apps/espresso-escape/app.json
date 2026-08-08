@@ -42,7 +42,8 @@
             "privacyManifestAggregationEnabled": false
           }
         }
-      ]
+      ],
+      "expo-font"
     ],
     "extra": {
       "brand": "Casa Rustico",
