@@ -7,6 +7,11 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "scheme": "casarusticogo",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#14100C"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.jrod042.casarusticogo",

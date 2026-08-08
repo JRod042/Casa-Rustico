@@ -8,10 +8,11 @@ APP="${1:-}"
 PROFILE="${2:-production}"
 
 usage() {
-  echo "Usage: $0 <casa-rustico-go|espresso-escape> [production|preview]"
+  echo "Usage: $0 <casa-rustico-go|espresso-escape> [production|internal|preview|development]"
   echo
   echo "Examples:"
   echo "  $0 casa-rustico-go"
+  echo "  $0 casa-rustico-go internal"
   echo "  $0 espresso-escape production"
   exit 1
 }
