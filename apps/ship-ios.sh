@@ -42,10 +42,11 @@ echo "    Team ID in eas.json: FY5H9V76QL"
 echo "    Tip: use production for TestFlight; internal needs Ad Hoc devices."
 echo
 
-npx eas-cli build --platform ios --profile "$PROFILE" --no-wait
+# Pin CLI — unpinned `npx eas-cli` latest has been flaky (MODULE_NOT_FOUND).
+npx --yes eas-cli@16.28.0 build --platform ios --profile "$PROFILE" --no-wait
 
 echo
 echo "When the build finishes (watch expo.dev), submit with:"
-echo "  cd $DIR && npx eas-cli submit --platform ios --profile $PROFILE --latest"
+echo "  cd $DIR && npx --yes eas-cli@16.28.0 submit --platform ios --profile $PROFILE --latest"
 echo
 echo "Or open the build page on expo.dev and click Submit."

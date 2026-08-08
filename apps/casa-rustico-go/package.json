@@ -10,9 +10,9 @@
     "web": "expo start --web",
     "preflight:ios": "bash ./scripts/preflight-ios.sh",
     "bump:ios": "node ./scripts/bump-ios-build.mjs",
-    "eas:build:ios": "npx eas-cli build --platform ios --profile production",
-    "eas:build:internal": "npx eas-cli build --platform ios --profile internal",
-    "eas:submit:ios": "npx eas-cli submit --platform ios --profile production --latest",
+    "eas:build:ios": "npx --yes eas-cli@16.28.0 build --platform ios --profile production",
+    "eas:build:internal": "npx --yes eas-cli@16.28.0 build --platform ios --profile internal",
+    "eas:submit:ios": "npx --yes eas-cli@16.28.0 submit --platform ios --profile production --latest",
     "eas-build-pre-install": "node ./scripts/restore-assets.js"
   },
   "dependencies": {

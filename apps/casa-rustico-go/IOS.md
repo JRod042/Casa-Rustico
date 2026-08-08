@@ -9,10 +9,12 @@ These notes mirror the Omni (`JRod042/project-1`) EAS fixes that already shipped
 
 ---
 
-## Important: `Error: build:internal command failed`
+## If you still see `Failed to run eas build:internal`
 
-That string is EAS CLI’s **generic failure wrapper**, not always “profile = internal”.  
-Always open the build log and read the **first real error** (credentials, autoIncrement, pod install, privacy manifests).
+1. **Merge PR #2 into `main` first.** Until then, `main` has **no** profile named `internal` (only `preview` + `production`). Building profile `internal` from `main` will fail immediately.
+2. After merge, rebuild from branch **`main`** (or the fix branch) with profile **`production`** (TestFlight) or **`internal`**.
+3. That error string is also EAS’s **generic wrapper** — open the full Expo build log for the real line (credentials / pods / etc.).
+4. Prefer a pinned CLI locally: `npx --yes eas-cli@16.28.0` (see `npm run eas:build:ios`).
 
 ---
 
