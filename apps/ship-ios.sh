@@ -23,6 +23,13 @@ DIR="$ROOT/$APP"
 
 cd "$DIR"
 export EAS_BUILD_NO_EXPO_GO_WARNING=true
+export EXPO_USE_PRECOMPILED_MODULES=0
+
+if [[ -x ./scripts/preflight-ios.sh ]]; then
+  echo "==> Preflight"
+  npm run preflight:ios
+  echo
+fi
 
 if ! npx eas-cli whoami >/dev/null 2>&1; then
   echo "Log into Expo first:"
@@ -32,6 +39,7 @@ fi
 echo "==> iOS build for $APP (profile: $PROFILE)"
 echo "    EAS will ask for Apple Developer login to create certs + profiles."
 echo "    Team ID in eas.json: FY5H9V76QL"
+echo "    Tip: use production for TestFlight; internal needs Ad Hoc devices."
 echo
 
 npx eas-cli build --platform ios --profile "$PROFILE" --no-wait
