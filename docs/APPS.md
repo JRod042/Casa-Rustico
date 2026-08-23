@@ -8,18 +8,34 @@ GitHub org repo: https://github.com/JRod042/Casa-Rustico
 | App | Folder | Role | Store path |
 |-----|--------|------|------------|
 | **Espresso Escape** | `apps/espresso-escape/` | Casual coffee-themed game (bean run / barista timing) | EAS → TestFlight / Play |
-| **Casa Rustico Go** | `apps/casa-rustico-go/` | Brand shop: single-origin catalog, story, reorder | EAS → TestFlight / Play |
+| **Casa Rustico Go** | `apps/casa-rustico-go/` | Brand shop: Shopify catalog, bag, rusticopr.com checkout, ritual, story | EAS → TestFlight / Play |
 
-Both share Casa Rustico visual identity (labels under `Single Origin Labels/`, product JSON in repo root).
+Do not mix this shop with the HQ app in `JRod042/project-1`.
 
-## Architecture (merged)
+## Casa Rustico Go
+
+Customer shop — not a restaurant HQ.
+
+- **Tabs:** Home, Coffee, Ritual, Story. Bag is a FAB (not a tab).
+- **Hero:** Colombia. Origins, capsules, house mug.
+- **Cart:** AsyncStorage (`casa-rustico-go.v4`). No accounts.
+- **Checkout:** Shopify cart permalinks `https://rusticopr.com/cart/{variantId}:{qty}`. Promo `MORNING10`.
+- **Catalog:** `apps/casa-rustico-go/src/catalog.ts` (Shopify product + variant IDs).
+- **Welcome:** Hallow-inspired dissolve (`src/welcome/`). Replay from Story.
+
+EAS identity (do not change unless submitting a new build):
+
+- Bundle `com.jrod042.casarusticogo`
+- EAS project `25937717-3f2f-4793-af4d-79a12310f02a`
+- GitHub Actions base directory `apps/casa-rustico-go`
+
+## Architecture
 
 ```
-Casa Rustico brand assets + dripshipper catalog
+Casa Rustico brand + Shopify catalog (rusticopr.com)
         │
-        ├── casa-rustico-go  (commerce / loyalty shell)
-        │       └── deep-link rewards ←── espresso-escape
-        └── espresso-escape  (game loop + rewards)
+        ├── casa-rustico-go  (shop / bag / ritual / story)
+        └── espresso-escape  (game)
 ```
 
 ## Reference repos (cloned under `references/`)
@@ -31,7 +47,6 @@ Casa Rustico brand assets + dripshipper catalog
 | [EvanBacon/pillar-valley](https://github.com/EvanBacon/pillar-valley) | Expo game polish / menus |
 | [k1rana/jokopi-react](https://github.com/k1rana/jokopi-react) | Coffee order / menu UX |
 | [Asatelit/pwa-pos-terminal](https://github.com/Asatelit/pwa-pos-terminal) | Cart / counter patterns |
-| [amahim/espresso-escape](https://github.com/amahim/espresso-escape) | Named coffee-store client/server split |
 
 Do **not** ship references as-is — study patterns only; product code lives in `apps/`.
 
@@ -42,34 +57,10 @@ Both apps use a **Hallow-inspired** welcome (Appllama study): splash loader diss
 - Go: `apps/casa-rustico-go/src/welcome/`
 - Escape: `apps/espresso-escape/src/welcome/`
 
-See `docs/WELCOME_SCREENS.md`. Clear the storage key (or reinstall) to replay.
+See `docs/WELCOME_SCREENS.md`. Clear the storage key (or **Replay intro** on Story) to replay.
 
-## Local brand data to wire
+## Submission
 
-- `dripshipper-single-origin.json` — product SKUs / descriptions  
-- `Single Origin Labels/` — bag art  
-- `passive-income/shopify/` — storefront / brand notes  
+See `apps/casa-rustico-go/IOS.md`. Never change `eas.json` / bundle IDs / string build numbers unless bumping for a new TestFlight (`npm run bump:ios`).
 
-## Next (submission)
-
-1. `cd apps/casa-rustico-go && npx eas init` (or link existing Expo project)  
-2. Same for `espresso-escape`  
-3. Set bundle IDs, icons, privacy strings  
-4. `eas build --platform ios --profile production`  
-5. Submit with ASC credentials (same team as Omni if desired)
-
-## Expo / GitHub login on this host
-
-CLI still showed **Not logged in** from agent shells. On your machine:
-
-```bash
-npx eas-cli login
-gh auth login
-```
-
-Then re-run listing:
-
-```bash
-npx eas-cli project:list
-eas build:list
-```
+GitHub → Expo: base directory **`apps/casa-rustico-go`**, profile **`production`**.
