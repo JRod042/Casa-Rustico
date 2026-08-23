@@ -1,0 +1,11 @@
+# Casa Rústico brand apps — Grok Build project config
+
+[project]
+name = "Casa-Rustico"
+description = "Brand shop (casa-rustico-go) + Espresso Escape. Expo EAS only."
+
+[models]
+default = "grok-4"
+
+[ui]
+permission_default = "ask"

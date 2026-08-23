@@ -1,0 +1,6 @@
+---
+description: Casa Rústico brand apps
+alwaysApply: true
+---
+
+Two Expo apps under `apps/`. Never treat repo root as the Expo app. No Linux host. Read AGENTS.md first.
