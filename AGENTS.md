@@ -12,7 +12,11 @@
 ## Repos
 
 - This repo: brand apps
-- https://github.com/JRod042/project-1 — house HQ / TestFlight shell
+- https://github.com/JRod042/project-1 — house HQ / TestFlight shell (separate product)
+
+## Go shop
+
+Customer coffee shop for rusticopr.com. Colombia hero, bag, Shopify checkout permalinks, ritual, story. Not a restaurant HQ. Cart is on-device only.
 
 ## Engineering
 

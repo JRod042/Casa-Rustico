@@ -1,58 +1,23 @@
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode } from "react";
 import { View } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useShop } from "../store";
 import { CasaWelcome } from "./CasaWelcome";
-import { goWelcomeTheme as t, WELCOME_STORAGE_KEY } from "./theme";
+import { goWelcomeTheme as t } from "./theme";
 
 type Props = {
   children: ReactNode;
-  /** Force show welcome (dev / QA). */
-  forceShow?: boolean;
 };
 
-export function WelcomeGate({ children, forceShow = false }: Props) {
-  const [ready, setReady] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(true);
+/** First launch (and Replay intro) shows the branded welcome; returning skips to the shop. */
+export function WelcomeGate({ children }: Props) {
+  const { hydrated, welcomeSeen, markWelcomeSeen } = useShop();
 
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      if (forceShow) {
-        if (alive) {
-          setShowWelcome(true);
-          setReady(true);
-        }
-        return;
-      }
-      try {
-        const seen = await AsyncStorage.getItem(WELCOME_STORAGE_KEY);
-        if (alive) setShowWelcome(seen !== "1");
-      } catch {
-        if (alive) setShowWelcome(true);
-      } finally {
-        if (alive) setReady(true);
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [forceShow]);
-
-  const finish = async () => {
-    setShowWelcome(false);
-    try {
-      await AsyncStorage.setItem(WELCOME_STORAGE_KEY, "1");
-    } catch {
-      // Ignore persistence failures — still enter the app.
-    }
-  };
-
-  if (!ready) {
+  if (!hydrated) {
     return <View style={{ flex: 1, backgroundColor: t.bg }} />;
   }
 
-  if (showWelcome) {
-    return <CasaWelcome onFinished={finish} />;
+  if (!welcomeSeen) {
+    return <CasaWelcome onFinished={markWelcomeSeen} />;
   }
 
   return <>{children}</>;

@@ -22,4 +22,6 @@ Branding, scene, and CTAs are original Casa Rústico — not Hallow (or any othe
 | Casa Rustico Go | `CasaWelcome` | `@casa-rustico/go-welcome-v1` |
 | Espresso Escape | `EscapeWelcome` | `@casa-rustico/escape-welcome-v1` |
 
+Go: first launch shows `CasaWelcome`. Returning opens the shop. **Replay intro** on the Story tab clears the key.
+
 Stack: Expo SDK 57, Reanimated timeline, LinearGradient atmosphere, Fraunces + Source Sans 3, AsyncStorage first-run gate.
