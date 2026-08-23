@@ -9,12 +9,37 @@ These notes mirror the Omni (`JRod042/project-1`) EAS fixes that already shipped
 
 ---
 
-## If you still see `Failed to run eas build:internal`
+## Current failure (GitHub Actions)
 
-1. **Merge PR #2 into `main` first.** Until then, `main` has **no** profile named `internal` (only `preview` + `production`). Building profile `internal` from `main` will fail immediately.
-2. After merge, rebuild from branch **`main`** (or the fix branch) with profile **`production`** (TestFlight) or **`internal`**.
-3. That error string is also EAS’s **generic wrapper** — open the full Expo build log for the real line (credentials / pods / etc.).
-4. Prefer a pinned CLI locally: `npx --yes eas-cli@16.28.0` (see `npm run eas:build:ios`).
+```
+Distribution Certificate is not validated for non-interactive builds.
+Failed to set up credentials.
+Credentials are not set up. Run this command again in interactive mode.
+```
+
+EXPO_TOKEN is fine. The Expo project simply has **no Distribution Certificate yet**.
+Non-interactive / CI builds refuse to create one (eas-cli source behavior).
+
+### Fix once (then CI works forever)
+
+**Fastest path — Expo web UI**
+1. Open https://expo.dev/accounts/jrod42/projects/espresso-escape/credentials
+2. Select iOS → bundle `com.jrod042.espressoescape` → **App Store**
+3. Generate / assign Distribution Certificate + App Store Provisioning Profile
+4. Complete Apple login
+5. Confirm both show valid
+
+**CLI path (interactive, once)**
+```bash
+cd apps/espresso-escape
+npm ci
+npx eas-cli credentials -p ios
+# or: npx eas-cli build --platform ios --profile production   # no --non-interactive
+```
+
+After the certificate exists on EAS, re-run the GitHub workflow (or `eas build --non-interactive`).
+
+An App Store Connect API key alone is **not enough**.
 
 ---
 
@@ -32,17 +57,6 @@ These notes mirror the Omni (`JRod042/project-1`) EAS fixes that already shipped
 
 ---
 
-## Credentials (required before GitHub / non-interactive builds)
-
-1. [expo.dev → espresso-escape → Credentials → iOS](https://expo.dev/accounts/jrod42/projects/espresso-escape/credentials)
-2. For **`com.jrod042.espressoescape`** open **App Store** (not Ad Hoc) when targeting TestFlight
-3. Generate **Distribution Certificate** + **App Store Provisioning Profile** (Apple login)
-4. For ad hoc **internal** installs, also set up **Ad Hoc** profile + register devices
-
-An App Store Connect API key alone is **not enough**.
-
----
-
 ## Build matrix
 
 | Profile | Distribution | Use |
@@ -55,7 +69,7 @@ An App Store Connect API key alone is **not enough**.
 cd apps/espresso-escape
 npm ci
 npm run preflight:ios
-# TestFlight path:
+# TestFlight path (after credentials exist):
 npx eas-cli build --platform ios --profile production
 # then Submit on expo.dev (or eas submit)
 ```
@@ -69,7 +83,7 @@ GitHub → Expo: base directory **`apps/espresso-escape`**, profile **`productio
 ```
 [ ] Apple App ID com.jrod042.espressoescape exists
 [ ] App Store Connect app exists (add ascAppId to eas.json submit when known)
-[ ] Expo credentials: Distribution Cert + App Store profile VALID
+[ ] Expo credentials: Distribution Cert + App Store profile VALID  ← current blocker
 [ ] GitHub connected; base directory = apps/espresso-escape
 [ ] Bumped ios.buildNumber if Apple already used current number (npm run bump:ios)
 [ ] npm ci green
