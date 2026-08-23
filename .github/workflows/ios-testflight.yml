@@ -54,10 +54,24 @@ jobs:
       - name: Verify Expo auth
         run: eas whoami
 
+      - name: Write App Store Connect API key (optional)
+        env:
+          APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
+        run: |
+          if [ -n "${APPLE_API_KEY_P8:-}" ]; then
+            printf '%s\n' "$APPLE_API_KEY_P8" > asc-api-key.p8
+            echo "EXPO_ASC_API_KEY_PATH=$PWD/asc-api-key.p8" >> "$GITHUB_ENV"
+            echo "ASC API key file written"
+          else
+            echo "No APPLE_API_KEY_P8 secret — using Expo-stored Apple credentials if configured"
+          fi
+
       - name: Build iOS
         env:
           EAS_BUILD_NO_EXPO_GO_WARNING: "true"
           EXPO_USE_PRECOMPILED_MODULES: "0"
+          EXPO_ASC_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          EXPO_ASC_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
         run: |
           if [ "${{ inputs.submit }}" = "true" ]; then
             eas build --platform ios --profile ${{ inputs.profile }} --non-interactive --auto-submit --no-wait
