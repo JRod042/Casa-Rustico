@@ -7,10 +7,20 @@ GitHub org repo: https://github.com/JRod042/Casa-Rustico
 
 | App | Folder | Role | Store path |
 |-----|--------|------|------------|
+| **Casa Rústico Hacienda** | `apps/hacienda/` | Order-ahead café PWA: rewards, scan, gifts, stores | Web / Vercel |
 | **Espresso Escape** | `apps/espresso-escape/` | Casual coffee-themed game (bean run / barista timing) | EAS → TestFlight / Play |
 | **Casa Rustico Go** | `apps/casa-rustico-go/` | Brand shop: Shopify catalog, bag, rusticopr.com checkout, ritual, story | EAS → TestFlight / Play |
 
 Do not mix this shop with the HQ app in `JRod042/project-1`.
+
+## Casa Rústico Hacienda
+
+Café order-ahead — not Shopify checkout.
+
+- **Tabs:** Home, Order, Scan, Gift, Stores. Account is the avatar, not a tab.
+- **Rewards:** Hacienda beans, Cosecha / Hacienda tiers, wallet, member barcode.
+- **Catalog:** `apps/hacienda/src/lib/catalog.ts`
+- **Auth:** email + Google / X. Orders, gifts, and beans are per signed-in user.
 
 ## Casa Rustico Go
 
@@ -34,6 +44,7 @@ EAS identity (do not change unless submitting a new build):
 ```
 Casa Rustico brand + Shopify catalog (rusticopr.com)
         │
+        ├── hacienda         (web café / rewards / scan)
         ├── casa-rustico-go  (shop / bag / ritual / story)
         └── espresso-escape  (game)
 ```
@@ -52,7 +63,7 @@ Do **not** ship references as-is — study patterns only; product code lives in 
 
 ## First-launch welcome
 
-Both apps use a **Hallow-inspired** welcome (Appllama study): splash loader dissolve → brand-first final surface, once per install (AsyncStorage).
+Both Expo apps use a **Hallow-inspired** welcome (Appllama study): splash loader dissolve → brand-first final surface, once per install (AsyncStorage).
 
 - Go: `apps/casa-rustico-go/src/welcome/`
 - Escape: `apps/espresso-escape/src/welcome/`

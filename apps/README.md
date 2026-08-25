@@ -1,5 +1,6 @@
 # Apps
 
+- **hacienda** — café PWA (order ahead, scan, rewards)
 - **espresso-escape** — game (Expo)
 - **casa-rustico-go** — brand / shop companion (Expo)
 

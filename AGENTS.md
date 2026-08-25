@@ -1,18 +1,23 @@
 # Casa Rústico brand apps — Grok Build / Cursor
 
-**Products:** Casa Rustico Go (shop) and Espresso Escape (game).
+**Products:** Casa Rústico Hacienda (web café), Casa Rustico Go (Expo shop), Espresso Escape (game).
 
 ## Hard constraints
 
-- iPhone / iPad only. No Linux host, no Mac, no OpenClaw.
-- Builds via Expo EAS → TestFlight.
+- iPhone / iPad only for Expo apps. No Linux host, no Mac, no OpenClaw.
+- Expo builds via EAS → TestFlight.
 - GitHub Actions base directory is `apps/casa-rustico-go` or `apps/espresso-escape` — never repo root.
 - Do not ship `references/` as product code.
+- Never overwrite Expo `eas.json` / bundle IDs when editing the web app.
 
 ## Repos
 
 - This repo: brand apps
 - https://github.com/JRod042/project-1 — house HQ / TestFlight shell (separate product)
+
+## Hacienda (web)
+
+Order-ahead café PWA in `apps/hacienda`. Tabs: Home, Order, Scan, Gift, Stores. Auth + per-user rewards, wallet, gifts. Not Shopify checkout.
 
 ## Go shop
 

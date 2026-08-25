@@ -1,0 +1,175 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f3eee6;
+  --color-cream: #faf6f0;
+  --color-ink: #1a1612;
+  --color-muted: #7a6f64;
+  --color-subtle: #a3988c;
+  --color-forest: #1f3329;
+  --color-grove: #2f4a3c;
+  --color-clay: #a3542f;
+  --color-card: #fffcf7;
+  --color-line: #e4dcd0;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI",
+    sans-serif;
+  --font-display: "Iowan Old Style", Palatino, "Palatino Linotype", Georgia, serif;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --ease-out-apple: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-apple: cubic-bezier(0.32, 0, 0.67, 0);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    color-scheme: light;
+  }
+
+  body {
+    min-height: 100dvh;
+    min-height: -webkit-fill-available;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    -webkit-tap-highlight-color: transparent;
+    font-family: var(--font-sans);
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  button,
+  a,
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  input,
+  textarea {
+    font: inherit;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.glass-tab {
+  background: color-mix(in oklab, var(--color-cream) 72%, transparent);
+  backdrop-filter: saturate(180%) blur(22px);
+  -webkit-backdrop-filter: saturate(180%) blur(22px);
+  box-shadow:
+    0 10px 32px color-mix(in oklab, var(--color-ink) 12%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 70%, transparent);
+  border: 1px solid color-mix(in oklab, white 55%, var(--color-line));
+}
+
+.scroll-fade {
+  mask-image: linear-gradient(to bottom, #000 0%, #000 calc(100% - 88px), transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 calc(100% - 88px),
+    transparent 100%
+  );
+}
+
+.snap-x {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.snap-x::-webkit-scrollbar {
+  display: none;
+}
+.snap-item {
+  scroll-snap-align: start;
+}
+
+.barcode-slide {
+  animation: barcode-drift 2.4s linear infinite;
+}
+@keyframes barcode-drift {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-28px);
+  }
+}
+
+.pressable {
+  transition: transform 150ms var(--ease-out-apple);
+}
+.pressable:active {
+  transform: scale(0.96);
+}
+
+.stagger-in > * {
+  animation: rise-in 400ms var(--ease-out-apple) both;
+}
+.stagger-in > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+.stagger-in > *:nth-child(2) {
+  animation-delay: 40ms;
+}
+.stagger-in > *:nth-child(3) {
+  animation-delay: 80ms;
+}
+.stagger-in > *:nth-child(4) {
+  animation-delay: 120ms;
+}
+.stagger-in > *:nth-child(5) {
+  animation-delay: 160ms;
+}
+.stagger-in > *:nth-child(6) {
+  animation-delay: 200ms;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+}
