@@ -21,7 +21,7 @@ Order-ahead café PWA in `apps/hacienda`. Tabs: Home, Order, Scan, Gift, Stores.
 
 ## Go shop
 
-Customer coffee shop for rusticopr.com. Colombia hero, bag, Shopify checkout permalinks, ritual, story. Not a restaurant HQ. Cart is on-device only.
+Customer coffee shop for rusticopr.com. Colombia hero, bag, Shopify checkout permalinks, Hacienda Rewards, scan card, gift, stores. Ritual and story stay in-app. Cart is on-device.
 
 ## Engineering
 

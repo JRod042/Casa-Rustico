@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { memberNumber } from "./rewards";
 import { WELCOME_STORAGE_KEY } from "./welcome/theme";
 
 export type CartLine = {
@@ -19,13 +20,24 @@ export type CartLine = {
   price: number;
 };
 
+export type Member = {
+  name: string;
+  email: string;
+  beans: number;
+  lifetime: number;
+  memberNo: string;
+  joinedAt: string;
+};
+
 const CART_KEY = "casa-rustico-go.v4";
+const MEMBER_KEY = "casa-rustico-go.member.v1";
 
 type ShopApi = {
   hydrated: boolean;
   welcomeSeen: boolean;
   toast: string | null;
   cart: CartLine[];
+  member: Member | null;
   markWelcomeSeen: () => void;
   replayWelcome: () => void;
   flash: (msg: string) => void;
@@ -33,6 +45,9 @@ type ShopApi = {
   setCartQty: (productId: string, variantId: number, qty: number) => void;
   removeFromCart: (productId: string, variantId: number) => void;
   clearCart: () => void;
+  joinRewards: (name: string, email: string) => Member;
+  signOutMember: () => void;
+  earnBeans: (n: number) => number;
 };
 
 const ShopContext = createContext<ShopApi | null>(null);
@@ -42,21 +57,27 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const [welcomeSeen, setWelcomeSeen] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
   const [cart, setCart] = useState<CartLine[]>([]);
+  const [member, setMember] = useState<Member | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
-        const [rawCart, welcome] = await Promise.all([
+        const [rawCart, welcome, rawMember] = await Promise.all([
           AsyncStorage.getItem(CART_KEY),
           AsyncStorage.getItem(WELCOME_STORAGE_KEY),
+          AsyncStorage.getItem(MEMBER_KEY),
         ]);
         if (!alive) return;
         if (rawCart) {
           const parsed = JSON.parse(rawCart) as { cart?: CartLine[] } | CartLine[];
           const lines = Array.isArray(parsed) ? parsed : parsed.cart;
           if (Array.isArray(lines)) setCart(lines);
+        }
+        if (rawMember) {
+          const parsed = JSON.parse(rawMember) as Member;
+          if (parsed?.memberNo && parsed?.email) setMember(parsed);
         }
         setWelcomeSeen(welcome === "1");
       } catch {
@@ -74,6 +95,15 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     if (!hydrated) return;
     void AsyncStorage.setItem(CART_KEY, JSON.stringify({ cart })).catch(() => undefined);
   }, [cart, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    if (!member) {
+      void AsyncStorage.removeItem(MEMBER_KEY).catch(() => undefined);
+      return;
+    }
+    void AsyncStorage.setItem(MEMBER_KEY, JSON.stringify(member)).catch(() => undefined);
+  }, [member, hydrated]);
 
   const markWelcomeSeen = useCallback(() => {
     setWelcomeSeen(true);
@@ -120,12 +150,39 @@ export function ShopProvider({ children }: { children: ReactNode }) {
 
   const clearCart = useCallback(() => setCart([]), []);
 
+  const joinRewards = useCallback((name: string, email: string) => {
+    const seed = `${email.trim().toLowerCase()}|${Date.now()}`;
+    const next: Member = {
+      name: name.trim() || "Member",
+      email: email.trim().toLowerCase(),
+      beans: 0,
+      lifetime: 0,
+      memberNo: memberNumber(seed),
+      joinedAt: new Date().toISOString(),
+    };
+    setMember(next);
+    return next;
+  }, []);
+
+  const signOutMember = useCallback(() => setMember(null), []);
+
+  const earnBeans = useCallback((n: number) => {
+    let awarded = 0;
+    setMember((cur) => {
+      if (!cur || n <= 0) return cur;
+      awarded = n;
+      return { ...cur, beans: cur.beans + n, lifetime: cur.lifetime + n };
+    });
+    return awarded;
+  }, []);
+
   const api = useMemo<ShopApi>(
     () => ({
       hydrated,
       welcomeSeen,
       toast,
       cart,
+      member,
       markWelcomeSeen,
       replayWelcome,
       flash,
@@ -133,12 +190,16 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       setCartQty,
       removeFromCart,
       clearCart,
+      joinRewards,
+      signOutMember,
+      earnBeans,
     }),
     [
       hydrated,
       welcomeSeen,
       toast,
       cart,
+      member,
       markWelcomeSeen,
       replayWelcome,
       flash,
@@ -146,6 +207,9 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       setCartQty,
       removeFromCart,
       clearCart,
+      joinRewards,
+      signOutMember,
+      earnBeans,
     ],
   );
 
@@ -164,4 +228,10 @@ export function cartCount(cart: CartLine[]) {
 
 export function cartSubtotal(cart: CartLine[]) {
   return cart.reduce((n, l) => n + l.price * l.qty, 0);
+}
+
+export function firstName(name: string | null | undefined) {
+  const t = (name ?? "").trim();
+  if (!t) return "there";
+  return t.split(/\s+/)[0];
 }

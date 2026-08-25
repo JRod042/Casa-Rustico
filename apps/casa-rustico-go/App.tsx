@@ -14,7 +14,7 @@ import { colors } from "./src/theme";
 /**
  * Casa Rústico Go — brand shop.
  * Shopify catalog + rusticopr.com checkout permalinks.
- * Cart persists on-device (AsyncStorage). No auth.
+ * Cart persists on-device (AsyncStorage). Hacienda Rewards is local to the phone.
  */
 export default function App() {
   const [fontsLoaded] = useFonts({

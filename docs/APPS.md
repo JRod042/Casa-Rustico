@@ -26,9 +26,10 @@ Café order-ahead — not Shopify checkout.
 
 Customer shop — not a restaurant HQ.
 
-- **Tabs:** Home, Coffee, Ritual, Story. Bag is a FAB (not a tab).
+- **Tabs:** Home, Order, Scan, Gift, Stores. Bag is a FAB (not a tab). Ritual and Story live on Home / Account.
 - **Hero:** Colombia. Origins, capsules, house mug.
-- **Cart:** AsyncStorage (`casa-rustico-go.v4`). No accounts.
+- **Cart:** AsyncStorage (`casa-rustico-go.v4`). Shopify checkout permalinks.
+- **Rewards:** Hacienda Rewards on-device (`casa-rustico-go.member.v1`). Join with name + email. Beans on checkout. Casa card in Scan.
 - **Checkout:** Shopify cart permalinks `https://rusticopr.com/cart/{variantId}:{qty}`. Promo `MORNING10`.
 - **Catalog:** `apps/casa-rustico-go/src/catalog.ts` (Shopify product + variant IDs).
 - **Welcome:** Hallow-inspired dissolve (`src/welcome/`). Replay from Story.

@@ -336,3 +336,92 @@ export function gear() {
 }
 
 export const colombia = products[0];
+
+export type CafeStore = {
+  id: string;
+  name: string;
+  city: string;
+  region: string;
+  address: string;
+  hours: string;
+  amenities: string[];
+  image: string;
+  pickup: boolean;
+};
+
+export const stores: CafeStore[] = [
+  {
+    id: "sanjuan",
+    name: "Casa Rústico Atelier",
+    city: "San Juan",
+    region: "Puerto Rico",
+    address: "151 Calle del Cristo, Old San Juan",
+    hours: "6:30 AM – 6:00 PM",
+    amenities: ["Mobile order", "Wifi", "Indoor", "House-mark merch"],
+    image: `${FILES}/pr-cordillera-central-vista.jpg`,
+    pickup: true,
+  },
+  {
+    id: "jayuya",
+    name: "Highland Outpost",
+    city: "Jayuya",
+    region: "Puerto Rico",
+    address: "Carretera 144, Cordillera Central",
+    hours: "7:00 AM – 4:00 PM",
+    amenities: ["Mobile order", "Pour-over bar", "Mountain view"],
+    image: `${FILES}/pr-jayuya-mountain.jpg`,
+    pickup: true,
+  },
+  {
+    id: "hammond",
+    name: "Hammond Pickup",
+    city: "Hammond",
+    region: "Louisiana",
+    address: "1100 NW Railroad Ave",
+    hours: "7:00 AM – 5:00 PM",
+    amenities: ["Mobile order", "Wifi", "Parking"],
+    image: `${FILES}/pr-hacienda-lealtad-landscape.jpg`,
+    pickup: true,
+  },
+  {
+    id: "nola",
+    name: "Magazine Street",
+    city: "New Orleans",
+    region: "Louisiana",
+    address: "4206 Magazine St",
+    hours: "6:30 AM – 7:00 PM",
+    amenities: ["Mobile order", "Wifi", "Patio"],
+    image: `${FILES}/pr-toro-negro-panorama.jpg`,
+    pickup: true,
+  },
+  {
+    id: "temecula",
+    name: "Roastery Partner",
+    city: "Temecula",
+    region: "California",
+    address: "Partner-roasted · pickup by appointment",
+    hours: "By appointment",
+    amenities: ["Bag pickup", "Roastery"],
+    image: `${CDN}/kraft_blank_final_latest_d8ef99ab-eaab-4274-b98b-8c3fbcd09ec5.jpg?v=1785445582`,
+    pickup: true,
+  },
+  {
+    id: "ship",
+    name: "Ships from the U.S.",
+    city: "Nationwide",
+    region: "United States",
+    address: "Quiet logistics · partner packed under our label",
+    hours: "Ships in 2–4 days",
+    amenities: ["Whole-bean", "Capsules", "Merch"],
+    image: `${CDN}/kraft_blank_final_latest_d8ef99ab-eaab-4274-b98b-8c3fbcd09ec5.jpg?v=1785445582`,
+    pickup: false,
+  },
+];
+
+export const giftDesigns = [
+  { id: "kraft", name: "Kraft morning", image: `${CDN}/kraft_blank_final_latest_d8ef99ab-eaab-4274-b98b-8c3fbcd09ec5.jpg?v=1785445582` },
+  { id: "forest", name: "Highland forest", image: `${FILES}/pr-toro-negro-panorama.jpg` },
+  { id: "hacienda", name: "Hacienda light", image: `${FILES}/pr-hacienda-lealtad-landscape.jpg` },
+] as const;
+
+export const giftAmounts = [10, 15, 25, 50, 100] as const;

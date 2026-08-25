@@ -125,3 +125,90 @@ export function IconBag({ color = colors.linen, size = 20 }: { color?: string; s
     </View>
   );
 }
+
+export function IconScan({ on }: { on: boolean }) {
+  const c = stroke(on);
+  return (
+    <View style={{ width: 22, height: 22, alignItems: "center", justifyContent: "center" }}>
+      <View
+        style={{
+          width: 16,
+          height: 16,
+          borderWidth: 1.7,
+          borderColor: c,
+          borderRadius: 3,
+        }}
+      />
+      <View style={{ position: "absolute", width: 10, height: 1.6, backgroundColor: c }} />
+    </View>
+  );
+}
+
+export function IconGift({ on }: { on: boolean }) {
+  const c = stroke(on);
+  return (
+    <View style={{ width: 22, height: 22, alignItems: "center", justifyContent: "flex-end" }}>
+      <View
+        style={{
+          width: 16,
+          height: 10,
+          borderWidth: 1.7,
+          borderColor: c,
+          borderBottomLeftRadius: 3,
+          borderBottomRightRadius: 3,
+        }}
+      />
+      <View
+        style={{
+          position: "absolute",
+          top: 2,
+          width: 16,
+          height: 6,
+          borderWidth: 1.7,
+          borderColor: c,
+          borderRadius: 2,
+        }}
+      />
+      <View
+        style={{
+          position: "absolute",
+          width: 1.6,
+          height: 16,
+          backgroundColor: c,
+          borderRadius: 1,
+        }}
+      />
+    </View>
+  );
+}
+
+export function IconPin({ on }: { on: boolean }) {
+  const c = stroke(on);
+  return (
+    <View style={{ width: 22, height: 22, alignItems: "center" }}>
+      <View
+        style={{
+          width: 12,
+          height: 12,
+          borderRadius: 6,
+          borderWidth: 1.7,
+          borderColor: c,
+          marginTop: 1,
+        }}
+      />
+      <View
+        style={{
+          width: 0,
+          height: 0,
+          borderLeftWidth: 5,
+          borderRightWidth: 5,
+          borderTopWidth: 7,
+          borderLeftColor: "transparent",
+          borderRightColor: "transparent",
+          borderTopColor: c,
+          marginTop: -2,
+        }}
+      />
+    </View>
+  );
+}

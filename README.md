@@ -12,7 +12,7 @@ Brand apps for Casa Rustico coffee.
 
 **Hacienda** is the café: Home, Order, Scan, Gift, Stores, Hacienda Rewards beans.
 
-**Go** is the customer shop: Colombia hero, origins, bag, rusticopr.com Shopify checkout, ritual timer, and house story.
+**Go** is the customer shop: Home, Order, Scan, Gift, Stores. Hacienda Rewards on-device. Colombia bags check out on rusticopr.com.
 
 ## Run
 

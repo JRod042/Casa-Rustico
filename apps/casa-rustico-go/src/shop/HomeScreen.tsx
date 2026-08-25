@@ -1,8 +1,9 @@
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { brand, colombia, formatPrice, gear, origins } from "../catalog";
-import { useShop } from "../store";
+import { firstName, useShop } from "../store";
 import { colors, fonts } from "../theme";
+import { RewardsCard } from "./RewardsCard";
 import { BrassButton, Kicker, ProductCard, StoreTitle, ui } from "./ui";
 import type { Tab } from "./nav";
 
@@ -16,17 +17,26 @@ function greeting() {
 export function HomeScreen({
   openProduct,
   openTab,
+  openAccount,
+  openStory,
+  openRitual,
 }: {
   openProduct: (id: string) => void;
   openTab: (tab: Tab) => void;
+  openAccount: () => void;
+  openStory: () => void;
+  openRitual: () => void;
 }) {
   const featured = origins().filter((p) => p.id !== "cr-colombia");
   const mug = gear()[0];
-  const { flash } = useShop();
+  const { flash, member } = useShop();
+  const title = member ? greeting().replace(".", `, ${firstName(member.name)}.`) : greeting();
 
   return (
     <ScrollView contentContainerStyle={s.page} showsVerticalScrollIndicator={false}>
-      <StoreTitle title={greeting()} sub="Colombia leads. Single-origin. Ship ready from the U.S." />
+      <StoreTitle title={title} sub="Colombia leads. Hacienda Rewards on every bag." />
+
+      <RewardsCard onPress={member ? openAccount : openAccount} />
 
       <View style={s.hero}>
         <Image source={{ uri: brand.heroImage }} style={StyleSheet.absoluteFill} resizeMode="cover" />
@@ -59,7 +69,7 @@ export function HomeScreen({
           <Text style={s.h2}>The latest.</Text>
           <Text style={s.muted}>Origins, one bag at a time</Text>
         </View>
-        <Pressable onPress={() => openTab("coffee")} hitSlop={8}>
+        <Pressable onPress={() => openTab("order")} hitSlop={8}>
           <Text style={s.link}>See all</Text>
         </Pressable>
       </View>
@@ -78,6 +88,9 @@ export function HomeScreen({
           <Text style={s.h2}>From the highlands.</Text>
           <Text style={s.muted}>The look of the house</Text>
         </View>
+        <Pressable onPress={openStory} hitSlop={8}>
+          <Text style={s.link}>Story</Text>
+        </Pressable>
       </View>
       <ScrollView
         horizontal
@@ -87,7 +100,7 @@ export function HomeScreen({
         {brand.landscapes.map((place) => (
           <Pressable
             key={place.id}
-            onPress={() => openTab("story")}
+            onPress={openStory}
             style={({ pressed }) => [s.place, pressed && ui.pressed]}
           >
             <Image source={{ uri: place.image }} style={s.placeImg} resizeMode="cover" />
@@ -102,6 +115,12 @@ export function HomeScreen({
           </Pressable>
         ))}
       </ScrollView>
+
+      <Pressable onPress={openRitual} style={({ pressed }) => [s.ritual, pressed && ui.pressed]}>
+        <Kicker>Ritual</Kicker>
+        <Text style={s.h2}>Brew timer.</Text>
+        <Text style={s.muted}>Pour-over, espresso, French press. Keep the cadence.</Text>
+      </Pressable>
 
       {mug ? (
         <Pressable
@@ -123,8 +142,8 @@ export function HomeScreen({
 }
 
 const s = StyleSheet.create({
-  page: { paddingBottom: 28 },
-  hero: { minHeight: 380, justifyContent: "flex-end" },
+  page: { paddingBottom: 96 },
+  hero: { minHeight: 380, justifyContent: "flex-end", marginTop: 20 },
   heroCopy: { paddingHorizontal: 20, paddingBottom: 28, paddingTop: 96, gap: 10 },
   heroTitle: {
     color: colors.linen,
@@ -194,6 +213,13 @@ const s = StyleSheet.create({
   placeImg: { ...StyleSheet.absoluteFillObject },
   placeCopy: { position: "absolute", left: 14, right: 14, bottom: 14, gap: 2 },
   placeTitle: { color: colors.linen, fontFamily: fonts.display, fontSize: 20 },
+  ritual: {
+    marginHorizontal: 20,
+    marginTop: 28,
+    backgroundColor: colors.elevated,
+    borderRadius: 16,
+    padding: 20,
+  },
   mug: {
     marginHorizontal: 20,
     marginTop: 36,

@@ -31,7 +31,7 @@ export function CoffeeScreen({ openProduct }: { openProduct: (id: string) => voi
 
   return (
     <ScrollView contentContainerStyle={s.page} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-      <StoreTitle title="Coffee." sub="Single-origin bags, capsules, and the house mug." />
+      <StoreTitle title="Order." sub="Single-origin bags, capsules, and the house mug." />
       <View style={s.searchWrap}>
         <TextInput
           value={q}

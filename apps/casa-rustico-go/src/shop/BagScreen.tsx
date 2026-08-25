@@ -1,12 +1,13 @@
 import { Image, Linking, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { brand, colombia, formatPrice, gear, getProduct } from "../catalog";
+import { beansForSpend } from "../rewards";
 import { cartPermalink } from "../shopify";
 import { cartCount, cartSubtotal, useShop } from "../store";
 import { colors, fonts } from "../theme";
 import { BrassButton, Kicker, ProductCard, Qty, StoreTitle, ui } from "./ui";
 
 export function BagScreen({ openProduct }: { openProduct: (id: string) => void }) {
-  const { cart, setCartQty, removeFromCart, flash } = useShop();
+  const { cart, setCartQty, removeFromCart, flash, member, earnBeans } = useShop();
   const count = cartCount(cart);
   const subtotal = cartSubtotal(cart);
   const checkout = cartPermalink(cart.map((l) => ({ variantId: l.variantId, qty: l.qty })));
@@ -14,6 +15,15 @@ export function BagScreen({ openProduct }: { openProduct: (id: string) => void }
   const hasCoffee = cart.some((l) => l.productId !== "cr-mug");
   const hasMug = cart.some((l) => l.productId === "cr-mug");
   const suggest = hasCoffee && !hasMug && mug ? mug : !hasCoffee ? colombia : null;
+  const beans = member ? beansForSpend(subtotal, member.lifetime) : 0;
+
+  const pay = () => {
+    if (member && beans > 0) {
+      earnBeans(beans);
+      flash(`+${beans} beans · Hacienda Rewards`);
+    }
+    void Linking.openURL(checkout);
+  };
 
   if (count === 0) {
     return (
@@ -85,11 +95,11 @@ export function BagScreen({ openProduct }: { openProduct: (id: string) => void }
 
       <View style={s.dock}>
         <View>
-          <Text style={s.subLabel}>Subtotal</Text>
+          <Text style={s.subLabel}>{member && beans ? `+${beans} beans` : "Subtotal"}</Text>
           <Text style={s.subVal}>{formatPrice(subtotal)}</Text>
         </View>
         <Pressable
-          onPress={() => Linking.openURL(checkout)}
+          onPress={pay}
           style={({ pressed }) => [s.checkout, pressed && ui.pressed]}
           accessibilityLabel="Check out on rusticopr.com"
         >
@@ -165,3 +175,4 @@ const s = StyleSheet.create({
   },
   checkoutText: { color: colors.ink, fontFamily: fonts.sansBold, fontSize: 16 },
 });
+
