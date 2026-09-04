@@ -11,7 +11,7 @@ Both brand Expo apps live in **this** repo (`JRod042/Casa-Rustico`). The coffee-
 
 Apple team for both: `FY5H9V76QL`.
 
-ASC Espresso Escape last known reject: version **1.0.2**, build **7** (2.1.0 completeness, 3.1.1 IAP). Source now ships **1.0.3** / build **8**, no IAP.
+ASC Espresso Escape last known reject: version **1.0.2**, build **7** (2.1.0 completeness, 3.1.1 IAP). Source now ships **1.0.4** / build **9**, no IAP.
 
 ## Not in this repo
 

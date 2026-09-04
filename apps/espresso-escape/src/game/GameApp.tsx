@@ -12,15 +12,22 @@ import { StatusBar } from "expo-status-bar";
 import { SteamMark } from "../welcome/SteamMark";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
 import { PlayField } from "./PlayField";
+import { KitThumb, type KitKind } from "./sprites";
 import { loadBestScore, loadSeenFirstRun, markFirstRunSeen } from "./storage";
 
 type Screen = "menu" | "how" | "about" | "privacy" | "play";
 
-const HOW: { title: string; body: string }[] = [
-  { title: "Jump", body: "Tap the café floor. One tap, one hop — only from the ground." },
-  { title: "Dodge", body: "Grinders stay low. Portafilters are taller. Steam hangs mid-air." },
-  { title: "Collect", body: "Gold beans are +5. Surviving the line also adds to your run." },
-  { title: "Brew again", body: "One hit ends the run. No lives to buy. Pause anytime." },
+const HOW: { title: string; body: string; kit: KitKind }[] = [
+  { title: "Jump", body: "Tap the linen floor. One tap, one hop — only from the ground.", kit: "player" },
+  { title: "Dodge", body: "Grinders stay low. Portafilters are taller. Steam hangs mid-air.", kit: "grinder" },
+  { title: "Collect", body: "Honey beans are +5. Surviving the line also adds to your run.", kit: "bean" },
+  { title: "Brew again", body: "One hit ends the run. No lives to buy. Pause anytime.", kit: "portafilter" },
+];
+
+const BAR: { kit: KitKind; label: string }[] = [
+  { kit: "grinder", label: "Grinder" },
+  { kit: "portafilter", label: "Portafilter" },
+  { kit: "steam", label: "Steam" },
 ];
 
 export function GameApp() {
@@ -56,7 +63,7 @@ export function GameApp() {
     <View style={styles.root}>
       <StatusBar style="light" />
       <LinearGradient
-        colors={["#5A3018", t.bg, "#0A0705"]}
+        colors={[t.wood, t.bg, t.espressoDeep]}
         locations={[0, 0.48, 1]}
         style={StyleSheet.absoluteFill}
       />
@@ -106,8 +113,20 @@ function Menu({
           showsVerticalScrollIndicator={false}
         >
         <Text style={styles.panelTitle}>How to play</Text>
+        <Text style={styles.legendLabel}>Meet the bar</Text>
+        <View style={styles.legend}>
+          {BAR.map((item) => (
+            <View key={item.label} style={styles.legendItem}>
+              <KitThumb kind={item.kit} size={40} />
+              <Text style={styles.legendText}>{item.label}</Text>
+            </View>
+          ))}
+        </View>
         {HOW.map((step, i) => (
           <View key={step.title} style={styles.step}>
+            <View style={styles.stepKit}>
+              <KitThumb kind={step.kit} size={36} />
+            </View>
             <Text style={styles.stepNum}>{i + 1}</Text>
             <View style={styles.stepCopy}>
               <Text style={styles.stepTitle}>{step.title}</Text>
@@ -143,6 +162,7 @@ function Menu({
           showsVerticalScrollIndicator={false}
         >
         <Text style={styles.panelTitle}>About</Text>
+        <View style={styles.copyCard}>
         <Text style={styles.panelBody}>
           Espresso Escape is a free Casa Rústico coffee mini-game — a playable
           run through the café line.
@@ -151,10 +171,11 @@ function Menu({
           No accounts. No ads. No in-app purchases. This game does not sell coffee
           or take payments.
         </Text>
-        <Text style={styles.panelBody}>
+        <Text style={styles.panelBodyLast}>
           Physical bags stay in the Casa Rústico shop. This app is only the
           game — there is no checkout here.
         </Text>
+        </View>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Back to menu"
@@ -175,6 +196,7 @@ function Menu({
           showsVerticalScrollIndicator={false}
         >
         <Text style={styles.panelTitle}>Privacy</Text>
+        <View style={styles.copyCard}>
         <Text style={styles.panelBody}>
           Espresso Escape keeps a high score and a welcome flag on this device.
         </Text>
@@ -182,10 +204,11 @@ function Menu({
           No account. No location. No tracking. No payments. Nothing is sent
           to a store or payment service.
         </Text>
-        <Text style={styles.panelBody}>
+        <Text style={styles.panelBodyLast}>
           Local high score and welcome flag only. No accounts, ads, or
           payments.
         </Text>
+        </View>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Back to menu"
@@ -204,11 +227,15 @@ function Menu({
         contentContainerStyle={styles.menu}
         showsVerticalScrollIndicator={false}
       >
-      <SteamMark size={88} />
+      <View style={styles.heroMark}>
+        <SteamMark size={88} />
+      </View>
       <Text style={styles.brand}>CASA RÚSTICO</Text>
       <Text style={styles.title}>Espresso Escape</Text>
       <Text style={styles.tag}>Dodge the grinders. Chase the beans.</Text>
-      <Text style={styles.best}>Best run {best}</Text>
+      <View style={styles.bestChip}>
+        <Text style={styles.best}>Best run {best}</Text>
+      </View>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Play Espresso Escape"
@@ -257,6 +284,17 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     gap: 10,
   },
+  heroMark: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: t.espresso,
+    borderWidth: 1,
+    borderColor: t.kraft,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 4,
+  },
   brand: {
     color: t.brand,
     letterSpacing: 4,
@@ -266,7 +304,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   title: {
-    color: t.ink,
+    color: t.linen,
     fontFamily: "Fraunces_700Bold",
     fontSize: 34,
     fontWeight: "800",
@@ -277,13 +315,21 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3_600SemiBold",
     fontSize: 16,
     textAlign: "center",
+    marginBottom: 4,
+  },
+  bestChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: "rgba(245,234,216,0.1)",
+    borderWidth: 1,
+    borderColor: t.line,
     marginBottom: 8,
   },
   best: {
-    color: t.muted,
+    color: t.linenDim,
     fontFamily: "SourceSans3_400Regular",
     fontSize: 16,
-    marginBottom: 10,
   },
   primary: {
     alignSelf: "stretch",
@@ -296,7 +342,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   primaryText: {
-    color: "#FFF8F0",
+    color: t.cream,
     fontFamily: "SourceSans3_700Bold",
     fontSize: 17,
     fontWeight: "800",
@@ -308,17 +354,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: t.brand,
+    backgroundColor: "rgba(36,24,15,0.55)",
     minHeight: 48,
     justifyContent: "center",
   },
   ghostText: {
-    color: t.ink,
+    color: t.linen,
     fontFamily: "SourceSans3_700Bold",
     fontSize: 16,
     fontWeight: "700",
   },
   panelTitle: {
-    color: t.ink,
+    color: t.linen,
     fontFamily: "Fraunces_700Bold",
     fontSize: 28,
     fontWeight: "800",
@@ -326,35 +373,86 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     textAlign: "center",
   },
+  copyCard: {
+    alignSelf: "stretch",
+    backgroundColor: t.panel,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: t.line,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    marginBottom: 8,
+  },
   panelBody: {
     color: t.muted,
     fontFamily: "SourceSans3_400Regular",
     fontSize: 17,
     lineHeight: 24,
     textAlign: "center",
+    marginBottom: 10,
+  },
+  panelBodyLast: {
+    color: t.muted,
+    fontFamily: "SourceSans3_400Regular",
+    fontSize: 17,
+    lineHeight: 24,
+    textAlign: "center",
+    marginBottom: 0,
+  },
+  legendLabel: {
+    alignSelf: "stretch",
+    color: t.brand,
+    fontFamily: "SourceSans3_700Bold",
+    fontSize: 12,
+    letterSpacing: 1.4,
+    textTransform: "uppercase",
+  },
+  legend: {
+    alignSelf: "stretch",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: t.panel,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: t.kraft,
+    paddingHorizontal: 10,
+    paddingVertical: 12,
     marginBottom: 4,
+  },
+  legendItem: { flex: 1, alignItems: "center", gap: 6 },
+  legendText: {
+    color: t.linenDim,
+    fontFamily: "SourceSans3_600SemiBold",
+    fontSize: 11,
   },
   step: {
     alignSelf: "stretch",
     flexDirection: "row",
-    gap: 12,
+    alignItems: "center",
+    gap: 10,
     backgroundColor: t.panel,
     borderRadius: 14,
     borderWidth: 1,
     borderColor: t.line,
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     paddingVertical: 12,
+  },
+  stepKit: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
   },
   stepNum: {
     color: t.kraft,
     fontFamily: "Fraunces_700Bold",
-    fontSize: 22,
-    width: 24,
+    fontSize: 20,
+    width: 20,
     textAlign: "center",
   },
   stepCopy: { flex: 1, gap: 2 },
   stepTitle: {
-    color: t.ink,
+    color: t.linen,
     fontFamily: "SourceSans3_700Bold",
     fontSize: 16,
   },

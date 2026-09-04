@@ -15,6 +15,7 @@ import Animated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
+import { CafeStage } from "./CafeStage";
 import { createRun, jump, MAX_BEANS, MAX_HAZARDS, resizeRun, tick, type Run } from "./engine";
 import { type HazardKind, PLAYER_H, PLAYER_W } from "./physics";
 import { BeanArt, HazardArt } from "./sprites";
@@ -90,7 +91,7 @@ const Sprite = memo(function Sprite({
           : styles.hazard;
   return (
     <Animated.View pointerEvents="none" style={[look, styles.sprite, anim]}>
-      {tone === "gold" ? <BeanArt /> : <HazardArt kind={tone} />}
+      {tone === "gold" ? <BeanArt tone="honey" /> : <HazardArt kind={tone} />}
     </Animated.View>
   );
 });
@@ -228,11 +229,16 @@ export function PlayField({
 
   return (
     <View style={styles.play} testID="escape-play">
+      <CafeStage width={width} height={height} groundY={groundY} />
       <SafeAreaView style={styles.hud}>
-        <Text style={styles.hudScore} accessibilityRole="text">
-          {score}
-        </Text>
-        <Text style={styles.hudBest}>Best {best}</Text>
+        <View style={styles.scoreChip}>
+          <Text style={styles.hudScore} accessibilityRole="text">
+            {score}
+          </Text>
+        </View>
+        <View style={styles.bestChip}>
+          <Text style={styles.hudBest}>Best {best}</Text>
+        </View>
         {dead ? (
           <View style={styles.hudBtn}>
             <Text style={styles.hudBtnText}>Ended</Text>
@@ -256,7 +262,6 @@ export function PlayField({
         onPress={onJump}
         style={styles.stage}
       >
-        <View style={[styles.ground, { top: groundY }]} />
         <Animated.View
           pointerEvents="none"
           style={[
@@ -265,7 +270,7 @@ export function PlayField({
             playerStyle,
           ]}
         >
-          <BeanArt />
+          <BeanArt tone="roast" />
         </Animated.View>
         {hazardSlots.map((slot, i) => (
           <Sprite key={`h${i}`} slot={slot} tone={hazardMeta[i] ?? "grinder"} />
@@ -274,58 +279,62 @@ export function PlayField({
           <Sprite key={`b${i}`} slot={slot} tone="gold" />
         ))}
         {showHint ? (
-          <Text style={[styles.hint, { top: groundY + 18 }]}>
-            Tap to jump · collect beans · dodge the bar
-          </Text>
+          <View style={[styles.hintWrap, { top: groundY + 16 }]}>
+            <Text style={styles.hint}>Tap the linen floor to jump</Text>
+          </View>
         ) : null}
       </Pressable>
 
       {paused && !dead ? (
         <View style={styles.overlay} testID="escape-paused">
-          <Text style={styles.overlayTitle}>Paused</Text>
-          <Text style={styles.overlayBody}>
-            The line holds. Resume when you are ready — nothing is for sale here.
-          </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Resume run"
-            onPress={togglePause}
-            style={styles.primary}
-          >
-            <Text style={styles.primaryText}>Resume</Text>
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Leave run"
-            onPress={onMenu}
-            style={styles.ghost}
-          >
-            <Text style={styles.ghostText}>Menu</Text>
-          </Pressable>
+          <View style={styles.sheet}>
+            <Text style={styles.overlayTitle}>Paused</Text>
+            <Text style={styles.overlayBody}>
+              The line holds. Resume when you are ready — nothing is for sale here.
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Resume run"
+              onPress={togglePause}
+              style={styles.primary}
+            >
+              <Text style={styles.primaryText}>Resume</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Leave run"
+              onPress={onMenu}
+              style={styles.ghost}
+            >
+              <Text style={styles.ghostText}>Menu</Text>
+            </Pressable>
+          </View>
         </View>
       ) : null}
 
       {dead ? (
         <View style={styles.overlay} testID="escape-gameover">
-          <Text style={styles.overlayTitle}>Roasted</Text>
-          <Text style={styles.overlayScore}>Score {score}</Text>
-          <Text style={styles.tag}>Best {best}</Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Play again"
-            onPress={reset}
-            style={styles.primary}
-          >
-            <Text style={styles.primaryText}>Brew again</Text>
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Back to menu"
-            onPress={onMenu}
-            style={styles.ghost}
-          >
-            <Text style={styles.ghostText}>Menu</Text>
-          </Pressable>
+          <View style={styles.sheet}>
+            <Text style={styles.overlayTitle}>Roasted</Text>
+            <Text style={styles.overlayScore}>Score {score}</Text>
+            <Text style={styles.tag}>Best {best}</Text>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Play again"
+              onPress={reset}
+              style={styles.primary}
+            >
+              <Text style={styles.primaryText}>Brew again</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Back to menu"
+              onPress={onMenu}
+              style={styles.ghost}
+            >
+              <Text style={styles.ghostText}>Menu</Text>
+            </Pressable>
+          </View>
         </View>
       ) : null}
     </View>
@@ -336,91 +345,111 @@ const styles = StyleSheet.create({
   play: { flex: 1 },
   hud: {
     paddingTop: 8,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    gap: 8,
+  },
+  scoreChip: {
+    minWidth: 72,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 14,
+    backgroundColor: t.espresso,
+    borderWidth: 1,
+    borderColor: t.kraft,
   },
   hudScore: {
     color: t.glow,
     fontFamily: "Fraunces_700Bold",
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: "800",
-    minWidth: 72,
+  },
+  bestChip: {
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 14,
+    backgroundColor: "rgba(245,234,216,0.1)",
+    borderWidth: 1,
+    borderColor: t.line,
   },
   hudBest: {
-    color: t.muted,
+    color: t.linenDim,
     fontFamily: "SourceSans3_600SemiBold",
     fontSize: 15,
-    flex: 1,
-    marginLeft: 8,
   },
   hudBtn: {
     minHeight: 44,
     minWidth: 88,
-    borderWidth: 1,
-    borderColor: t.brand,
-    borderRadius: 12,
+    borderRadius: 14,
     paddingHorizontal: 14,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: t.kraft,
   },
   hudBtnText: {
-    color: t.ink,
+    color: t.cream,
     fontFamily: "SourceSans3_700Bold",
     fontWeight: "700",
   },
   stage: { flex: 1 },
-  ground: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    height: 4,
-    backgroundColor: t.brand,
-  },
   sprite: { position: "absolute", left: 0, top: 0, overflow: "hidden" },
   bean: {
     position: "absolute",
     left: 0,
     top: 0,
     borderRadius: 14,
-    backgroundColor: t.glow,
     overflow: "hidden",
   },
   gold: {
     borderRadius: 10,
-    backgroundColor: "#F0C56A",
     overflow: "hidden",
   },
   hazard: {
     borderRadius: 10,
-    backgroundColor: t.danger,
     overflow: "hidden",
   },
-  steam: { backgroundColor: "#D4B89A", borderRadius: 8, overflow: "hidden" },
-  porta: { backgroundColor: t.kraft, borderRadius: 8, overflow: "hidden" },
-  hint: {
+  steam: { borderRadius: 8, overflow: "hidden" },
+  porta: { borderRadius: 8, overflow: "hidden" },
+  hintWrap: {
     position: "absolute",
-    left: 20,
-    right: 20,
-    color: t.muted,
+    left: 24,
+    right: 24,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: "rgba(20,14,10,0.55)",
+  },
+  hint: {
+    color: t.linen,
     fontFamily: "SourceSans3_600SemiBold",
     fontSize: 14,
     textAlign: "center",
   },
   overlay: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: "rgba(10,7,5,0.88)",
+    backgroundColor: "rgba(10,7,5,0.72)",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 28,
+    paddingHorizontal: 24,
+  },
+  sheet: {
+    alignSelf: "stretch",
+    backgroundColor: t.panel,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: t.kraft,
+    paddingHorizontal: 22,
+    paddingVertical: 22,
     gap: 10,
   },
   overlayTitle: {
-    color: t.ink,
+    color: t.linen,
     fontFamily: "Fraunces_700Bold",
-    fontSize: 36,
+    fontSize: 34,
     fontWeight: "800",
+    textAlign: "center",
   },
   overlayBody: {
     color: t.muted,
@@ -435,10 +464,10 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3_700Bold",
     fontSize: 22,
     fontWeight: "700",
-    marginBottom: 8,
+    textAlign: "center",
   },
   tag: {
-    color: t.glow,
+    color: t.linenDim,
     fontFamily: "SourceSans3_600SemiBold",
     fontSize: 16,
     textAlign: "center",
@@ -455,7 +484,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   primaryText: {
-    color: "#FFF8F0",
+    color: t.cream,
     fontFamily: "SourceSans3_700Bold",
     fontSize: 17,
     fontWeight: "800",
@@ -471,7 +500,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   ghostText: {
-    color: t.ink,
+    color: t.linen,
     fontFamily: "SourceSans3_700Bold",
     fontSize: 16,
     fontWeight: "700",

@@ -20,7 +20,7 @@ export function SteamMark({ size = 84 }: { size?: number }) {
             height: cupH,
             borderRadius: size * 0.12,
             borderColor: t.glow,
-            backgroundColor: t.accent,
+            backgroundColor: t.kraft,
           },
         ]}
       />

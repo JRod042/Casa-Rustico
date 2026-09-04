@@ -5,7 +5,7 @@ Android package: **`com.jrod042.espressoescape`**
 Expo: **`@jrod42/espresso-escape`** (`016d7c24-a7df-4e0d-8e59-00a9d8db352c`)  
 Apple Team: **`FY5H9V76QL`**  
 GitHub base directory: **`apps/espresso-escape`**  
-Store binary: **version 1.0.3 / iOS build 8 / Android versionCode 8**
+Store binary: **version 1.0.4 / iOS build 9 / Android versionCode 9**
 
 ASC last reject was **1.0.2 (7)** for 2.1.0 (incomplete prototype shell) and 3.1.1 (IAP/payments). This tree has **no IAP, no store, no checkout**. Coffee is not sold in the game.
 
@@ -47,7 +47,7 @@ An App Store Connect API key alone is **not enough**.
 
 | Guideline | What changed |
 |---|---|
-| 2.1.0 completeness | Prototype “BREW / BUST” shell removed. Playable runner: jump, café-floor hazards, beans, score, best, pause, first-run how-to → Play, About, in-app Privacy. Store description in `app.json` matches the mini-game. Fonts time out so a CDN stall cannot leave a blank screen. Pause is not a dead control after a roast. |
+| 2.1.0 completeness | Prototype “BREW / BUST” shell removed. Playable runner: jump, café kits (grinder / portafilter / steam), beans, score, best, pause, first-run how-to → Play, About, in-app Privacy. Linen floor + kraft counter stage. Store description in `app.json` matches the mini-game. Fonts time out so a CDN stall cannot leave a blank screen. Pause is not a dead control after a roast. |
 | 3.1.1 IAP / payments | No StoreKit / RevenueCat / IAP / Safari checkout. No shop buttons or `Linking.openURL`. About + Privacy state the game does not sell coffee or take payments. Do not add IAP. |
 | Dual platform | Same bundle/package on iOS + Android. `eas build --platform all`. |
 

@@ -122,5 +122,11 @@ if (!/testID="escape-privacy"/.test(sources)) {
 if (!/testID="escape-how"/.test(sources) || !/Play Espresso Escape/.test(sources)) {
   throw new Error("How-to must offer a working Play path");
 }
+if (!/Meet the bar/.test(sources) || !/KitThumb/.test(sources)) {
+  throw new Error("How-to must show café kits (grinder, portafilter, steam)");
+}
+if (!/CafeStage/.test(sources)) {
+  throw new Error("Play field must use the linen café stage");
+}
 
 console.log("check-game: PASS");
