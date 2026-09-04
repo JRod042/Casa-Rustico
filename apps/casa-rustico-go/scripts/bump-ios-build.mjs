@@ -18,5 +18,9 @@ if (!Number.isFinite(Number(next)) || Number(next) < 1) {
   process.exit(1);
 }
 app.expo.ios.buildNumber = next;
+const vc = Number(app.expo?.android?.versionCode ?? 0);
+app.expo.android = app.expo.android ?? {};
+app.expo.android.versionCode = Number.isFinite(vc) ? vc + 1 : Number(next);
 fs.writeFileSync(appJsonPath, `${JSON.stringify(app, null, 2)}\n`);
 console.log(`ios.buildNumber: ${current} → ${next}`);
+console.log(`android.versionCode: ${vc} → ${app.expo.android.versionCode}`);

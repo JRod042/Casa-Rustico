@@ -39,7 +39,7 @@ EAS identity (do not change slugs or bundle IDs unless Apple/Expo require it):
 | Expo project (`@jrod42/…`) | Git folder | slug / scheme | iOS bundle + Android package | EAS projectId | Marketing version / build |
 |---|---|---|---|---|---|
 | **espresso-escape** | `apps/espresso-escape` | `espresso-escape` / `espressoescape` | `com.jrod042.espressoescape` | `016d7c24-a7df-4e0d-8e59-00a9d8db352c` | `1.0.3` / iOS `8` · Android `8` |
-| **casa-rustico-go** | `apps/casa-rustico-go` | `casa-rustico-go` / `casarusticogo` | `com.jrod042.casarusticogo` | `25937717-3f2f-4793-af4d-79a12310f02a` | `1.0.0` / iOS `4` · Android `4` |
+| **casa-rustico-go** | `apps/casa-rustico-go` | `casa-rustico-go` / `casarusticogo` | `com.jrod042.casarusticogo` | `25937717-3f2f-4793-af4d-79a12310f02a` | `1.0.1` / iOS `5` · Android `5` |
 
 GitHub Actions base directory is the folder in that table — never repo root.
 

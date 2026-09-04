@@ -323,16 +323,20 @@ export function formatPrice(n: number) {
   return n % 1 === 0 ? `$${n}` : `$${n.toFixed(2)}`;
 }
 
+const COFFEES = products.filter((p) => p.category === "coffee");
+const ORIGINS = COFFEES.filter((p) => p.id !== "cr-capsules");
+const GEAR = products.filter((p) => p.category === "gear");
+
 export function coffees() {
-  return products.filter((p) => p.category === "coffee");
+  return COFFEES;
 }
 
 export function origins() {
-  return products.filter((p) => p.category === "coffee" && p.id !== "cr-capsules");
+  return ORIGINS;
 }
 
 export function gear() {
-  return products.filter((p) => p.category === "gear");
+  return GEAR;
 }
 
 export const colombia = products[0];

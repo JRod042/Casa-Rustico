@@ -3,7 +3,7 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-nati
 import { brand, colombia, formatPrice, gear } from "../catalog";
 import { useShop } from "../store";
 import { colors, fonts } from "../theme";
-import { BrassButton, Kicker, StoreTitle, ui } from "./ui";
+import { BackRow, BrassButton, Kicker, StoreTitle, ui } from "./ui";
 
 const TOTAL = 180;
 
@@ -91,11 +91,20 @@ function BrewTimer() {
   );
 }
 
-export function RitualScreen({ openProduct }: { openProduct: (id: string) => void }) {
+export function RitualScreen({
+  openProduct,
+  onBack,
+  backLabel,
+}: {
+  openProduct: (id: string) => void;
+  onBack: () => void;
+  backLabel: string;
+}) {
   const mug = gear()[0];
 
   return (
     <ScrollView contentContainerStyle={s.page} showsVerticalScrollIndicator={false}>
+      <BackRow label={backLabel} onPress={onBack} />
       <StoreTitle title="Ritual." sub="How we drink the house bag. Short methods, honest notes." />
       <Image source={{ uri: brand.ritualImage }} style={s.hero} resizeMode="cover" />
       <View style={s.block}>
@@ -147,7 +156,7 @@ export function RitualScreen({ openProduct }: { openProduct: (id: string) => voi
 }
 
 const s = StyleSheet.create({
-  page: { paddingBottom: 28 },
+  page: { paddingBottom: 96 },
   hero: { width: "100%", height: 224, backgroundColor: colors.elevated },
   block: { paddingHorizontal: 20, paddingTop: 24 },
   h2: {
@@ -192,11 +201,11 @@ const s = StyleSheet.create({
     flex: 1,
     minHeight: 44,
     borderRadius: 999,
-    backgroundColor: colors.brass,
+    backgroundColor: colors.kraft,
     alignItems: "center",
     justifyContent: "center",
   },
-  startText: { color: colors.ink, fontFamily: fonts.sansBold, fontSize: 14 },
+  startText: { color: colors.linen, fontFamily: fonts.sansBold, fontSize: 14 },
   reset: {
     minHeight: 44,
     paddingHorizontal: 20,

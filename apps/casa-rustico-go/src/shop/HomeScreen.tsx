@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { brand, colombia, formatPrice, gear, origins } from "../catalog";
@@ -27,7 +28,7 @@ export function HomeScreen({
   openStory: () => void;
   openRitual: () => void;
 }) {
-  const featured = origins().filter((p) => p.id !== "cr-colombia");
+  const featured = useMemo(() => origins().filter((p) => p.id !== "cr-colombia"), []);
   const mug = gear()[0];
   const { flash, member } = useShop();
   const title = member ? greeting().replace(".", `, ${firstName(member.name)}.`) : greeting();

@@ -5,7 +5,7 @@ import { useShop } from "../store";
 import { colors, fonts } from "../theme";
 import { BrassButton, StoreTitle } from "./ui";
 
-export function JoinScreen({ onDone }: { onDone: () => void }) {
+export function JoinScreen({ onDone }: { onDone: (joined: boolean) => void }) {
   const { joinRewards, flash, member } = useShop();
   const [name, setName] = useState(member?.name ?? "");
   const [email, setEmail] = useState(member?.email ?? "");
@@ -19,7 +19,7 @@ export function JoinScreen({ onDone }: { onDone: () => void }) {
     }
     joinRewards(n || "Member", e);
     flash("Welcome to Hacienda Rewards");
-    onDone();
+    onDone(true);
   };
 
   return (
@@ -54,7 +54,7 @@ export function JoinScreen({ onDone }: { onDone: () => void }) {
           <Text style={s.tierBody}>{t.perks.join(" · ")}</Text>
         </View>
       ))}
-      <Pressable onPress={onDone} hitSlop={8} style={{ paddingHorizontal: 20, marginTop: 12 }}>
+      <Pressable onPress={() => onDone(false)} hitSlop={8} style={{ paddingHorizontal: 20, marginTop: 12 }}>
         <Text style={s.skip}>Not now</Text>
       </Pressable>
     </ScrollView>

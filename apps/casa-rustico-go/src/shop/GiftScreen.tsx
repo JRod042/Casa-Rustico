@@ -5,18 +5,22 @@ import { useShop } from "../store";
 import { colors, fonts } from "../theme";
 import { BrassButton, Chip, StoreTitle, ui } from "./ui";
 
-export function GiftScreen() {
+export function GiftScreen({ onJoin }: { onJoin: () => void }) {
   const { flash, member } = useShop();
   const [design, setDesign] = useState<(typeof giftDesigns)[number]["id"]>("kraft");
   const [amount, setAmount] = useState<(typeof giftAmounts)[number]>(25);
   const art = giftDesigns.find((d) => d.id === design) ?? giftDesigns[0];
 
   const send = () => {
-    const code = `CASA-${amount}-${Math.abs(Date.now()).toString(36).toUpperCase().slice(-6)}`;
-    flash(member ? `Gift code ${code}` : "Join to send a card");
-    if (member) {
-      void Linking.openURL(`mailto:?subject=Casa Rústico gift&body=A ${formatPrice(amount)} Casa Rústico card. Code ${code}`);
+    if (!member) {
+      onJoin();
+      return;
     }
+    const code = `CASA-${amount}-${Math.abs(Date.now()).toString(36).toUpperCase().slice(-6)}`;
+    flash(`Gift code ${code}`);
+    void Linking.openURL(
+      `mailto:?subject=Casa Rústico gift&body=A ${formatPrice(amount)} Casa Rústico card. Code ${code}`
+    );
   };
 
   return (

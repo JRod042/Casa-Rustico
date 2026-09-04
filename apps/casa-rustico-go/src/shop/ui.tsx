@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { formatPrice, type Product } from "../catalog";
 import { colors, fonts } from "../theme";
@@ -11,7 +12,7 @@ export function StoreTitle({ title, sub }: { title: string; sub?: string }) {
   );
 }
 
-export function ProductCard({
+export const ProductCard = memo(function ProductCard({
   product,
   large,
   onPress,
@@ -39,6 +40,26 @@ export function ProductCard({
         {product.name}
       </Text>
       <Text style={ui.cardPrice}>{formatPrice(product.price)}</Text>
+    </Pressable>
+  );
+});
+
+export function BackRow({
+  label,
+  onPress,
+}: {
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`Back to ${label}`}
+      hitSlop={8}
+      style={ui.backRow}
+    >
+      <Text style={ui.back}>‹ {label}</Text>
     </Pressable>
   );
 }
@@ -204,16 +225,18 @@ export const ui = StyleSheet.create({
     minHeight: 44,
     paddingHorizontal: 20,
     borderRadius: 999,
-    backgroundColor: colors.brass,
+    backgroundColor: colors.kraft,
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "flex-start",
   },
-  brassText: { color: colors.ink, fontFamily: fonts.sansBold, fontSize: 14 },
+  brassText: { color: colors.linen, fontFamily: fonts.sansBold, fontSize: 14 },
   kicker: {
-    color: colors.brass,
+    color: colors.brassSoft,
     fontFamily: fonts.sansSemi,
     fontSize: 11,
     letterSpacing: 2.4,
   },
+  backRow: { minHeight: 44, justifyContent: "center", paddingHorizontal: 16 },
+  back: { color: colors.brassSoft, fontFamily: fonts.sansSemi, fontSize: 15 },
 });

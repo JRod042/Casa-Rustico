@@ -47,7 +47,7 @@ An App Store Connect API key alone is **not enough**.
 
 | Guideline | What changed |
 |---|---|
-| 2.1.0 completeness | Prototype “BREW / BUST” shell removed. Playable runner: jump, hazards, beans, score, best, pause, how-to, about. |
+| 2.1.0 completeness | Prototype “BREW / BUST” shell removed. Playable runner: jump, hazards, beans, score, best, pause, how-to, about. Menus use Fraunces + Source Sans; pause auto-holds on background. |
 | 3.1.1 IAP / payments | No StoreKit / RevenueCat / IAP. About screen states the game does not sell coffee. Do not add IAP. |
 | Dual platform | Same bundle/package on iOS + Android. `eas build --platform all`. |
 

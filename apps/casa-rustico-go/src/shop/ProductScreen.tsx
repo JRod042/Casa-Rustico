@@ -4,15 +4,17 @@ import { colombia, formatPrice, gear, getProduct } from "../catalog";
 import { productUrl } from "../shopify";
 import { useShop } from "../store";
 import { colors, fonts } from "../theme";
-import { Chip, Kicker, ProductCard, Qty, ui } from "./ui";
+import { BackRow, Chip, Kicker, ProductCard, Qty, ui } from "./ui";
 
 export function ProductScreen({
   productId,
   onBack,
+  backLabel,
   openProduct,
 }: {
   productId: string;
   onBack: () => void;
+  backLabel: string;
   openProduct: (id: string) => void;
 }) {
   const product = getProduct(productId);
@@ -29,7 +31,7 @@ export function ProductScreen({
       <View style={s.missing}>
         <Text style={s.missingTitle}>Bag not found</Text>
         <Pressable onPress={onBack} hitSlop={8}>
-          <Text style={s.back}>Back to coffee</Text>
+          <Text style={s.back}>Back to {backLabel}</Text>
         </Pressable>
       </View>
     );
@@ -53,9 +55,7 @@ export function ProductScreen({
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={s.page} showsVerticalScrollIndicator={false}>
-        <Pressable onPress={onBack} style={s.backRow} accessibilityLabel="Back to coffee">
-          <Text style={s.back}>‹ Coffee</Text>
-        </Pressable>
+        <BackRow label={backLabel} onPress={onBack} />
         <Image source={{ uri: product.image }} style={s.hero} resizeMode="cover" />
         <View style={s.body}>
           {product.badge ? <Kicker>{product.badge}</Kicker> : null}
@@ -122,8 +122,7 @@ const s = StyleSheet.create({
   page: { paddingBottom: 24 },
   missing: { paddingHorizontal: 20, paddingTop: 64, alignItems: "center" },
   missingTitle: { color: colors.linen, fontFamily: fonts.display, fontSize: 24, marginBottom: 12 },
-  backRow: { minHeight: 44, justifyContent: "center", paddingHorizontal: 16 },
-  back: { color: colors.brass, fontFamily: fonts.sansSemi, fontSize: 14 },
+  back: { color: colors.brassSoft, fontFamily: fonts.sansSemi, fontSize: 14 },
   hero: { width: "100%", aspectRatio: 1, backgroundColor: colors.elevated },
   body: { paddingHorizontal: 20, paddingTop: 24 },
   name: {
