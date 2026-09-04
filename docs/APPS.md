@@ -34,11 +34,23 @@ Customer shop — not a restaurant HQ.
 - **Catalog:** `apps/casa-rustico-go/src/catalog.ts` (Shopify product + variant IDs).
 - **Welcome:** Hallow-inspired dissolve (`src/welcome/`). Replay from Story.
 
-EAS identity (do not change unless submitting a new build):
+EAS identity (do not change slugs or bundle IDs unless Apple/Expo require it):
 
-- Bundle `com.jrod042.casarusticogo`
-- EAS project `25937717-3f2f-4793-af4d-79a12310f02a`
-- GitHub Actions base directory `apps/casa-rustico-go`
+| Expo project (`@jrod42/…`) | Git folder | slug / scheme | iOS bundle + Android package | EAS projectId | Marketing version / build |
+|---|---|---|---|---|---|
+| **espresso-escape** | `apps/espresso-escape` | `espresso-escape` / `espressoescape` | `com.jrod042.espressoescape` | `016d7c24-a7df-4e0d-8e59-00a9d8db352c` | `1.0.4` / iOS `9` · Android `9` |
+| **casa-rustico-go** | `apps/casa-rustico-go` | `casa-rustico-go` / `casarusticogo` | `com.jrod042.casarusticogo` | `25937717-3f2f-4793-af4d-79a12310f02a` | `1.0.1` / iOS `5` · Android `5` |
+
+GitHub Actions base directory is the folder in that table — never repo root.
+
+Related, **not** in this repo:
+
+| Expo project | GitHub | slug | bundle |
+|---|---|---|---|
+| Casa Rustico (coffee shop / HQ) | `JRod042/project-1` `mobile/` | `omni` | `com.jrod042.omni` (build 49) |
+| `casa-r-stico-go` | none | stray empty Expo project — do not ship | — |
+
+Do not point Expo **espresso-escape** or **casa-rustico-go** at `project-1`. Do not use IAP in Escape (physical coffee is sold on rusticopr.com via Go / Hacienda, not this game).
 
 ## Architecture
 
@@ -73,6 +85,9 @@ See `docs/WELCOME_SCREENS.md`. Clear the storage key (or **Replay intro** on Sto
 
 ## Submission
 
-See `apps/casa-rustico-go/IOS.md`. Never change `eas.json` / bundle IDs / string build numbers unless bumping for a new TestFlight (`npm run bump:ios`).
+- Go: `apps/casa-rustico-go/IOS.md`
+- Escape: `apps/espresso-escape/IOS.md`
 
-GitHub → Expo: base directory **`apps/casa-rustico-go`**, profile **`production`**.
+Never change `eas.json` / bundle IDs / string build numbers unless bumping for a new store binary (`npm run bump:ios`).
+
+GitHub → Expo: base directory **`apps/espresso-escape`** or **`apps/casa-rustico-go`**, profile **`production`**, platform **ios** or **all**.

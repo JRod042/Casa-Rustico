@@ -15,16 +15,7 @@ import Animated, {
   useAnimatedStyle,
   useReducedMotion,
 } from "react-native-reanimated";
-import {
-  Fraunces_600SemiBold,
-  Fraunces_700Bold,
-} from "@expo-google-fonts/fraunces";
-import {
-  SourceSans3_400Regular,
-  SourceSans3_600SemiBold,
-  SourceSans3_700Bold,
-  useFonts,
-} from "@expo-google-fonts/source-sans-3";
+import { KitThumb } from "../game/sprites";
 import { segment, useWelcomeTimeline } from "./motion";
 import { SteamMark } from "./SteamMark";
 import { escapeWelcomeTheme as t } from "./theme";
@@ -41,13 +32,6 @@ const INTERACT_MS = 3033;
  * Game-forward Casa branding; no third-party identity.
  */
 export function EscapeWelcome({ onFinished }: Props) {
-  const [fontsLoaded] = useFonts({
-    Fraunces_600SemiBold,
-    Fraunces_700Bold,
-    SourceSans3_400Regular,
-    SourceSans3_600SemiBold,
-    SourceSans3_700Bold,
-  });
   const reducedMotion = useReducedMotion();
   const { height } = useWindowDimensions();
   const time = useWelcomeTimeline(DURATION_MS, true);
@@ -96,17 +80,13 @@ export function EscapeWelcome({ onFinished }: Props) {
     opacity: interpolate(segment(time.value, 2767, 3200), [0, 1], [0, 1]),
   }));
 
-  if (!fontsLoaded) {
-    return <View style={[styles.root, { backgroundColor: t.bg }]} />;
-  }
-
   return (
     <View style={styles.root} testID="welcome-escape-hallow">
       <StatusBar style="light" />
 
       <Animated.View style={[StyleSheet.absoluteFill, finalStyle]}>
         <LinearGradient
-          colors={["#5A3018", t.bg, "#0A0705"]}
+          colors={[t.wood, t.bg, t.espressoDeep]}
           locations={[0, 0.45, 1]}
           style={StyleSheet.absoluteFill}
         />
@@ -117,10 +97,13 @@ export function EscapeWelcome({ onFinished }: Props) {
         />
 
         <View style={[styles.playArt, { top: height * 0.16 }]}>
-          <View style={styles.hazard} />
-          <View style={[styles.hazard, styles.hazardB]} />
-          <View style={styles.bean} />
-          <SteamMark size={72} />
+          <View style={styles.kitRow}>
+            <KitThumb kind="grinder" size={52} />
+            <KitThumb kind="portafilter" size={56} />
+            <SteamMark size={64} />
+            <KitThumb kind="steam" size={52} />
+            <KitThumb kind="bean" size={40} />
+          </View>
         </View>
 
         <Text style={styles.wordmark}>Espresso Escape</Text>
@@ -176,39 +159,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  hazard: {
-    position: "absolute",
-    left: 48,
-    top: 40,
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: t.danger,
-    opacity: 0.8,
-  },
-  hazardB: {
-    left: "auto",
-    right: 56,
-    top: 70,
-    width: 36,
-    height: 36,
-    opacity: 0.55,
-  },
-  bean: {
-    position: "absolute",
-    right: 110,
-    top: 36,
-    width: 16,
-    height: 24,
-    borderRadius: 10,
-    backgroundColor: t.glow,
+  kitRow: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 14,
   },
   wordmark: {
     position: "absolute",
     left: 20,
     right: 20,
     bottom: 236,
-    color: t.ink,
+    color: t.linen,
     fontFamily: "Fraunces_700Bold",
     fontSize: 38,
     textAlign: "center",
@@ -233,13 +194,13 @@ const styles = StyleSheet.create({
   },
   primary: {
     alignSelf: "stretch",
-    backgroundColor: t.accent,
+    backgroundColor: t.kraft,
     borderRadius: 16,
     paddingVertical: 17,
     alignItems: "center",
   },
   primaryText: {
-    color: "#FFF8F0",
+    color: t.cream,
     fontFamily: "SourceSans3_700Bold",
     fontSize: 17,
   },
