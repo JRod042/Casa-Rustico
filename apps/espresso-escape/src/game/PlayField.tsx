@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: "rgba(10,7,5,0.88)",
     alignItems: "center",
     justifyContent: "center",
