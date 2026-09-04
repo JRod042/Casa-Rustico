@@ -1,15 +1,19 @@
 # Espresso Escape — iOS / TestFlight
 
 Bundle ID: **`com.jrod042.espressoescape`**  
-Expo: **`@jrod42/espresso-escape`**  
+Android package: **`com.jrod042.espressoescape`**  
+Expo: **`@jrod42/espresso-escape`** (`016d7c24-a7df-4e0d-8e59-00a9d8db352c`)  
 Apple Team: **`FY5H9V76QL`**  
-GitHub base directory: **`apps/espresso-escape`**
+GitHub base directory: **`apps/espresso-escape`**  
+Store binary: **version 1.0.3 / iOS build 8 / Android versionCode 8**
+
+ASC last reject was **1.0.2 (7)** for 2.1.0 (incomplete prototype shell) and 3.1.1 (IAP/payments). This tree has **no IAP, no store, no checkout**. Coffee is not sold in the game.
 
 These notes mirror the Omni (`JRod042/project-1`) EAS fixes that already shipped.
 
 ---
 
-## Current failure (GitHub Actions)
+## Current CI blocker (not fixable in git)
 
 ```
 Distribution Certificate is not validated for non-interactive builds.
@@ -17,12 +21,11 @@ Failed to set up credentials.
 Credentials are not set up. Run this command again in interactive mode.
 ```
 
-EXPO_TOKEN is fine. The Expo project simply has **no Distribution Certificate yet**.
-Non-interactive / CI builds refuse to create one (eas-cli source behavior).
+EXPO_TOKEN is fine. The Expo project needs a **Distribution Certificate + App Store profile** on expo.dev before GitHub Actions `--non-interactive` can queue a build.
 
-### Fix once (then CI works forever)
+### Fix once (then CI works)
 
-**Fastest path — Expo web UI**
+**Expo web UI**
 1. Open https://expo.dev/accounts/jrod42/projects/espresso-escape/credentials
 2. Select iOS → bundle `com.jrod042.espressoescape` → **App Store**
 3. Generate / assign Distribution Certificate + App Store Provisioning Profile
@@ -34,12 +37,21 @@ Non-interactive / CI builds refuse to create one (eas-cli source behavior).
 cd apps/espresso-escape
 npm ci
 npx eas-cli credentials -p ios
-# or: npx eas-cli build --platform ios --profile production   # no --non-interactive
 ```
 
-After the certificate exists on EAS, re-run the GitHub workflow (or `eas build --non-interactive`).
-
 An App Store Connect API key alone is **not enough**.
+
+---
+
+## Review notes for the next binary
+
+| Guideline | What changed |
+|---|---|
+| 2.1.0 completeness | Prototype “BREW / BUST” shell removed. Playable runner: jump, hazards, beans, score, best, pause, how-to, about. |
+| 3.1.1 IAP / payments | No StoreKit / RevenueCat / IAP. About screen states the game does not sell coffee. Do not add IAP. |
+| Dual platform | Same bundle/package on iOS + Android. `eas build --platform all`. |
+
+Do **not** invent payments. Physical bags stay in Casa Rustico Go (Shopify permalinks) and Hacienda.
 
 ---
 
@@ -61,7 +73,7 @@ An App Store Connect API key alone is **not enough**.
 
 | Profile | Distribution | Use |
 |---|---|---|
-| `production` | store | TestFlight / App Store (preferred) |
+| `production` | store | TestFlight / App Store / Play (preferred) |
 | `internal` / `preview` | internal | Device testers via Expo (needs Ad Hoc devices) |
 | `development` | internal + dev client | Native debug |
 
@@ -69,9 +81,11 @@ An App Store Connect API key alone is **not enough**.
 cd apps/espresso-escape
 npm ci
 npm run preflight:ios
+npm run check:game
 # TestFlight path (after credentials exist):
 npx eas-cli build --platform ios --profile production
-# then Submit on expo.dev (or eas submit)
+# or both stores:
+npx eas-cli build --platform all --profile production
 ```
 
 GitHub → Expo: base directory **`apps/espresso-escape`**, profile **`production`**.
@@ -81,21 +95,21 @@ GitHub → Expo: base directory **`apps/espresso-escape`**, profile **`productio
 ## Before every Expo build
 
 ```
-[ ] Apple App ID com.jrod042.espressoescape exists
+[ ] Apple App ID com.jrod042.espressoescape exists (keep this bundle — ASC already has it)
 [ ] App Store Connect app exists (add ascAppId to eas.json submit when known)
-[ ] Expo credentials: Distribution Cert + App Store profile VALID  ← current blocker
+[ ] Expo credentials: Distribution Cert + App Store profile VALID  ← current CI blocker
 [ ] GitHub connected; base directory = apps/espresso-escape
-[ ] Bumped ios.buildNumber if Apple already used current number (npm run bump:ios)
+[ ] ios.buildNumber / android.versionCode unused by Apple/Play (npm run bump:ios)
 [ ] npm ci green
 [ ] npm run preflight:ios green
-[ ] Expo → Build from GitHub → main → iOS → production
+[ ] Expo → Build from GitHub → main → iOS or all → production
 [ ] Submit → TestFlight → Ready to Test
 ```
 
 ### Submit note
 
 `submit.production.ios.appleTeamId` is set (`FY5H9V76QL`).  
-When the ASC app exists, add `"ascAppId": "<digits>"` under `submit.production.ios` (same as Omni).
+When the ASC app id is known, add `"ascAppId": "<digits>"` under `submit.production.ios` (same as Omni).
 
 ---
 
