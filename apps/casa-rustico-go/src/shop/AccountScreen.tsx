@@ -2,21 +2,26 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { formatMember, nextReward, TIERS, tierFor } from "../rewards";
 import { useShop } from "../store";
 import { colors, fonts } from "../theme";
-import { BrassButton, StoreTitle } from "./ui";
+import { BackRow, BrassButton, StoreTitle } from "./ui";
 
 export function AccountScreen({
   onJoin,
   onStory,
   onRitual,
+  onBack,
+  backLabel,
 }: {
   onJoin: () => void;
   onStory: () => void;
   onRitual: () => void;
+  onBack: () => void;
+  backLabel: string;
 }) {
   const { member, signOutMember, replayWelcome, flash } = useShop();
 
   return (
     <ScrollView contentContainerStyle={s.page} showsVerticalScrollIndicator={false}>
+      <BackRow label={backLabel} onPress={onBack} />
       <StoreTitle
         title={member ? member.name : "Account."}
         sub={member ? formatMember(member.memberNo) : "Join Hacienda Rewards to keep beans on this phone."}

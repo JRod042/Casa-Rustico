@@ -4,9 +4,17 @@ import { beansForSpend } from "../rewards";
 import { cartPermalink } from "../shopify";
 import { cartCount, cartSubtotal, useShop } from "../store";
 import { colors, fonts } from "../theme";
-import { BrassButton, Kicker, ProductCard, Qty, StoreTitle, ui } from "./ui";
+import { BackRow, BrassButton, Kicker, ProductCard, Qty, StoreTitle, ui } from "./ui";
 
-export function BagScreen({ openProduct }: { openProduct: (id: string) => void }) {
+export function BagScreen({
+  openProduct,
+  onBack,
+  backLabel,
+}: {
+  openProduct: (id: string) => void;
+  onBack: () => void;
+  backLabel: string;
+}) {
   const { cart, setCartQty, removeFromCart, flash, member, earnBeans } = useShop();
   const count = cartCount(cart);
   const subtotal = cartSubtotal(cart);
@@ -28,6 +36,7 @@ export function BagScreen({ openProduct }: { openProduct: (id: string) => void }
   if (count === 0) {
     return (
       <View>
+        <BackRow label={backLabel} onPress={onBack} />
         <StoreTitle title="Bag." sub="Your bag is empty." />
         <View style={{ paddingHorizontal: 20, paddingTop: 24 }}>
           <Text style={s.dim}>Start with Colombia, the house bag.</Text>
@@ -42,6 +51,7 @@ export function BagScreen({ openProduct }: { openProduct: (id: string) => void }
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={s.page} showsVerticalScrollIndicator={false}>
+        <BackRow label={backLabel} onPress={onBack} />
         <StoreTitle title="Bag." sub={`${count} ${count === 1 ? "item" : "items"}`} />
         {cart.map((line) => {
           const product = getProduct(line.productId);
@@ -103,7 +113,7 @@ export function BagScreen({ openProduct }: { openProduct: (id: string) => void }
           style={({ pressed }) => [s.checkout, pressed && ui.pressed]}
           accessibilityLabel="Check out on rusticopr.com"
         >
-          <Text style={s.checkoutText}>Check Out</Text>
+          <Text style={s.checkoutText}>Checkout · rusticopr.com</Text>
         </Pressable>
       </View>
     </View>

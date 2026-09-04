@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native";
+import { brand, colombia } from "../catalog";
 import { cartCount, useShop } from "../store";
 import { colors, fonts } from "../theme";
 import { IconBag, IconCoffee, IconGift, IconHome, IconPin, IconScan } from "./icons";
@@ -16,7 +17,7 @@ import { GiftScreen } from "./GiftScreen";
 import { StoresScreen } from "./StoresScreen";
 import { AccountScreen } from "./AccountScreen";
 import { JoinScreen } from "./JoinScreen";
-import { activeTab, type Screen, type Tab } from "./nav";
+import { activeTab, backLabel, goBack, isOnTab, type Screen, type Tab } from "./nav";
 import { ui } from "./ui";
 
 const TABS: { id: Tab; label: string }[] = [
@@ -46,6 +47,11 @@ export function ShopShell() {
   const hideDock = screen.kind === "join";
 
   useEffect(() => {
+    Image.prefetch(brand.heroImage).catch(() => undefined);
+    Image.prefetch(colombia.image).catch(() => undefined);
+  }, []);
+
+  useEffect(() => {
     if (count > lastCount.current) {
       setPop(true);
       const id = setTimeout(() => setPop(false), 420);
@@ -55,15 +61,35 @@ export function ShopShell() {
     lastCount.current = count;
   }, [count]);
 
-  const openProduct = (productId: string) => {
-    setScreen({ kind: "product", productId, back: tab });
-  };
-  const openTab = (next: Tab) => setScreen({ kind: "tab", tab: next });
-  const openBag = () => setScreen({ kind: "bag", back: tab });
-  const openAccount = () => setScreen({ kind: "account", back: tab });
-  const openJoin = () => setScreen({ kind: "join", back: tab });
-  const openStory = () => setScreen({ kind: "story", back: tab });
-  const openRitual = () => setScreen({ kind: "ritual", back: tab });
+  const openProduct = useCallback((productId: string) => {
+    setScreen((s) => ({ kind: "product", productId, back: s }));
+  }, []);
+  const openTab = useCallback((next: Tab) => setScreen({ kind: "tab", tab: next }), []);
+  const openBag = useCallback(() => {
+    setScreen((s) => (s.kind === "bag" ? s : { kind: "bag", back: s }));
+  }, []);
+  const openAccount = useCallback(() => {
+    setScreen((s) => ({ kind: "account", back: s }));
+  }, []);
+  const openJoin = useCallback(() => {
+    setScreen((s) => ({ kind: "join", back: s }));
+  }, []);
+  const openStory = useCallback(() => {
+    setScreen((s) => ({ kind: "story", back: s }));
+  }, []);
+  const openRitual = useCallback(() => {
+    setScreen((s) => ({ kind: "ritual", back: s }));
+  }, []);
+  const onBack = useCallback(() => setScreen((s) => goBack(s)), []);
+
+  const onJoinDone = useCallback((joined: boolean) => {
+    setScreen((s) => {
+      const prev = goBack(s);
+      if (!joined) return prev;
+      if (prev.kind === "tab" && prev.tab === "gift") return prev;
+      return { kind: "tab", tab: "scan" };
+    });
+  }, []);
 
   return (
     <SafeAreaView style={s.root}>
@@ -96,19 +122,26 @@ export function ShopShell() {
             <ProductScreen
               key={screen.productId}
               productId={screen.productId}
-              onBack={() => openTab("order")}
+              backLabel={backLabel(screen)}
+              onBack={onBack}
               openProduct={openProduct}
             />
           ) : screen.kind === "bag" ? (
-            <BagScreen openProduct={openProduct} />
+            <BagScreen backLabel={backLabel(screen)} onBack={onBack} openProduct={openProduct} />
           ) : screen.kind === "ritual" ? (
-            <RitualScreen openProduct={openProduct} />
+            <RitualScreen backLabel={backLabel(screen)} onBack={onBack} openProduct={openProduct} />
           ) : screen.kind === "story" ? (
-            <StoryScreen openProduct={openProduct} />
+            <StoryScreen backLabel={backLabel(screen)} onBack={onBack} openProduct={openProduct} />
           ) : screen.kind === "account" ? (
-            <AccountScreen onJoin={openJoin} onStory={openStory} onRitual={openRitual} />
+            <AccountScreen
+              backLabel={backLabel(screen)}
+              onBack={onBack}
+              onJoin={openJoin}
+              onStory={openStory}
+              onRitual={openRitual}
+            />
           ) : screen.kind === "join" ? (
-            <JoinScreen onDone={() => setScreen({ kind: "tab", tab: "scan" })} />
+            <JoinScreen onDone={onJoinDone} />
           ) : tab === "home" ? (
             <HomeScreen
               openProduct={openProduct}
@@ -122,7 +155,7 @@ export function ShopShell() {
           ) : tab === "scan" ? (
             <ScanScreen onJoin={openJoin} />
           ) : tab === "gift" ? (
-            <GiftScreen />
+            <GiftScreen onJoin={openJoin} />
           ) : (
             <StoresScreen />
           )}
@@ -131,11 +164,11 @@ export function ShopShell() {
         {hideDock ? null : (
           <View style={s.dock} accessibilityRole="tablist">
             {TABS.map((item) => {
-              const on = tab === item.id && screen.kind === "tab";
+              const on = isOnTab(screen, item.id);
               return (
                 <Pressable
                   key={item.id}
-                  accessibilityRole="button"
+                  accessibilityRole="tab"
                   accessibilityState={{ selected: on }}
                   onPress={() => openTab(item.id)}
                   style={s.tab}
@@ -179,12 +212,12 @@ const s = StyleSheet.create({
     height: 18,
     paddingHorizontal: 4,
     borderRadius: 9,
-    backgroundColor: colors.brass,
+    backgroundColor: colors.kraft,
     alignItems: "center",
     justifyContent: "center",
   },
   badgeText: {
-    color: colors.ink,
+    color: colors.linen,
     fontFamily: fonts.sansBold,
     fontSize: 10,
     fontVariant: ["tabular-nums"],
@@ -221,5 +254,5 @@ const s = StyleSheet.create({
     fontSize: 10,
     letterSpacing: 0.2,
   },
-  tabLabelOn: { color: colors.brass },
+  tabLabelOn: { color: colors.brassSoft },
 });

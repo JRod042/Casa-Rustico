@@ -3,7 +3,10 @@
 Bundle ID: **`com.jrod042.casarusticogo`**  
 Expo: **`@jrod42/casa-rustico-go`**  
 Apple Team: **`FY5H9V76QL`**  
-GitHub base directory: **`apps/casa-rustico-go`**
+GitHub base directory: **`apps/casa-rustico-go`**  
+Store binary: **version 1.0.1 / iOS build 5 / Android versionCode 5**
+
+Companion shop only. Checkout is Shopify on rusticopr.com — no IAP.
 
 These notes mirror the Omni (`JRod042/project-1`) EAS fixes that already shipped.
 
@@ -87,6 +90,7 @@ GitHub → Expo: base directory **`apps/casa-rustico-go`**, profile **`productio
 [ ] GitHub connected; base directory = apps/casa-rustico-go
 [ ] Bumped ios.buildNumber if Apple already used current number (npm run bump:ios)
 [ ] npm ci green
+[ ] npm run check:shop green
 [ ] npm run preflight:ios green
 [ ] Expo → Build from GitHub → main → iOS → production
 [ ] Submit → TestFlight → Ready to Test

@@ -53,14 +53,16 @@ export function RewardsCard({ onPress }: { onPress: () => void }) {
 const s = StyleSheet.create({
   card: {
     marginHorizontal: 20,
-    backgroundColor: "#1f3a2e",
+    backgroundColor: colors.elevated,
+    borderWidth: 1,
+    borderColor: colors.kraft,
     borderRadius: 18,
     paddingHorizontal: 18,
     paddingVertical: 18,
   },
   row: { flexDirection: "row", alignItems: "center", gap: 14 },
   kicker: {
-    color: "rgba(245,234,216,0.62)",
+    color: colors.brassSoft,
     fontFamily: fonts.sansSemi,
     fontSize: 11,
     letterSpacing: 1.6,
@@ -76,7 +78,7 @@ const s = StyleSheet.create({
   },
   body: {
     marginTop: 6,
-    color: "rgba(245,234,216,0.72)",
+    color: colors.linenDim,
     fontFamily: fonts.sans,
     fontSize: 14,
     lineHeight: 19,
@@ -84,12 +86,12 @@ const s = StyleSheet.create({
   cta: {
     marginTop: 14,
     alignSelf: "flex-start",
-    backgroundColor: colors.linen,
+    backgroundColor: colors.kraft,
     borderRadius: 999,
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
-  ctaText: { color: colors.ink, fontFamily: fonts.sansBold, fontSize: 13 },
+  ctaText: { color: colors.linen, fontFamily: fonts.sansBold, fontSize: 13 },
   ringWrap: { width: 76, height: 76, justifyContent: "center" },
   ringTrack: {
     position: "absolute",
@@ -116,7 +118,7 @@ const s = StyleSheet.create({
     fontVariant: ["tabular-nums"],
   },
   beansLabel: {
-    color: "rgba(245,234,216,0.62)",
+    color: colors.brassSoft,
     fontFamily: fonts.sansSemi,
     fontSize: 10,
     letterSpacing: 1.4,
@@ -124,7 +126,7 @@ const s = StyleSheet.create({
   },
   member: {
     marginTop: 8,
-    color: "rgba(245,234,216,0.5)",
+    color: colors.linenMuted,
     fontFamily: fonts.sans,
     fontSize: 12,
     fontVariant: ["tabular-nums"],

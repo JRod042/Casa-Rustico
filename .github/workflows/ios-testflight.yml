@@ -11,6 +11,15 @@ on:
           - espresso-escape
           - casa-rustico-go
         default: espresso-escape
+      platform:
+        description: "EAS platform"
+        required: true
+        type: choice
+        options:
+          - ios
+          - android
+          - all
+        default: ios
       profile:
         description: "EAS profile"
         required: true
@@ -67,21 +76,22 @@ jobs:
             echo "No APPLE_API_KEY_P8 secret — using Expo-stored Apple credentials if configured"
           fi
 
-      - name: Build iOS
+      - name: Build
         env:
           EAS_BUILD_NO_EXPO_GO_WARNING: "true"
           EXPO_USE_PRECOMPILED_MODULES: "0"
           EXPO_ASC_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           EXPO_ASC_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
         run: |
-          if [ "${{ inputs.submit }}" = "true" ]; then
+          # Auto-submit only for iOS — do not invent a Play Console upload.
+          if [ "${{ inputs.submit }}" = "true" ] && [ "${{ inputs.platform }}" = "ios" ]; then
             eas build --platform ios --profile ${{ inputs.profile }} --non-interactive --auto-submit --no-wait
           else
-            eas build --platform ios --profile ${{ inputs.profile }} --non-interactive --no-wait
+            eas build --platform ${{ inputs.platform }} --profile ${{ inputs.profile }} --non-interactive --no-wait
           fi
 
       - name: Reminder
         run: |
-          echo "Build queued on EAS for ${{ inputs.app }}."
+          echo "Build queued on EAS for ${{ inputs.app }} (${{ inputs.platform }})."
           echo "Watch: https://expo.dev/accounts/jrod42/projects/${{ inputs.app }}/builds"
-          echo "After auto-submit, open App Store Connect → TestFlight."
+          echo "After iOS auto-submit, open App Store Connect → TestFlight."

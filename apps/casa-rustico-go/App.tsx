@@ -12,12 +12,12 @@ import { ShopShell } from "./src/shop/ShopShell";
 import { colors } from "./src/theme";
 
 /**
- * Casa Rústico Go — brand shop.
- * Shopify catalog + rusticopr.com checkout permalinks.
+ * Casa Rústico Go — brand shop companion.
+ * Shopify catalog + rusticopr.com checkout permalinks. No in-app payments.
  * Cart persists on-device (AsyncStorage). Hacienda Rewards is local to the phone.
  */
 export default function App() {
-  const [fontsLoaded] = useFonts({
+  useFonts({
     Fraunces_600SemiBold,
     Fraunces_700Bold,
     SourceSans3_400Regular,
@@ -25,15 +25,13 @@ export default function App() {
     SourceSans3_700Bold,
   });
 
-  if (!fontsLoaded) {
-    return <View style={{ flex: 1, backgroundColor: colors.bg }} />;
-  }
-
   return (
-    <ShopProvider>
-      <WelcomeGate>
-        <ShopShell />
-      </WelcomeGate>
-    </ShopProvider>
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <ShopProvider>
+        <WelcomeGate>
+          <ShopShell />
+        </WelcomeGate>
+      </ShopProvider>
+    </View>
   );
 }

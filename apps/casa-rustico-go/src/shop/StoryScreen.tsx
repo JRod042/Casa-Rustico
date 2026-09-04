@@ -2,7 +2,7 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-nati
 import { brand, colombia } from "../catalog";
 import { useShop } from "../store";
 import { colors, fonts } from "../theme";
-import { BrassButton, Kicker, StoreTitle } from "./ui";
+import { BackRow, BrassButton, Kicker, StoreTitle } from "./ui";
 
 const REVIEWS = [
   {
@@ -22,11 +22,20 @@ const REVIEWS = [
   },
 ];
 
-export function StoryScreen({ openProduct }: { openProduct: (id: string) => void }) {
+export function StoryScreen({
+  openProduct,
+  onBack,
+  backLabel,
+}: {
+  openProduct: (id: string) => void;
+  onBack: () => void;
+  backLabel: string;
+}) {
   const { replayWelcome } = useShop();
 
   return (
     <ScrollView contentContainerStyle={s.page} showsVerticalScrollIndicator={false}>
+      <BackRow label={backLabel} onPress={onBack} />
       <StoreTitle
         title="Story."
         sub="Puerto Rico in the mark. Single-origin in the cup. Colombia leads the menu."
@@ -77,7 +86,7 @@ export function StoryScreen({ openProduct }: { openProduct: (id: string) => void
 }
 
 const s = StyleSheet.create({
-  page: { paddingBottom: 28 },
+  page: { paddingBottom: 96 },
   figure: { marginBottom: 8 },
   photo: { width: "100%", height: 224, backgroundColor: colors.elevated },
   caption: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 20, gap: 4 },
