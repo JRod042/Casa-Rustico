@@ -26,7 +26,9 @@ cd apps/espresso-escape && npm install && npx expo start
 
 - [apps/hacienda/README.md](./apps/hacienda/README.md) — order-ahead web app
 - [docs/APPS.md](./docs/APPS.md) — architecture, shop contract, submission
-- [apps/casa-rustico-go/IOS.md](./apps/casa-rustico-go/IOS.md) — TestFlight / EAS
+- [docs/EXPO_IDENTITY.md](./docs/EXPO_IDENTITY.md) — Expo slugs, bundle IDs, projectIds
+- [apps/casa-rustico-go/IOS.md](./apps/casa-rustico-go/IOS.md) — Go TestFlight / EAS
+- [apps/espresso-escape/IOS.md](./apps/espresso-escape/IOS.md) — Escape TestFlight / EAS
 - [references/README.md](./references/README.md) — upstream open-source repos to study (not vendored)
 
 ## Catalog
