@@ -90,7 +90,8 @@ if (!/Local high score/.test(String(app.expo?.extra?.privacyNote ?? ""))) {
 const sources = walk(join(root, "src"))
   .concat([join(root, "App.tsx"), join(root, "package.json")])
   .map((f) => readFileSync(f, "utf8"))
-  .join("\n");
+  .join("\n")
+  .replace(/\s+/g, " ");
 
 const banned = [
   "StoreKit",

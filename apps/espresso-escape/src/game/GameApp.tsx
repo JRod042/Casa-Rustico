@@ -148,8 +148,8 @@ function Menu({
           run through the café line.
         </Text>
         <Text style={styles.panelBody}>
-          No accounts. No ads. No in-app purchases. This game does not sell
-          coffee or take payments.
+          No accounts. No ads. No in-app purchases. This game does not sell coffee
+          or take payments.
         </Text>
         <Text style={styles.panelBody}>
           Physical bags stay in the Casa Rústico shop. This app is only the
