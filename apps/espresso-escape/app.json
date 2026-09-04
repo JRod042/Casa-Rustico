@@ -2,7 +2,8 @@
   "expo": {
     "name": "Espresso Escape",
     "slug": "espresso-escape",
-    "version": "1.0.0",
+    "version": "1.0.3",
+    "description": "Casa Rústico coffee mini-game. Jump the café floor, dodge grinders and portafilters, collect single-origin beans. Free to play — no accounts, no ads, no in-app purchases. This game does not sell coffee.",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -15,7 +16,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.jrod042.espressoescape",
-      "buildNumber": "3",
+      "buildNumber": "8",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleDisplayName": "Espresso Escape"
@@ -23,7 +24,7 @@
     },
     "android": {
       "package": "com.jrod042.espressoescape",
-      "versionCode": 3,
+      "versionCode": 8,
       "adaptiveIcon": {
         "backgroundColor": "#1A120B",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -48,6 +49,9 @@
     ],
     "extra": {
       "brand": "Casa Rustico",
+      "kind": "game",
+      "hasIap": false,
+      "privacyNote": "Local high score and welcome flag only. No accounts, ads, or payments.",
       "eas": {
         "projectId": "016d7c24-a7df-4e0d-8e59-00a9d8db352c"
       }

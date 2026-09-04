@@ -15,16 +15,6 @@ import Animated, {
   useAnimatedStyle,
   useReducedMotion,
 } from "react-native-reanimated";
-import {
-  Fraunces_600SemiBold,
-  Fraunces_700Bold,
-} from "@expo-google-fonts/fraunces";
-import {
-  SourceSans3_400Regular,
-  SourceSans3_600SemiBold,
-  SourceSans3_700Bold,
-  useFonts,
-} from "@expo-google-fonts/source-sans-3";
 import { segment, useWelcomeTimeline } from "./motion";
 import { SteamMark } from "./SteamMark";
 import { escapeWelcomeTheme as t } from "./theme";
@@ -41,13 +31,6 @@ const INTERACT_MS = 3033;
  * Game-forward Casa branding; no third-party identity.
  */
 export function EscapeWelcome({ onFinished }: Props) {
-  const [fontsLoaded] = useFonts({
-    Fraunces_600SemiBold,
-    Fraunces_700Bold,
-    SourceSans3_400Regular,
-    SourceSans3_600SemiBold,
-    SourceSans3_700Bold,
-  });
   const reducedMotion = useReducedMotion();
   const { height } = useWindowDimensions();
   const time = useWelcomeTimeline(DURATION_MS, true);
@@ -95,10 +78,6 @@ export function EscapeWelcome({ onFinished }: Props) {
   const finalStyle = useAnimatedStyle(() => ({
     opacity: interpolate(segment(time.value, 2767, 3200), [0, 1], [0, 1]),
   }));
-
-  if (!fontsLoaded) {
-    return <View style={[styles.root, { backgroundColor: t.bg }]} />;
-  }
 
   return (
     <View style={styles.root} testID="welcome-escape-hallow">

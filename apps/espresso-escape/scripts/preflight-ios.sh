@@ -23,8 +23,20 @@ if (bid !== expected) throw new Error(`bundleIdentifier ${bid} != ${expected}`);
 if (typeof bn !== 'string' || !/^\d+$/.test(bn)) {
   throw new Error(`ios.buildNumber must be digit string, got ${JSON.stringify(bn)}`);
 }
+if (app.expo?.android?.package !== expected) {
+  throw new Error(`android.package ${app.expo?.android?.package} != ${expected}`);
+}
+const vc = app.expo?.android?.versionCode;
+if (!Number.isInteger(vc) || vc < 1) {
+  throw new Error(`android.versionCode must be a positive integer, got ${JSON.stringify(vc)}`);
+}
+const desc = String(app.expo?.description ?? "");
+if (!/mini-game/i.test(desc) || !/does not sell coffee/i.test(desc)) {
+  throw new Error("app.json description must match the playable coffee mini-game (no IAP)");
+}
 if (!eas.build?.production) throw new Error('eas.json missing production profile');
 if (!eas.build?.internal) throw new Error('eas.json missing internal profile');
+if (!eas.build.production.android) throw new Error('production profile must include android');
 if (eas.build.production.autoIncrement) {
   throw new Error('autoIncrement is not supported — use npm run bump:ios');
 }

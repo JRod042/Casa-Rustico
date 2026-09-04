@@ -61,6 +61,10 @@
       "ios": {
         "appleTeamId": "FY5H9V76QL",
         "bundleIdentifier": "com.jrod042.espressoescape"
+      },
+      "android": {
+        "track": "internal",
+        "releaseStatus": "draft"
       }
     }
   }
