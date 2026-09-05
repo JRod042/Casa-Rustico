@@ -6,12 +6,12 @@ Both brand Expo apps live in **this** repo (`JRod042/Casa-Rustico`). The coffee-
 
 | Product | Expo slug | Expo owner / projectId | Git path | iOS `bundleIdentifier` | Android `package` | URL scheme |
 |---|---|---|---|---|---|---|
-| Espresso Escape | `espresso-escape` | `@jrod42` / `016d7c24-a7df-4e0d-8e59-00a9d8db352c` | `apps/espresso-escape` | **`com.jrod042.espressoescape`** | **`com.jrod042.espressoescape`** | `espressoescape` |
+| Espresso Escape | `espresso-escape` | `@jrod42` / `016d7c24-a7df-4e0d-8e59-00a9d8db352c` | `apps/espresso-escape` | **`com.vibecode.espressoescape-20z7xb`** | **`com.jrod042.espressoescape`** | `espressoescape` |
 | Casa Rustico Go | `casa-rustico-go` | `@jrod42` / `25937717-3f2f-4793-af4d-79a12310f02a` | `apps/casa-rustico-go` | **`com.jrod042.casarusticogo`** | **`com.jrod042.casarusticogo`** | `casarusticogo` |
 
 Apple team for both: `FY5H9V76QL`.
 
-ASC Espresso Escape last known reject: version **1.0.2**, build **7** (2.1.0 completeness, 3.1.1 IAP). Source now ships **1.0.4** / build **9**, no IAP.
+ASC Espresso Escape (Apple ID **6758108565**) is locked to iOS bundle **`com.vibecode.espressoescape-20z7xb`**. Do not submit `com.jrod042.espressoescape` (ITMS-90055). Source now ships **1.0.4** / iOS build **10**, no IAP.
 
 ## Not in this repo
 

@@ -15,8 +15,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.jrod042.espressoescape",
-      "buildNumber": "9",
+      "bundleIdentifier": "com.vibecode.espressoescape-20z7xb",
+      "buildNumber": "10",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleDisplayName": "Espresso Escape"
