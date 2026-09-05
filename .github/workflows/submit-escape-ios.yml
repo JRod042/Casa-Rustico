@@ -1,0 +1,88 @@
+name: Submit Escape IPA to ASC
+
+# One-shot: push to this branch submits the Finished 1.0.4 / build 9 IPA.
+# Does NOT build a new binary. Escape only — never Casa Rustico Go / shop.
+# workflow_dispatch works after this file is on the default branch.
+on:
+  push:
+    branches:
+      - cursor/escape-ios-submit-2fc2
+  workflow_dispatch:
+    inputs:
+      eas_build_id:
+        description: "EAS iOS build UUID to submit to App Store Connect"
+        required: true
+        default: "0c3bb93d-6d23-4669-b559-305ab5e5f6b9"
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/espresso-escape
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Confirm target binary
+        run: |
+          python3 - <<'PY'
+          import json
+          d = json.load(open("app.json"))["expo"]
+          print(
+              f"version={d['version']} ios.buildNumber={d['ios']['buildNumber']} "
+              f"bundle={d['ios']['bundleIdentifier']}"
+          )
+          assert d["version"] == "1.0.4", d["version"]
+          assert d["ios"]["buildNumber"] == "9", d["ios"]["buildNumber"]
+          assert d["ios"]["bundleIdentifier"] == "com.jrod042.espressoescape"
+          PY
+          echo "EAS build: ${{ github.event.inputs.eas_build_id || '0c3bb93d-6d23-4669-b559-305ab5e5f6b9' }}"
+          echo "ASC Apple ID: 6758108565"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/espresso-escape/package-lock.json
+
+      - name: Setup Expo / EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: 16.28.0
+          packager: npm
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify Expo auth
+        run: eas whoami
+
+      - name: Write App Store Connect API key (optional)
+        env:
+          APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
+        run: |
+          if [ -n "${APPLE_API_KEY_P8:-}" ]; then
+            printf '%s\n' "$APPLE_API_KEY_P8" > asc-api-key.p8
+            echo "EXPO_ASC_API_KEY_PATH=$PWD/asc-api-key.p8" >> "$GITHUB_ENV"
+            echo "ASC API key file written"
+          else
+            echo "No APPLE_API_KEY_P8 secret — using Expo-stored Apple credentials if configured"
+          fi
+
+      - name: Submit Finished IPA to App Store Connect
+        env:
+          EXPO_ASC_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          EXPO_ASC_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+        run: |
+          BUILD_ID="${{ github.event.inputs.eas_build_id || '0c3bb93d-6d23-4669-b559-305ab5e5f6b9' }}"
+          echo "Submitting https://expo.dev/accounts/jrod42/projects/espresso-escape/builds/${BUILD_ID}"
+          eas submit --platform ios --profile production --id "$BUILD_ID" --non-interactive
+
+      - name: Reminder
+        run: |
+          echo "Submitted Espresso Escape 1.0.4 / iOS 9 to ASC 6758108565."
+          echo "Apple usually shows Processing, then the build becomes attachable."
+          echo "Expo: https://expo.dev/accounts/jrod42/projects/espresso-escape/builds/0c3bb93d-6d23-4669-b559-305ab5e5f6b9"

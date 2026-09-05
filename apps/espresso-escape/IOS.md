@@ -96,7 +96,7 @@ GitHub → Expo: base directory **`apps/espresso-escape`**, profile **`productio
 
 ```
 [ ] Apple App ID com.jrod042.espressoescape exists (keep this bundle — ASC already has it)
-[ ] App Store Connect app exists (add ascAppId to eas.json submit when known)
+[ ] App Store Connect app exists — Apple ID **6758108565** (`eas.json` `submit.production.ios.ascAppId`)
 [ ] Expo credentials: Distribution Cert + App Store profile VALID  ← current CI blocker
 [ ] GitHub connected; base directory = apps/espresso-escape
 [ ] ios.buildNumber / android.versionCode unused by Apple/Play (npm run bump:ios)
@@ -108,8 +108,10 @@ GitHub → Expo: base directory **`apps/espresso-escape`**, profile **`productio
 
 ### Submit note
 
-`submit.production.ios.appleTeamId` is set (`FY5H9V76QL`).  
-When the ASC app id is known, add `"ascAppId": "<digits>"` under `submit.production.ios` (same as Omni).
+`submit.production.ios` has `appleTeamId` `FY5H9V76QL` and `ascAppId` `6758108565` (Escape only — not shop `6797235230`).
+
+GitHub → Expo submit (Finished IPA, no rebuild): `.github/workflows/submit-escape-ios.yml`  
+`eas submit --platform ios --profile production --id <eas-build-uuid> --non-interactive` from `apps/espresso-escape`.
 
 ---
 
