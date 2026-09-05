@@ -1,16 +1,16 @@
 # Espresso Escape — iOS / TestFlight
 
-iOS bundle ID (ASC-locked): **`com.vibecode.espressoescape-20z7xb`**  
-ASC Apple ID: **`6758108565`**  
+iOS bundle ID: **`com.jrod042.espressoescape`**  
+ASC Apple ID: **`6809059605`** (Espresso Escape Runner)  
 Android package: **`com.jrod042.espressoescape`**  
 Expo: **`@jrod42/espresso-escape`** (`016d7c24-a7df-4e0d-8e59-00a9d8db352c`)  
 Apple Team: **`FY5H9V76QL`**  
 GitHub base directory: **`apps/espresso-escape`**  
-Store binary: **version 1.0.4 / iOS build 10 / Android versionCode 9**
+Store binary: **version 1.0.4 / iOS build 11 / Android versionCode 9**
 
-Do **not** change the iOS bundle to `com.jrod042.espressoescape`. ASC app **6758108565** is locked to the Vibecode id (ITMS-90055).
+Jorge’s iOS identity is **`com.jrod042.espressoescape`**. Submit to ASC **`6809059605`**. Do **not** restore `com.vibecode.espressoescape-20z7xb` or point EAS submit at the old vibecode ASC **`6758108565`**.
 
-ASC last reject was **1.0.4 (9)** for ITMS-90055 (wrong bundle id). Earlier **1.0.2 (7)** was 2.1.0 (incomplete prototype shell) and 3.1.1 (IAP/payments). This tree has **no IAP, no store, no checkout**. Coffee is not sold in the game.
+This tree has **no IAP, no store, no checkout**. Coffee is not sold in the game.
 
 These notes mirror the Omni (`JRod042/project-1`) EAS fixes that already shipped.
 
@@ -24,13 +24,13 @@ Failed to set up credentials.
 Credentials are not set up. Run this command again in interactive mode.
 ```
 
-EXPO_TOKEN is fine. The Expo project needs a **Distribution Certificate + App Store profile** on expo.dev before GitHub Actions `--non-interactive` can queue a build.
+EXPO_TOKEN is fine. The Expo project needs a **Distribution Certificate + App Store profile** for **`com.jrod042.espressoescape`** on expo.dev before GitHub Actions `--non-interactive` can queue a build.
 
 ### Fix once (then CI works)
 
 **Expo web UI**
 1. Open https://expo.dev/accounts/jrod42/projects/espresso-escape/credentials
-2. Select iOS → bundle `com.vibecode.espressoescape-20z7xb` → **App Store**
+2. Select iOS → bundle `com.jrod042.espressoescape` → **App Store**
 3. Generate / assign Distribution Certificate + App Store Provisioning Profile
 4. Complete Apple login
 5. Confirm both show valid
@@ -52,7 +52,7 @@ An App Store Connect API key alone is **not enough**.
 |---|---|
 | 2.1.0 completeness | Prototype “BREW / BUST” shell removed. Playable runner: jump, café kits (grinder / portafilter / steam), beans, score, best, pause, first-run how-to → Play, About, in-app Privacy. Linen floor + kraft counter stage. Store description in `app.json` matches the mini-game. Fonts time out so a CDN stall cannot leave a blank screen. Pause is not a dead control after a roast. |
 | 3.1.1 IAP / payments | No StoreKit / RevenueCat / IAP / Safari checkout. No shop buttons or `Linking.openURL`. About + Privacy state the game does not sell coffee or take payments. Do not add IAP. |
-| Dual platform | iOS stays on the ASC-locked Vibecode bundle; Android package stays `com.jrod042.espressoescape`. `eas build --platform all`. |
+| Dual platform | iOS and Android both use `com.jrod042.espressoescape`. `eas build --platform all`. |
 
 Do **not** invent payments. Physical bags stay in Casa Rustico Go (Shopify permalinks) and Hacienda.
 
@@ -98,9 +98,9 @@ GitHub → Expo: base directory **`apps/espresso-escape`**, profile **`productio
 ## Before every Expo build
 
 ```
-[ ] Apple App ID com.vibecode.espressoescape-20z7xb / ASC 6758108565 (do not invent a new ASC app)
-[ ] eas.json submit.production.ios has bundleIdentifier + ascAppId 6758108565
-[ ] Expo credentials: Distribution Cert + App Store profile VALID  ← current CI blocker
+[ ] Apple App ID com.jrod042.espressoescape / ASC 6809059605 (not vibecode 6758108565)
+[ ] eas.json submit.production.ios has bundleIdentifier + ascAppId 6809059605
+[ ] Expo credentials: Distribution Cert + App Store profile VALID for the jrod042 bundle
 [ ] GitHub connected; base directory = apps/espresso-escape
 [ ] ios.buildNumber / android.versionCode unused by Apple/Play (npm run bump:ios)
 [ ] npm ci green
@@ -111,7 +111,7 @@ GitHub → Expo: base directory **`apps/espresso-escape`**, profile **`productio
 
 ### Submit note
 
-`submit.production.ios` is set: `appleTeamId` `FY5H9V76QL`, `ascAppId` `6758108565`, bundle `com.vibecode.espressoescape-20z7xb`.
+`submit.production.ios` is set: `appleTeamId` `FY5H9V76QL`, `ascAppId` `6809059605`, bundle `com.jrod042.espressoescape`. Do not add `6758108565`.
 
 ---
 

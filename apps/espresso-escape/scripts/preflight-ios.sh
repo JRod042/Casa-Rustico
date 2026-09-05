@@ -3,9 +3,11 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
-EXPECTED_IOS_BUNDLE_ID="com.vibecode.espressoescape-20z7xb"
+EXPECTED_IOS_BUNDLE_ID="com.jrod042.espressoescape"
 EXPECTED_ANDROID_PACKAGE="com.jrod042.espressoescape"
-EXPECTED_ASC_APP_ID="6758108565"
+EXPECTED_ASC_APP_ID="6809059605"
+FORBIDDEN_IOS_BUNDLE_ID="com.vibecode.espressoescape-20z7xb"
+FORBIDDEN_ASC_APP_ID="6758108565"
 
 [[ -f app.json ]] || { echo "missing app.json"; exit 1; }
 [[ -f eas.json ]] || { echo "missing eas.json"; exit 1; }
@@ -14,17 +16,27 @@ EXPECTED_ASC_APP_ID="6758108565"
 
 EXPECTED_IOS_BUNDLE_ID="$EXPECTED_IOS_BUNDLE_ID" \
 EXPECTED_ANDROID_PACKAGE="$EXPECTED_ANDROID_PACKAGE" \
-EXPECTED_ASC_APP_ID="$EXPECTED_ASC_APP_ID" node <<'NODE'
+EXPECTED_ASC_APP_ID="$EXPECTED_ASC_APP_ID" \
+FORBIDDEN_IOS_BUNDLE_ID="$FORBIDDEN_IOS_BUNDLE_ID" \
+FORBIDDEN_ASC_APP_ID="$FORBIDDEN_ASC_APP_ID" node <<'NODE'
 const app = require('./app.json');
 const eas = require('./eas.json');
 const pkg = require('./package.json');
 const expectedIos = process.env.EXPECTED_IOS_BUNDLE_ID;
 const expectedAndroid = process.env.EXPECTED_ANDROID_PACKAGE;
 const expectedAsc = process.env.EXPECTED_ASC_APP_ID;
+const forbiddenIos = process.env.FORBIDDEN_IOS_BUNDLE_ID;
+const forbiddenAsc = process.env.FORBIDDEN_ASC_APP_ID;
 const bid = app.expo?.ios?.bundleIdentifier;
 const bn = app.expo?.ios?.buildNumber;
 
 if (!pkg.dependencies?.expo) throw new Error('package.json missing expo');
+if (typeof bid === 'string' && bid.includes('vibecode')) {
+  throw new Error(`vibecode iOS bundle is forbidden: ${bid}`);
+}
+if (bid === forbiddenIos) {
+  throw new Error(`vibecode iOS bundle is forbidden: ${bid}`);
+}
 if (bid !== expectedIos) throw new Error(`bundleIdentifier ${bid} != ${expectedIos}`);
 if (typeof bn !== 'string' || !/^\d+$/.test(bn)) {
   throw new Error(`ios.buildNumber must be digit string, got ${JSON.stringify(bn)}`);
@@ -56,8 +68,14 @@ if (!buildProps?.[1]?.ios || buildProps[1].ios.privacyManifestAggregationEnabled
   throw new Error('expo-build-properties must set privacyManifestAggregationEnabled: false');
 }
 const submitIos = eas.submit?.production?.ios || {};
-if (submitIos.bundleIdentifier !== expectedIos) {
+if (submitIos.bundleIdentifier && submitIos.bundleIdentifier !== expectedIos) {
   throw new Error(`eas submit bundleIdentifier ${submitIos.bundleIdentifier} != ${expectedIos}`);
+}
+if (String(submitIos.bundleIdentifier || '').includes('vibecode')) {
+  throw new Error(`eas submit still points at vibecode bundle ${submitIos.bundleIdentifier}`);
+}
+if (String(submitIos.ascAppId) === forbiddenAsc) {
+  throw new Error(`eas submit ascAppId ${submitIos.ascAppId} is the old vibecode ASC — use ${expectedAsc}`);
 }
 if (String(submitIos.ascAppId) !== expectedAsc) {
   throw new Error(`eas submit ascAppId ${submitIos.ascAppId} != ${expectedAsc}`);
@@ -68,10 +86,14 @@ NODE
 npx expo config --type public --json >/tmp/ee-expo-config.json
 node <<'NODE'
 const c = require('/tmp/ee-expo-config.json');
-if (c.ios?.bundleIdentifier !== 'com.vibecode.espressoescape-20z7xb') {
-  throw new Error('expo config bundle mismatch: ' + c.ios?.bundleIdentifier);
+const bid = c.ios?.bundleIdentifier;
+if (typeof bid === 'string' && bid.includes('vibecode')) {
+  throw new Error('expo config still has vibecode bundle: ' + bid);
 }
-console.log('expo config ok', c.ios.bundleIdentifier, 'buildNumber', c.ios.buildNumber);
+if (bid !== 'com.jrod042.espressoescape') {
+  throw new Error('expo config bundle mismatch: ' + bid);
+}
+console.log('expo config ok', bid, 'buildNumber', c.ios.buildNumber);
 NODE
 
 echo "preflight-ios: PASS"
