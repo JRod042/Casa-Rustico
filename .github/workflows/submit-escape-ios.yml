@@ -72,17 +72,128 @@ jobs:
             echo "No APPLE_API_KEY_P8 secret — using Expo-stored Apple credentials if configured"
           fi
 
+      - name: Inspect prior EAS submission (1.0.4/9 only)
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request
+          sid = "55556316-bccd-4518-898d-53cf2a68bead"
+          q = {
+            "query": """
+              query ($id: ID!) {
+                submissions {
+                  byId(submissionId: $id) {
+                    id
+                    status
+                    platform
+                    iosConfig { ascAppIdentifier }
+                    error { errorCode message }
+                    logFiles
+                  }
+                }
+              }
+            """,
+            "variables": {"id": sid},
+          }
+          req = urllib.request.Request(
+              "https://api.expo.dev/graphql",
+              data=json.dumps(q).encode(),
+              headers={
+                  "Authorization": f"Bearer {os.environ['EXPO_TOKEN']}",
+                  "Content-Type": "application/json",
+              },
+              method="POST",
+          )
+          with urllib.request.urlopen(req, timeout=60) as resp:
+              body = json.load(resp)
+          print(json.dumps(body, indent=2))
+          sub = (body.get("data") or {}).get("submissions", {}).get("byId") or {}
+          logs = sub.get("logFiles") or []
+          for url in logs[:3]:
+              print(f"--- log {url} ---")
+              try:
+                  with urllib.request.urlopen(url, timeout=60) as lr:
+                      print(lr.read().decode("utf-8", "replace")[-8000:])
+              except Exception as e:
+                  print(f"could not fetch log: {e}")
+          PY
+
       - name: Submit Finished IPA to App Store Connect
         env:
           EXPO_ASC_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           EXPO_ASC_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
         run: |
           BUILD_ID="${{ github.event.inputs.eas_build_id || '0c3bb93d-6d23-4669-b559-305ab5e5f6b9' }}"
-          echo "Submitting https://expo.dev/accounts/jrod42/projects/espresso-escape/builds/${BUILD_ID}"
-          eas submit --platform ios --profile production --id "$BUILD_ID" --non-interactive
+          if [ "$BUILD_ID" != "0c3bb93d-6d23-4669-b559-305ab5e5f6b9" ]; then
+            echo "Refusing build id $BUILD_ID — Cacique: only 0c3bb93d (1.0.4 / 9)"
+            exit 1
+          fi
+          echo "Submitting ONLY https://expo.dev/accounts/jrod42/projects/espresso-escape/builds/${BUILD_ID}"
+          echo "Cacique: never 1.0.3 — only 1.0.4 / build 9 — ASC 6758108565"
+
+          submit_once() {
+            eas submit --platform ios --profile production --id "$BUILD_ID" --non-interactive --verbose
+          }
+
+          if submit_once; then
+            echo "Submit succeeded on first attempt"
+            exit 0
+          fi
+          echo "First attempt failed (EAS Submit is on a partial artifact outage). Retrying same 1.0.4/9 id in 90s."
+          sleep 90
+          submit_once
+
+      - name: Dump latest Escape submission error
+        if: failure()
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request
+          q = {
+            "query": """
+              query {
+                app {
+                  byId(appId: "016d7c24-a7df-4e0d-8e59-00a9d8db352c") {
+                    submissions(filter: { platform: IOS }, offset: 0, limit: 3) {
+                      id
+                      status
+                      iosConfig { ascAppIdentifier }
+                      error { errorCode message }
+                      logFiles
+                    }
+                  }
+                }
+              }
+            """
+          }
+          req = urllib.request.Request(
+              "https://api.expo.dev/graphql",
+              data=json.dumps(q).encode(),
+              headers={
+                  "Authorization": f"Bearer {os.environ['EXPO_TOKEN']}",
+                  "Content-Type": "application/json",
+              },
+              method="POST",
+          )
+          with urllib.request.urlopen(req, timeout=60) as resp:
+              body = json.load(resp)
+          print(json.dumps(body, indent=2)[:12000])
+          subs = (((body.get("data") or {}).get("app") or {}).get("byId") or {}).get("submissions") or []
+          for sub in subs:
+              for url in (sub.get("logFiles") or [])[:2]:
+                  print(f"--- {sub.get('id')} {url} ---")
+                  try:
+                      with urllib.request.urlopen(url, timeout=60) as lr:
+                          print(lr.read().decode("utf-8", "replace")[-8000:])
+                  except Exception as e:
+                      print(f"could not fetch log: {e}")
+          PY
 
       - name: Reminder
         run: |
           echo "Submitted Espresso Escape 1.0.4 / iOS 9 to ASC 6758108565."
           echo "Apple usually shows Processing, then the build becomes attachable."
+          echo "Never attach 1.0.3. Shop ASC 6797235230 is untouched."
           echo "Expo: https://expo.dev/accounts/jrod42/projects/espresso-escape/builds/0c3bb93d-6d23-4669-b559-305ab5e5f6b9"
