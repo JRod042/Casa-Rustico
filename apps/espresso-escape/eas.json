@@ -60,7 +60,8 @@
     "production": {
       "ios": {
         "appleTeamId": "FY5H9V76QL",
-        "bundleIdentifier": "com.jrod042.espressoescape"
+        "ascAppId": "6758108565",
+        "bundleIdentifier": "com.vibecode.espressoescape-20z7xb"
       },
       "android": {
         "track": "internal",

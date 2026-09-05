@@ -21,7 +21,7 @@ Hardening below mirrors fixes already proven on **Omni** (`JRod042/project-1`).
 | App | Expo project | Base directory on GitHub | Bundle ID |
 |-----|--------------|--------------------------|-----------|
 | Casa Rustico Go | https://expo.dev/accounts/jrod42/projects/casa-rustico-go | `apps/casa-rustico-go` | `com.jrod042.casarusticogo` |
-| Espresso Escape | https://expo.dev/accounts/jrod42/projects/espresso-escape | `apps/espresso-escape` | `com.jrod042.espressoescape` |
+| Espresso Escape | https://expo.dev/accounts/jrod42/projects/espresso-escape | `apps/espresso-escape` | `com.vibecode.espressoescape-20z7xb` |
 
 Per-app checklists: [`apps/casa-rustico-go/IOS.md`](../apps/casa-rustico-go/IOS.md), [`apps/espresso-escape/IOS.md`](../apps/espresso-escape/IOS.md).
 
