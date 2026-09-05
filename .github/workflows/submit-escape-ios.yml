@@ -85,17 +85,64 @@ jobs:
           echo "Submitting ONLY https://expo.dev/accounts/jrod42/projects/espresso-escape/builds/${BUILD_ID}"
           echo "Cacique: never 1.0.3 — only 1.0.4 / build 9 — ASC 6758108565"
 
-          submit_once() {
+          eas build:view "$BUILD_ID" --json --non-interactive > /tmp/ee-build.json
+          python3 - <<'PY'
+          import json
+          raw = json.load(open("/tmp/ee-build.json"))
+          b = raw[0] if isinstance(raw, list) else raw
+          ver = b.get("appVersion") or b.get("version")
+          num = str(b.get("appBuildVersion") or b.get("buildNumber") or "")
+          print("build view:", {k: b.get(k) for k in ("id", "status", "appVersion", "appBuildVersion", "platform")})
+          arts = b.get("artifacts") or {}
+          print("artifact keys:", list(arts) if isinstance(arts, dict) else type(arts))
+          if ver != "1.0.4" or num != "9":
+              raise SystemExit(f"Cacique refuse: {ver}/{num} is not 1.0.4/9")
+          if "1.0.3" in str(ver):
+              raise SystemExit("Cacique refuse: 1.0.3")
+          PY
+
+          IPA_URL="$(python3 - <<'PY'
+          import json
+          raw = json.load(open("/tmp/ee-build.json"))
+          b = raw[0] if isinstance(raw, list) else raw
+          arts = b.get("artifacts") or {}
+          if isinstance(arts, dict):
+              for k in ("buildUrl", "applicationArchiveUrl", "url"):
+                  if arts.get(k):
+                      print(arts[k])
+                      break
+          PY
+          )"
+          echo "IPA_URL=${IPA_URL:-<none>}"
+
+          submit_id() {
             eas submit --platform ios --profile production --id "$BUILD_ID" --non-interactive --verbose
           }
+          submit_path() {
+            eas submit --platform ios --profile production --path "$1" --non-interactive --verbose
+          }
 
-          if submit_once; then
-            echo "Submit succeeded on first attempt"
+          if [ -n "$IPA_URL" ]; then
+            echo "Downloading Finished 1.0.4/9 IPA to the runner (bypass EAS Submit R2 fetch)..."
+            if curl -fL --retry 3 --retry-delay 15 -o /tmp/espresso-escape-1.0.4-9.ipa "$IPA_URL"; then
+              ls -lh /tmp/espresso-escape-1.0.4-9.ipa
+              if submit_path /tmp/espresso-escape-1.0.4-9.ipa; then
+                echo "Submit via --path succeeded"
+                exit 0
+              fi
+              echo "--path submit failed; falling back to --id"
+            else
+              echo "Runner download failed (Expo artifact outage). Falling back to --id"
+            fi
+          fi
+
+          if submit_id; then
+            echo "Submit via --id succeeded"
             exit 0
           fi
-          echo "First attempt failed (EAS Submit had a partial artifact outage). Retrying same 1.0.4/9 id in 90s."
+          echo "Retrying same 1.0.4/9 --id in 90s"
           sleep 90
-          submit_once
+          submit_id
 
       - name: Reminder
         run: |
