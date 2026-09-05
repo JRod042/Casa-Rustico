@@ -5,6 +5,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 EXPECTED_IOS_BUNDLE_ID="com.jrod042.espressoescape"
 EXPECTED_ANDROID_PACKAGE="com.jrod042.espressoescape"
+EXPECTED_ASC_APP_ID="6809059605"
 FORBIDDEN_IOS_BUNDLE_ID="com.vibecode.espressoescape-20z7xb"
 FORBIDDEN_ASC_APP_ID="6758108565"
 
@@ -15,6 +16,7 @@ FORBIDDEN_ASC_APP_ID="6758108565"
 
 EXPECTED_IOS_BUNDLE_ID="$EXPECTED_IOS_BUNDLE_ID" \
 EXPECTED_ANDROID_PACKAGE="$EXPECTED_ANDROID_PACKAGE" \
+EXPECTED_ASC_APP_ID="$EXPECTED_ASC_APP_ID" \
 FORBIDDEN_IOS_BUNDLE_ID="$FORBIDDEN_IOS_BUNDLE_ID" \
 FORBIDDEN_ASC_APP_ID="$FORBIDDEN_ASC_APP_ID" node <<'NODE'
 const app = require('./app.json');
@@ -22,6 +24,7 @@ const eas = require('./eas.json');
 const pkg = require('./package.json');
 const expectedIos = process.env.EXPECTED_IOS_BUNDLE_ID;
 const expectedAndroid = process.env.EXPECTED_ANDROID_PACKAGE;
+const expectedAsc = process.env.EXPECTED_ASC_APP_ID;
 const forbiddenIos = process.env.FORBIDDEN_IOS_BUNDLE_ID;
 const forbiddenAsc = process.env.FORBIDDEN_ASC_APP_ID;
 const bid = app.expo?.ios?.bundleIdentifier;
@@ -71,8 +74,11 @@ if (submitIos.bundleIdentifier && submitIos.bundleIdentifier !== expectedIos) {
 if (String(submitIos.bundleIdentifier || '').includes('vibecode')) {
   throw new Error(`eas submit still points at vibecode bundle ${submitIos.bundleIdentifier}`);
 }
-if (submitIos.ascAppId != null && String(submitIos.ascAppId) === forbiddenAsc) {
-  throw new Error(`eas submit ascAppId ${submitIos.ascAppId} is the old vibecode ASC — omit until the new ASC id is supplied`);
+if (String(submitIos.ascAppId) === forbiddenAsc) {
+  throw new Error(`eas submit ascAppId ${submitIos.ascAppId} is the old vibecode ASC — use ${expectedAsc}`);
+}
+if (String(submitIos.ascAppId) !== expectedAsc) {
+  throw new Error(`eas submit ascAppId ${submitIos.ascAppId} != ${expectedAsc}`);
 }
 console.log('config ok', { bid, bn, profiles: Object.keys(eas.build) });
 NODE

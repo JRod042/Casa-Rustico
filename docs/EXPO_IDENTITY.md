@@ -11,7 +11,7 @@ Both brand Expo apps live in **this** repo (`JRod042/Casa-Rustico`). The coffee-
 
 Apple team for both: `FY5H9V76QL`.
 
-Espresso Escape iOS identity is Jorge’s bundle **`com.jrod042.espressoescape`**. Do not restore `com.vibecode.espressoescape-20z7xb` or submit to vibecode ASC **6758108565**. New ASC numeric id is pending. Source now ships **1.0.4** / iOS build **11**, no IAP.
+Espresso Escape iOS identity is Jorge’s bundle **`com.jrod042.espressoescape`** on ASC **6809059605** (Espresso Escape Runner). Do not restore `com.vibecode.espressoescape-20z7xb` or submit to vibecode ASC **6758108565**. Source now ships **1.0.4** / iOS build **11**, no IAP.
 
 ## Not in this repo
 

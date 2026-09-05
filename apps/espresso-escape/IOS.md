@@ -1,14 +1,14 @@
 # Espresso Escape — iOS / TestFlight
 
 iOS bundle ID: **`com.jrod042.espressoescape`**  
-ASC Apple ID: **pending — do not use vibecode ASC `6758108565`**  
+ASC Apple ID: **`6809059605`** (Espresso Escape Runner)  
 Android package: **`com.jrod042.espressoescape`**  
 Expo: **`@jrod42/espresso-escape`** (`016d7c24-a7df-4e0d-8e59-00a9d8db352c`)  
 Apple Team: **`FY5H9V76QL`**  
 GitHub base directory: **`apps/espresso-escape`**  
 Store binary: **version 1.0.4 / iOS build 11 / Android versionCode 9**
 
-Jorge’s iOS identity is **`com.jrod042.espressoescape`**. Do **not** restore `com.vibecode.espressoescape-20z7xb` or point EAS submit at ASC **`6758108565`**. Create a new App Store Connect app for the jrod042 bundle, then add that numeric `ascAppId` to `eas.json` when parent supplies it.
+Jorge’s iOS identity is **`com.jrod042.espressoescape`**. Submit to ASC **`6809059605`**. Do **not** restore `com.vibecode.espressoescape-20z7xb` or point EAS submit at the old vibecode ASC **`6758108565`**.
 
 This tree has **no IAP, no store, no checkout**. Coffee is not sold in the game.
 
@@ -98,9 +98,8 @@ GitHub → Expo: base directory **`apps/espresso-escape`**, profile **`productio
 ## Before every Expo build
 
 ```
-[ ] Apple App ID com.jrod042.espressoescape (new ASC app — not 6758108565)
-[ ] eas.json submit.production.ios has bundleIdentifier com.jrod042.espressoescape
-[ ] ascAppId omitted until parent supplies the new ASC numeric id
+[ ] Apple App ID com.jrod042.espressoescape / ASC 6809059605 (not vibecode 6758108565)
+[ ] eas.json submit.production.ios has bundleIdentifier + ascAppId 6809059605
 [ ] Expo credentials: Distribution Cert + App Store profile VALID for the jrod042 bundle
 [ ] GitHub connected; base directory = apps/espresso-escape
 [ ] ios.buildNumber / android.versionCode unused by Apple/Play (npm run bump:ios)
@@ -112,7 +111,7 @@ GitHub → Expo: base directory **`apps/espresso-escape`**, profile **`productio
 
 ### Submit note
 
-`submit.production.ios` is set: `appleTeamId` `FY5H9V76QL`, bundle `com.jrod042.espressoescape`. `ascAppId` is omitted until the new App Store Connect numeric id is supplied. Do not add `6758108565`.
+`submit.production.ios` is set: `appleTeamId` `FY5H9V76QL`, `ascAppId` `6809059605`, bundle `com.jrod042.espressoescape`. Do not add `6758108565`.
 
 ---
 
