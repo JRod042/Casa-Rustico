@@ -19,10 +19,12 @@ import {
   useDerivedValue,
   useReducedMotion,
   useSharedValue,
+  withDelay,
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
+import { STEAM_FIRST_MS } from "./juice";
 
 /**
  * First Skia canvas path — kraft 2.5D parallax + 1-frame Atlas hook.
@@ -42,10 +44,12 @@ export function CafeStageSkia({
   const floorH = Math.max(80, height - groundY);
   const reduce = useReducedMotion();
   const life = useSharedValue(0);
+  const ambientGate = useSharedValue(0);
   const plate = useImage(require("../../assets/kraft/cafe-bg.png"));
   const runner = useImage(require("../../assets/kraft/runner.png"));
 
   useEffect(() => {
+    ambientGate.value = reduce ? 1 : withDelay(STEAM_FIRST_MS, withTiming(1, { duration: 360 }));
     if (reduce) {
       life.value = 0.5;
       return;
@@ -55,7 +59,7 @@ export function CafeStageSkia({
       -1,
       true
     );
-  }, [life, reduce]);
+  }, [ambientGate, life, reduce]);
 
   const canopyT = useDerivedValue(() => [
     { translateX: -((scroll.value * 0.02) % width) },
@@ -109,7 +113,8 @@ export function CafeStageSkia({
     { translateX: 12 * life.value },
     { translateY: -18 * life.value },
   ]);
-  const dustOp = useDerivedValue(() => 0.16 + life.value * 0.22);
+  const dustOp = useDerivedValue(() => ambientGate.value * (0.16 + life.value * 0.22));
+  const laterLife = useDerivedValue(() => ambientGate.value);
   const atlasSprites = [Skia.XYWHRect(0, 0, 48, 56)];
   const atlasForms = [Skia.RSXform(0.7, 0, 0, 0)];
 
@@ -194,8 +199,11 @@ export function CafeStageSkia({
           opacity={lightOp}
         />
 
+        <Circle cx={width * 0.64} cy={groundY * 0.24} r={40} color={t.espresso} opacity={0.12} />
         <Circle cx={width * 0.64} cy={groundY * 0.24} r={36} color={t.cream} opacity={steamA} />
+        <Circle cx={width * 0.16} cy={groundY * 0.16} r={31} color={t.espresso} opacity={0.1} />
         <Circle cx={width * 0.16} cy={groundY * 0.16} r={28} color={t.cream} opacity={steamB} />
+        <Circle cx={width * 0.42} cy={groundY * 0.3} r={23} color={t.espresso} opacity={0.1} />
         <Circle cx={width * 0.42} cy={groundY * 0.3} r={20} color={t.cream} opacity={steamA} />
 
         <Group transform={mistT} opacity={0.15}>
@@ -217,19 +225,25 @@ export function CafeStageSkia({
           <Circle cx={width * 0.88} cy={groundY * 0.22} r={1.3} color={t.cream} />
         </Group>
 
-        <Group transform={plantSway}>
+        <Group transform={plantSway} opacity={laterLife}>
+          <RoundedRect x={2} y={24} width={28} height={8} r={4} color={t.espresso} opacity={0.28} />
           <RoundedRect x={0} y={6} width={18} height={22} r={10} color={t.kraft} opacity={0.72} />
           <RoundedRect x={16} y={0} width={14} height={28} r={8} color={t.kraftDeep} opacity={0.7} />
+          <Circle cx={8} cy={8} r={2.2} color={t.kraftDeep} />
+          <Circle cx={22} cy={10} r={1.8} color={t.kraft} />
+          <Circle cx={14} cy={4} r={1.6} color={t.kraftDeep} />
         </Group>
-        <Group transform={clothSway} opacity={0.6}>
+        <Group transform={clothSway} opacity={laterLife}>
+          <RoundedRect x={4} y={30} width={22} height={7} r={3} color={t.espresso} opacity={0.22} />
           <RoundedRect x={0} y={0} width={28} height={36} r={4} color={t.cream} />
         </Group>
-        <Group transform={propFar}>
+        <Group transform={propFar} opacity={laterLife}>
+          <RoundedRect x={2} y={24} width={36} height={8} r={4} color={t.espresso} opacity={0.26} />
           <RoundedRect x={0} y={0} width={22} height={28} r={6} color={t.kraft} />
           <RoundedRect x={26} y={14} width={12} height={14} r={3} color={t.cream} />
         </Group>
 
-        <Group transform={atlasT} opacity={0.72}>
+        <Group transform={atlasT} opacity={laterLife}>
           <Atlas image={runner} sprites={atlasSprites} transforms={atlasForms} />
         </Group>
 

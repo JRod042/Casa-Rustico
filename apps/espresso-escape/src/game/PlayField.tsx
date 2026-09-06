@@ -21,6 +21,7 @@ import { escapeWelcomeTheme as t } from "../welcome/theme";
 import { CafeStage } from "./CafeStage";
 import { PaperSheet, StickerButton } from "./MenuChrome";
 import { beanTick, hopTick, landTick, roastTick, warnTick, RETRY_LOCK_MS } from "./feel";
+import { stepPaper } from "./juice";
 import {
   createRun,
   releaseJump,
@@ -142,7 +143,7 @@ const HazardSprite = memo(function HazardSprite({
       width: Math.max(22, slot.w.value + 8),
       height: hot ? 11 : 7,
       opacity: slot.on.value * (hot ? 1 : near ? 0.85 : 0.28),
-      backgroundColor: steam ? t.linenDim : hot ? t.kraft : t.kraftDeep,
+      backgroundColor: steam ? t.linenDim : hot ? t.kraft : t.espresso,
     };
   });
   const kit = useAnimatedStyle(() => ({
@@ -248,8 +249,8 @@ export function PlayField({
         { translateY: groundY - 6 },
         { scaleX: s },
       ],
-      opacity: 0.1 + s * 0.16,
-      width: PLAYER_W + 8,
+      opacity: 0.22 + s * 0.3,
+      width: PLAYER_W + 6,
     };
   });
   const flashStyle = useAnimatedStyle(() => ({
@@ -260,7 +261,10 @@ export function PlayField({
     (run: Run) => {
       playerY.value = run.playerY;
       scroll.value = run.distance;
-      bob.value = run.airborne || reduceMotion ? 1 : 1 + Math.sin(run.distance / 16) * 0.04;
+      bob.value =
+        run.airborne || reduceMotion
+          ? 1
+          : 1 + (Math.sin(run.distance / 16) > 0 ? 0.04 : 0);
       writeSlots(hazardSlots, run.hazards);
       writeSlots(beanSlots, run.beans);
     },
@@ -307,12 +311,19 @@ export function PlayField({
       setDead(true);
       setDeathKind(kind);
       if (!reduceMotion) {
-        flash.value = withSequence(withTiming(0.28, { duration: 90 }), withTiming(0, { duration: 320 }));
+        flash.value = withSequence(
+          withTiming(0.22, { duration: 0 }),
+          withTiming(0.22, { duration: 80 }),
+          withTiming(0.1, { duration: 0 }),
+          withTiming(0, { duration: 200 })
+        );
+        stepPaper(squashX, 1.22, 1.1);
+        stepPaper(squashY, 0.72, 0.88);
       }
       const next = await saveBestScore(finalScore);
       onBest(next);
     },
-    [flash, onBest, reduceMotion]
+    [flash, onBest, reduceMotion, squashX, squashY]
   );
 
   useEffect(() => {
@@ -335,18 +346,14 @@ export function PlayField({
       const warned = run.justTelegraph || pendingWarn;
       if (hopped) {
         if (!reduceMotion) {
-          squashX.value = 0.92;
-          squashY.value = 1.08;
-          squashX.value = withTiming(1, { duration: 220 });
-          squashY.value = withTiming(1, { duration: 220 });
+          stepPaper(squashX, 0.92, 0.96);
+          stepPaper(squashY, 1.08, 1.04);
         }
         hopTick();
       } else if (landed) {
         if (!reduceMotion) {
-          squashX.value = 1.32;
-          squashY.value = 0.62;
-          squashX.value = withTiming(1, { duration: 170 });
-          squashY.value = withTiming(1, { duration: 170 });
+          stepPaper(squashX, 1.32, 1.16);
+          stepPaper(squashY, 0.62, 0.84);
         }
         landTick();
       }
@@ -362,10 +369,8 @@ export function PlayField({
         }, 620);
         floaterTimers.current.push(timer);
         if (!reduceMotion) {
-          squashX.value = 1.14;
-          squashY.value = 0.94;
-          squashX.value = withTiming(1, { duration: 160 });
-          squashY.value = withTiming(1, { duration: 160 });
+          stepPaper(squashX, 1.14, 1.06);
+          stepPaper(squashY, 0.94, 0.98);
         }
         beanTick();
       }
@@ -638,7 +643,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     top: 0,
-    height: 12,
+    height: 10,
     borderRadius: 999,
     backgroundColor: t.espresso,
   },

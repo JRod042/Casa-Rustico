@@ -22,7 +22,7 @@ PR #18 changed spawn fairness and packaging. Owner: that binary still “plays b
 
 Cited playbook: `2026-09-05-escape-unified-revision-playbook` (ops file not always on this VM). Also `2026-09-05-escape-lbp-reviews-core-feel` and `2026-09-05-escape-lbp-craft-technique`.
 
-**Feel QA lock:** squash hop (0.92 / 1.08) + fall **3600 > 2200** rise + land thump (1.32 / 0.62). Telegraph **0.62s ≥ 550ms**. ≥4 parallax plates (7 paper planes). Not a floaty toy jump.
+**Feel QA lock:** fairness floors KEEP — coyote 130 / buffer 150 / hurtbox 18×24 / telegraph 0.62 / retry 320. Juice is stop-motion `stepPaper` after the physics tick. Steam-first 3s, then leaf-dots + fake-AO. Not a floaty toy jump.
 
 Ranked: handmade warmth → wonder/inspection → tactile materials → soft danger → playful weight → charm → creativity-as-invitation → cozy craft → diorama depth → soft-chaos joy. Casa kraft only. No Sackboy IP. No Creative PNG wire.
 

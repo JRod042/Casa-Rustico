@@ -6,12 +6,14 @@ import Animated, {
   useAnimatedStyle,
   useReducedMotion,
   useSharedValue,
+  withDelay,
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
 import { kraftSource } from "./kraftAssets";
+import { STEAM_FIRST_MS } from "./juice";
 
 const SLAT = 56;
 const DUST = [
@@ -47,8 +49,10 @@ export function CafeStageViews({
   const floorH = Math.max(80, height - groundY);
   const reduce = useReducedMotion();
   const life = useSharedValue(0);
+  const ambientGate = useSharedValue(0);
 
   useEffect(() => {
+    ambientGate.value = reduce ? 1 : withDelay(STEAM_FIRST_MS, withTiming(1, { duration: 360 }));
     if (reduce) {
       life.value = 0.5;
       return;
@@ -58,7 +62,7 @@ export function CafeStageViews({
       -1,
       true
     );
-  }, [life, reduce]);
+  }, [ambientGate, life, reduce]);
 
   const canopy = useAnimatedStyle(() => ({
     transform: [{ translateX: -(((scroll.value * 0.02) % width)) }],
@@ -107,8 +111,11 @@ export function CafeStageViews({
     transform: [{ translateY: -5 * life.value }, { translateX: 4 * (1 - life.value) }],
   }));
   const steamD = useAnimatedStyle(() => ({
-    opacity: 0.06 + (1 - life.value) * 0.1,
+    opacity: ambientGate.value * (0.06 + (1 - life.value) * 0.1),
     transform: [{ translateY: -7 * life.value }, { translateX: 6 * (1 - life.value) }],
+  }));
+  const laterLife = useAnimatedStyle(() => ({
+    opacity: ambientGate.value,
   }));
   const plantSway = useAnimatedStyle(() => ({
     transform: [
@@ -142,7 +149,7 @@ export function CafeStageViews({
   }));
   const dustStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: -18 * life.value }, { translateX: 12 * life.value }],
-    opacity: 0.16 + life.value * 0.22,
+    opacity: ambientGate.value * (0.16 + life.value * 0.22),
   }));
 
   return (
@@ -215,20 +222,24 @@ export function CafeStageViews({
         ))}
       </Animated.View>
 
-      <Animated.View style={[styles.plantRow, { top: groundY * 0.3, left: width * 0.08 }, plantSway]}>
+      <Animated.View style={[styles.plantRow, { top: groundY * 0.3, left: width * 0.08 }, plantSway, laterLife]}>
+        <View style={styles.contactAo} />
         <View style={styles.bush} />
         <View style={[styles.bush, styles.bushTall]} />
         <View style={styles.leaf} />
+        <View style={styles.leafDot} />
+        <View style={[styles.leafDot, styles.leafDotB]} />
       </Animated.View>
-      <Animated.View style={[styles.cloth, { top: groundY * 0.18, left: width * 0.72 }, clothSway]} />
+      <Animated.View style={[styles.cloth, { top: groundY * 0.18, left: width * 0.72 }, clothSway, laterLife]} />
 
-      <Animated.View style={[styles.prop, { top: groundY * 0.36, left: 14 }, propFar]}>
+      <Animated.View style={[styles.prop, { top: groundY * 0.36, left: 14 }, propFar, laterLife]}>
+        <View style={styles.contactAo} />
         <View style={styles.sack} />
         <Animated.View style={cupBob}>
           <View style={styles.cup} />
         </Animated.View>
       </Animated.View>
-      <Animated.View style={[styles.prop, { top: groundY * 0.4, right: 18, left: undefined }, propNear]}>
+      <Animated.View style={[styles.prop, { top: groundY * 0.4, right: 18, left: undefined }, propNear, laterLife]}>
         <View style={[styles.sack, { width: 26, height: 32, backgroundColor: t.kraftDeep }]} />
         <View style={[styles.cup, { width: 10, height: 12 }]} />
       </Animated.View>
@@ -337,6 +348,28 @@ const styles = StyleSheet.create({
     backgroundColor: t.kraft,
     opacity: 0.6,
     transform: [{ rotate: "18deg" }],
+  },
+  leafDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: t.kraftDeep,
+    marginLeft: -4,
+    marginBottom: 10,
+  },
+  leafDotB: {
+    marginBottom: 16,
+    backgroundColor: t.kraft,
+  },
+  contactAo: {
+    position: "absolute",
+    left: 2,
+    right: 2,
+    bottom: -3,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: t.espresso,
+    opacity: 0.28,
   },
   cloth: {
     position: "absolute",

@@ -195,7 +195,7 @@ const gDown = phys.match(/GRAVITY_DOWN = (\d+)/);
 if (!gUp || !gDown || Number(gDown[1]) <= Number(gUp[1])) {
   throw new Error("fall gravity must stay heavier than rise (not a floaty jump)");
 }
-if (!/squashX.value = 0.92/.test(sources) || !/squashX.value = 1.32/.test(sources)) {
+if (!/stepPaper\(squashX, 0.92/.test(sources) || !/stepPaper\(squashX, 1.32/.test(sources)) {
   throw new Error("squash hop + cardboard land thump must stay wired");
 }
 if (
@@ -242,6 +242,15 @@ if (!/APPSTORE_CONTROLS_BRIEF/.test(sources) || !/escape-appstore-controls-feel-
 }
 if (!/PRO_KIT_EVAL/.test(sources) || !/escape-pro-kit-eval/.test(sources)) {
   throw new Error("must cite 2026-09-05-escape-pro-kit-eval");
+}
+if (!/GEMINI_COMPARE_BRIEF/.test(sources) || !/escape-gemini-compare-optimize/.test(sources)) {
+  throw new Error("must cite 2026-09-05-escape-gemini-compare-optimize");
+}
+if (!/stepPaper/.test(sources) || !/STEAM_FIRST_MS/.test(sources) || !/FAKE_AO/.test(sources)) {
+  throw new Error("Gemini fold 2–5 must stay: stop-motion, steam-first, fake AO");
+}
+if (!/honeyTint/.test(sources) || !/leafDot/.test(sources)) {
+  throw new Error("leaf-dot sway and honey tint must stay wired");
 }
 const syncSrc = readFileSync(join(root, "scripts/sync-kraft.mjs"), "utf8");
 if (!/ESCAPE_WIRE_KRAFT/.test(syncSrc)) {

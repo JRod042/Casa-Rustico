@@ -18,6 +18,7 @@ export function BeanArt({ tone = "roast" }: { tone?: "roast" | "honey" }) {
         resizeMode="contain"
         accessibilityIgnoresInvertColors
       />
+      {tone === "honey" ? <View pointerEvents="none" style={sprite.honeyTint} /> : null}
     </View>
   );
 }
@@ -31,6 +32,7 @@ export function HazardArt({ kind }: { kind: HazardKind }) {
         : kraftSource("grinder");
   return (
     <View style={[sprite.fill, sprite.sticker]}>
+      {kind === "steam" ? <View pointerEvents="none" style={sprite.steamRim} /> : null}
       <Image
         source={src}
         style={sprite.img}
@@ -86,5 +88,16 @@ const sprite = StyleSheet.create({
   img: {
     width: "100%",
     height: "100%",
+  },
+  honeyTint: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: "rgba(164,124,89,0.2)",
+  },
+  steamRim: {
+    ...StyleSheet.absoluteFill,
+    margin: -2,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "rgba(247,243,236,0.45)",
   },
 });
