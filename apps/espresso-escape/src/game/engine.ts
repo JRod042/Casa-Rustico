@@ -85,7 +85,7 @@ export function createRun(
     seenPorta: false,
     seenSteam: false,
     cue: "tap",
-    cueFor: 3.2,
+    cueFor: 6,
     rng: mulberry32(seed >>> 0 || 1),
     paused: false,
     dead: false,

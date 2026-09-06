@@ -12,26 +12,26 @@ const PLAYER_INSET_X = 6;
 const PLAYER_INSET_Y = 5;
 const BEAN_W = 18;
 const BEAN_H = 24;
-const JUMP_V = -880;
-const GRAVITY_UP = 2300;
-const GRAVITY_DOWN = 2700;
-const GRAVITY_HANG = 2200;
-const JUMP_AIR_S = 0.736;
-const HEEL_MERCY_S = 0.1;
-const COYOTE_S = 0.1;
-const BUFFER_S = 0.12;
-const BASE_SPEED = 280;
-const MAX_SPEED = 400;
+const JUMP_V = -1020;
+const GRAVITY_UP = 2750;
+const GRAVITY_DOWN = 3000;
+const GRAVITY_HANG = 2500;
+const JUMP_AIR_S = 0.73;
+const HEEL_MERCY_S = 0.16;
+const COYOTE_S = 0.18;
+const BUFFER_S = 0.2;
+const BASE_SPEED = 248;
+const MAX_SPEED = 375;
 const SPEED_RAMP_S = 90;
-const INTRO_EMPTY_S = 2.2;
+const INTRO_EMPTY_S = 2.55;
 const MAX_DT = 1 / 30;
 const MAX_HAZARDS = 6;
 const MAX_BEANS = 8;
 const GAP_S = {
-  0: [1.55, 1.95],
-  1: [1.18, 1.58],
-  2: [0.96, 1.34],
-  3: [0.8, 1.12],
+  0: [1.85, 2.3],
+  1: [1.4, 1.82],
+  2: [1.12, 1.5],
+  3: [0.92, 1.24],
 };
 
 function phaseFor(time) {
@@ -112,19 +112,19 @@ function chooseKind(run) {
 function gapAfter(run, kind) {
   const [lo, hi] = GAP_S[phaseFor(run.time)];
   let gap = lo + run.rng() * (hi - lo);
-  if (kind === "grinder" || kind === "portafilter") gap = Math.max(gap, JUMP_AIR_S + 0.3);
-  else gap = Math.max(gap, 0.64);
+  if (kind === "grinder" || kind === "portafilter") gap = Math.max(gap, JUMP_AIR_S + 0.42);
+  else gap = Math.max(gap, 0.78);
   return gap;
 }
 function cueForKind(run, kind) {
   if (kind === "portafilter" && !run.seenPorta) {
     run.seenPorta = true;
     run.cue = "tall";
-    run.cueFor = 2.4;
+    run.cueFor = 3.2;
   } else if (kind === "steam" && !run.seenSteam) {
     run.seenSteam = true;
     run.cue = "steam";
-    run.cueFor = 2.6;
+    run.cueFor = 3.4;
   }
 }
 function sprinkleBeans(run, hazard) {
@@ -187,7 +187,7 @@ function createRun(world, playerX, seed) {
     seenPorta: false,
     seenSteam: false,
     cue: "tap",
-    cueFor: 3.2,
+    cueFor: 6,
     rng: mulberry32(seed >>> 0 || 1),
     paused: false,
     dead: false,
@@ -358,10 +358,10 @@ function play(seed, policy, maxT = 48) {
         .sort((a, b) => a.x - b.x)[0];
       if (threat) {
         const eta = (threat.x - firstX) / speed;
-        if (threat.kind !== "steam" && !run.airborne && eta > 0.14 && eta < 0.48) {
+        if (threat.kind !== "steam" && !run.airborne && eta > 0.12 && eta < 0.4) {
           requestJump(run);
         }
-        if (run.airborne && eta < 0.12) releaseJump(run);
+        if (run.airborne && eta < 0.1) releaseJump(run);
       }
     } else if (policy === "always") {
       if (!run.airborne) requestJump(run);
@@ -471,6 +471,7 @@ for (const [name, value] of [
   ["HEEL_MERCY_S", HEEL_MERCY_S],
   ["COYOTE_S", COYOTE_S],
   ["BUFFER_S", BUFFER_S],
+  ["JUMP_AIR_S", JUMP_AIR_S],
 ]) {
   const m = src.match(new RegExp(`export const ${name} = ([^;]+);`));
   if (!m || Number(m[1]) !== value) fail(`playtest ${name}=${value} drifted from physics.ts (${m?.[1]})`);
@@ -561,10 +562,21 @@ const feelSrc = readFileSync(
   "utf8"
 );
 const retryLock = feelSrc.match(/RETRY_LOCK_MS = (\d+)/);
-if (!retryLock || Number(retryLock[1]) > 500) {
-  fail("death→retry lock must stay ≤500ms");
+if (!retryLock || Number(retryLock[1]) > 260) {
+  fail("death→retry lock must stay punchy (≤260ms) so brew-again is instant");
 }
 qa.retryLockMs = Number(retryLock[1]);
+if (COYOTE_S < 0.16 || BUFFER_S < 0.18) {
+  fail("coyote/buffer must stay looser than 1.0.5 (0.10 / 0.12)");
+}
+if (INTRO_EMPTY_S < 2.4) fail("intro empty must stay longer than 1.0.5 (2.2s)");
+if (!/landTick/.test(feelSrc) || !/SQUASH_JUMP_Y = 1.48/.test(feelSrc)) {
+  fail("land haptic + dramatic hop squash must stay in feel.ts");
+}
+if (!/MARK_H = 16/.test(feelSrc) || !/MARK_WINDOW = 360/.test(feelSrc)) {
+  fail("floor-mark telegraph must stay 16px / 360px");
+}
+qa.feelDelta = "pass";
 
 const gate = {
   coldLaunch: idle.firstHazardAt >= INTRO_EMPTY_S && cue.cue === "tap" ? "pass" : "fail",

@@ -15,12 +15,12 @@ function aabbHits(a, b, pad = 0) {
 }
 
 const PLAYER_H = 38;
-const JUMP_V = -880;
-const GRAVITY_UP = 2300;
-const BASE_SPEED = 280;
-const MAX_SPEED = 400;
+const JUMP_V = -1020;
+const GRAVITY_UP = 2750;
+const BASE_SPEED = 248;
+const MAX_SPEED = 375;
 const MAX_DT = 1 / 30;
-const INTRO_EMPTY_S = 2.2;
+const INTRO_EMPTY_S = 2.55;
 
 function speedForRun(time) {
   const t = Math.min(1, Math.max(0, time / 90));
@@ -149,8 +149,17 @@ if (!/INTRO_EMPTY_S/.test(sources) || !/COYOTE_S/.test(sources) || !/HEEL_MERCY_
 if (!/testID="escape-coach"/.test(sources)) {
   throw new Error("in-run coach is required so first-run is not a dead how-to wall");
 }
-if (!/hopTick/.test(sources) || !/expo-haptics/.test(sources)) {
-  throw new Error("Apple-style hop haptics must stay wired");
+if (!/hopTick/.test(sources) || !/landTick/.test(sources) || !/expo-haptics/.test(sources)) {
+  throw new Error("Apple-style hop + land + roast haptics must stay wired");
+}
+if (!/SQUASH_JUMP_Y = 1.48/.test(sources) || !/SQUASH_LAND_Y = 0.55/.test(sources)) {
+  throw new Error("hop/land squash must stay dramatic enough to read on a 30px bean");
+}
+if (!/MARK_H = 16/.test(sources) || !/MARK_WINDOW = 360/.test(sources)) {
+  throw new Error("floor-mark telegraph must stay taller and earlier than 1.0.5");
+}
+if (!/TAP TO HOP/.test(sources)) {
+  throw new Error("first-run coach must shout TAP TO HOP on the linen");
 }
 if (!/#F7F3EC/.test(sources) || !/#A47C59/.test(sources) || !/#8D6C4F/.test(sources)) {
   throw new Error("kraft cream / kraft / dark kraft tokens must stay on the culture brief");

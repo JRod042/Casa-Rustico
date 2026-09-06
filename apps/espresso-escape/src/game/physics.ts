@@ -33,40 +33,41 @@ export const BEAN_W = 18;
 export const BEAN_H = 24;
 
 /**
- * Snappy tap-jump (Geometry Dash / Canabalt / Chrome Dino family).
- * Rise is committed; fall is faster so the hop does not float.
+ * Punchy tap-jump (Geometry Dash / Canabalt / Chrome Dino family).
+ * 1.0.5 floated: −880 / 2300 up / 2700 down. This launch is taller and
+ * snaps down so the first hop is obvious in under a second.
  * Hold only eases the fall for high honey beans — a tap still clears portafilters.
  */
-export const JUMP_V = -880;
-export const GRAVITY_UP = 2300;
-export const GRAVITY_DOWN = 2700;
-export const GRAVITY_HANG = 2200;
-export const JUMP_AIR_S = 0.736;
+export const JUMP_V = -1020;
+export const GRAVITY_UP = 2750;
+export const GRAVITY_DOWN = 3000;
+export const GRAVITY_HANG = 2500;
+export const JUMP_AIR_S = 0.73;
 /** Heel-clip grace after a hop so landing on a kit’s tail is not a cheap roast. */
-export const HEEL_MERCY_S = 0.1;
+export const HEEL_MERCY_S = 0.16;
 
-/** Late-tap forgiveness used by every modern platformer-runner. */
-export const COYOTE_S = 0.1;
-export const BUFFER_S = 0.12;
+/** Late-tap forgiveness — 1.0.5 was 0.10 / 0.12, too tight to feel. */
+export const COYOTE_S = 0.18;
+export const BUFFER_S = 0.2;
 
-/** Readable opening pace; max stays below the old 460 wall. */
-export const BASE_SPEED = 280;
-export const MAX_SPEED = 400;
+/** Slower opening so the first red mark has a full read. */
+export const BASE_SPEED = 248;
+export const MAX_SPEED = 375;
 export const SPEED_RAMP_S = 90;
 
 /** Seconds of empty linen before the first kit rolls in. */
-export const INTRO_EMPTY_S = 2.2;
+export const INTRO_EMPTY_S = 2.55;
 
 export const MAX_DT = 1 / 30;
 export const MAX_HAZARDS = 6;
 export const MAX_BEANS = 8;
 
-/** Time gaps by phase — always longer than airtime + a land beat. */
+/** Time gaps by phase — land beat is longer than 1.0.5 so hops reset. */
 export const GAP_S: Record<Phase, readonly [number, number]> = {
-  0: [1.55, 1.95],
-  1: [1.18, 1.58],
-  2: [0.96, 1.34],
-  3: [0.8, 1.12],
+  0: [1.85, 2.3],
+  1: [1.4, 1.82],
+  2: [1.12, 1.5],
+  3: [0.92, 1.24],
 };
 
 export const KIND_CODE: Record<HazardKind, number> = {

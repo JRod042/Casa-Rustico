@@ -14,12 +14,30 @@ import Animated, {
   type SharedValue,
   useAnimatedStyle,
   useReducedMotion,
+  withRepeat,
   withSequence,
   withTiming,
 } from "react-native-reanimated";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
 import { CafeStage } from "./CafeStage";
-import { beanTick, hopTick, roastTick, RETRY_LOCK_MS } from "./feel";
+import {
+  beanTick,
+  hopTick,
+  landTick,
+  roastTick,
+  MARK_FAR,
+  MARK_H,
+  MARK_IMMINENT,
+  MARK_NEAR,
+  MARK_WINDOW,
+  RETRY_LOCK_MS,
+  SQUASH_JUMP_MS,
+  SQUASH_JUMP_X,
+  SQUASH_JUMP_Y,
+  SQUASH_LAND_MS,
+  SQUASH_LAND_X,
+  SQUASH_LAND_Y,
+} from "./feel";
 import {
   createRun,
   releaseJump,
@@ -53,9 +71,9 @@ type Slot = {
 type Floater = { id: number; x: number; y: number; pts: number };
 
 const CUE: Record<Exclude<CoachCue, null>, string> = {
-  tap: "Tap to hop",
-  tall: "Tall kit — hop",
-  steam: "Steam — stay low",
+  tap: "TAP TO HOP",
+  tall: "TALL KIT — HOP",
+  steam: "STEAM — STAY LOW",
 };
 
 const ROAST: Record<DeathKind, string> = {
@@ -104,12 +122,20 @@ const HazardSprite = memo(function HazardSprite({
   groundY: number;
   playerX: number;
 }) {
-  const anim = useAnimatedStyle(() => ({
-    transform: [{ translateX: slot.x.value }, { translateY: slot.y.value }],
-    width: slot.w.value,
-    height: slot.h.value,
-    opacity: slot.on.value,
-  }));
+  const anim = useAnimatedStyle(() => {
+    const dist = slot.x.value - playerX;
+    const imminent = dist < MARK_IMMINENT && dist > -10;
+    return {
+      transform: [
+        { translateX: slot.x.value },
+        { translateY: slot.y.value },
+        { scale: slot.on.value && imminent ? 1.08 : 1 },
+      ],
+      width: slot.w.value,
+      height: slot.h.value,
+      opacity: slot.on.value,
+    };
+  });
   const g = useAnimatedStyle(() => ({
     opacity: slot.on.value * (slot.kind.value === 0 ? 1 : 0),
   }));
@@ -120,21 +146,64 @@ const HazardSprite = memo(function HazardSprite({
     opacity: slot.on.value * (slot.kind.value === 2 ? 1 : 0),
   }));
   const mark = useAnimatedStyle(() => {
-    const near = slot.x.value < playerX + 210 && slot.x.value > playerX - 10;
+    const dist = slot.x.value - playerX;
+    const incoming = dist < MARK_WINDOW && dist > -16;
+    const imminent = dist < MARK_IMMINENT && dist > -10;
     const steam = slot.kind.value === 2;
     return {
-      transform: [{ translateX: slot.x.value }, { translateY: groundY - 8 }],
-      width: Math.max(18, slot.w.value),
-      opacity: slot.on.value * (near ? 0.85 : 0.28),
+      transform: [
+        { translateX: slot.x.value - 6 },
+        { translateY: groundY - MARK_H },
+        { scaleX: imminent ? 1.55 : incoming ? 1.2 : 1 },
+      ],
+      width: Math.max(32, slot.w.value + 12),
+      height: MARK_H,
+      opacity: slot.on.value * (imminent ? MARK_NEAR : incoming ? 0.9 : MARK_FAR),
       backgroundColor: steam ? "#D5E1EA" : t.danger,
     };
   });
-  const kit = useAnimatedStyle(() => ({
-    borderColor: slot.kind.value === 2 ? "#D5E1EA" : t.glow,
-  }));
+  const hopGlyph = useAnimatedStyle(() => {
+    const dist = slot.x.value - playerX;
+    const incoming = dist < MARK_WINDOW && dist > -16;
+    const hop = slot.kind.value !== 2;
+    return {
+      transform: [
+        { translateX: slot.x.value + 4 },
+        { translateY: groundY - MARK_H - 22 },
+      ],
+      opacity: slot.on.value * (hop ? (incoming ? 1 : 0.55) : 0),
+    };
+  });
+  const stayGlyph = useAnimatedStyle(() => {
+    const dist = slot.x.value - playerX;
+    const incoming = dist < MARK_WINDOW && dist > -16;
+    const steam = slot.kind.value === 2;
+    return {
+      transform: [
+        { translateX: slot.x.value + 2 },
+        { translateY: groundY - MARK_H - 22 },
+      ],
+      opacity: slot.on.value * (steam ? (incoming ? 1 : 0.55) : 0),
+    };
+  });
+  const kit = useAnimatedStyle(() => {
+    const dist = slot.x.value - playerX;
+    const imminent = dist < MARK_IMMINENT && dist > -10;
+    const steam = slot.kind.value === 2;
+    return {
+      borderColor: steam ? "#D5E1EA" : imminent ? "#F3C56B" : t.glow,
+      borderWidth: imminent ? 3 : 2,
+    };
+  });
   return (
     <>
       <Animated.View pointerEvents="none" style={[styles.floorMark, mark]} />
+      <Animated.Text pointerEvents="none" style={[styles.hopGlyph, hopGlyph]}>
+        ▲
+      </Animated.Text>
+      <Animated.Text pointerEvents="none" style={[styles.stayGlyph, stayGlyph]}>
+        ▬
+      </Animated.Text>
       <Animated.View pointerEvents="none" style={[styles.sprite, styles.kit, anim, kit]}>
         <Animated.View style={[styles.artFill, g]}>
           <HazardArt kind="grinder" />
@@ -191,6 +260,9 @@ export function PlayField({
   const squashX = useRef(makeMutable(1)).current;
   const squashY = useRef(makeMutable(1)).current;
   const bob = useRef(makeMutable(1)).current;
+  const hopRing = useRef(makeMutable(0)).current;
+  const landRing = useRef(makeMutable(0)).current;
+  const coachPulse = useRef(makeMutable(1)).current;
   const flash = useRef(makeMutable(0)).current;
   const scroll = useRef(makeMutable(0)).current;
   const hazardSlots = useRef(makeSlots(MAX_HAZARDS)).current;
@@ -221,26 +293,70 @@ export function PlayField({
   }));
   const shadowStyle = useAnimatedStyle(() => {
     const lift = Math.max(0, groundY - PLAYER_H - playerY.value);
-    const s = Math.max(0.4, 1 - lift / 150);
+    const s = Math.max(0.35, 1 - lift / 150);
     return {
       transform: [
-        { translateX: playerX + 3 },
+        { translateX: playerX + 2 },
         { translateY: groundY - 8 },
         { scaleX: s },
       ],
-      opacity: 0.22 + s * 0.28,
-      width: PLAYER_W - 4,
+      opacity: 0.32 + s * 0.36,
+      width: PLAYER_W,
     };
   });
+  const hopRingStyle = useAnimatedStyle(() => ({
+    opacity: 0.9 * (1 - hopRing.value),
+    transform: [
+      { translateX: playerX + PLAYER_W / 2 - 24 },
+      { translateY: groundY - 20 },
+      { scale: 0.4 + hopRing.value * 2.15 },
+    ],
+  }));
+  const landRingStyle = useAnimatedStyle(() => ({
+    opacity: 0.8 * (1 - landRing.value),
+    transform: [
+      { translateX: playerX + PLAYER_W / 2 - 30 },
+      { translateY: groundY - 12 },
+      { scaleX: 0.55 + landRing.value * 2.4 },
+      { scaleY: 0.45 + landRing.value * 1.15 },
+    ],
+  }));
+  const coachStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: coachPulse.value }],
+  }));
   const flashStyle = useAnimatedStyle(() => ({
     opacity: flash.value,
   }));
+
+  const playHopJuice = useCallback(() => {
+    if (!reduceMotion) {
+      squashX.value = SQUASH_JUMP_X;
+      squashY.value = SQUASH_JUMP_Y;
+      squashX.value = withTiming(1, { duration: SQUASH_JUMP_MS });
+      squashY.value = withTiming(1, { duration: SQUASH_JUMP_MS });
+      hopRing.value = 0;
+      hopRing.value = withTiming(1, { duration: 240 });
+    }
+    hopTick();
+  }, [hopRing, reduceMotion, squashX, squashY]);
+
+  const playLandJuice = useCallback(() => {
+    if (!reduceMotion) {
+      squashX.value = SQUASH_LAND_X;
+      squashY.value = SQUASH_LAND_Y;
+      squashX.value = withTiming(1, { duration: SQUASH_LAND_MS });
+      squashY.value = withTiming(1, { duration: SQUASH_LAND_MS });
+      landRing.value = 0;
+      landRing.value = withTiming(1, { duration: 220 });
+    }
+    landTick();
+  }, [landRing, reduceMotion, squashX, squashY]);
 
   const syncVisual = useCallback(
     (run: Run) => {
       playerY.value = run.playerY;
       scroll.value = run.distance;
-      bob.value = run.airborne || reduceMotion ? 1 : 1 + Math.sin(run.distance / 16) * 0.035;
+      bob.value = run.airborne || reduceMotion ? 1 : 1 + Math.sin(run.distance / 14) * 0.07;
       writeSlots(hazardSlots, run.hazards);
       writeSlots(beanSlots, run.beans);
     },
@@ -254,6 +370,8 @@ export function PlayField({
     squashX.value = 1;
     squashY.value = 1;
     bob.value = 1;
+    hopRing.value = 0;
+    landRing.value = 0;
     flash.value = 0;
     syncVisual(runRef.current);
     scoreRef.current = 0;
@@ -266,7 +384,7 @@ export function PlayField({
     setFloaters([]);
     for (const id of floaterTimers.current) clearTimeout(id);
     floaterTimers.current = [];
-  }, [bob, flash, playerX, squashX, squashY, syncVisual, world]);
+  }, [bob, flash, hopRing, landRing, playerX, squashX, squashY, syncVisual, world]);
 
   useEffect(() => {
     resizeRun(runRef.current, world, playerX);
@@ -284,7 +402,7 @@ export function PlayField({
       setDead(true);
       setDeathKind(kind);
       if (!reduceMotion) {
-        flash.value = withSequence(withTiming(0.4, { duration: 70 }), withTiming(0, { duration: 280 }));
+        flash.value = withSequence(withTiming(0.72, { duration: 55 }), withTiming(0, { duration: 320 }));
       }
       roastTick();
       const next = await saveBestScore(finalScore);
@@ -304,18 +422,9 @@ export function PlayField({
       tick(run, dt);
       syncVisual(run);
       if (run.justJumped) {
-        if (!reduceMotion) {
-          squashX.value = 0.9;
-          squashY.value = 1.1;
-          squashX.value = withTiming(1, { duration: 140 });
-          squashY.value = withTiming(1, { duration: 140 });
-        }
-        hopTick();
-      } else if (run.justLanded && !reduceMotion) {
-        squashX.value = 1.12;
-        squashY.value = 0.86;
-        squashX.value = withTiming(1, { duration: 110 });
-        squashY.value = withTiming(1, { duration: 110 });
+        playHopJuice();
+      } else if (run.justLanded) {
+        playLandJuice();
       }
       if (run.justBean) {
         const pts = run.justBean;
@@ -348,7 +457,19 @@ export function PlayField({
       for (const id of floaterTimers.current) clearTimeout(id);
       floaterTimers.current = [];
     };
-  }, [finish, playerX, reduceMotion, squashX, squashY, syncVisual]);
+  }, [finish, playHopJuice, playLandJuice, playerX, syncVisual]);
+
+  useEffect(() => {
+    if (reduceMotion) {
+      coachPulse.value = 1;
+      return;
+    }
+    coachPulse.value = withRepeat(
+      withSequence(withTiming(1.08, { duration: 320 }), withTiming(1, { duration: 320 })),
+      -1,
+      false
+    );
+  }, [coachPulse, reduceMotion]);
 
   useEffect(() => {
     const onApp = (state: AppStateStatus) => {
@@ -363,13 +484,8 @@ export function PlayField({
 
   const onJumpDown = () => {
     if (requestJump(runRef.current)) {
-      if (!reduceMotion) {
-        squashX.value = 0.9;
-        squashY.value = 1.1;
-        squashX.value = withTiming(1, { duration: 140 });
-        squashY.value = withTiming(1, { duration: 140 });
-      }
-      hopTick();
+      playHopJuice();
+      runRef.current.justJumped = false;
     }
   };
   const onJumpUp = () => {
@@ -427,6 +543,8 @@ export function PlayField({
         style={styles.stage}
       >
         <Animated.View pointerEvents="none" style={[styles.shadow, shadowStyle]} />
+        <Animated.View pointerEvents="none" style={[styles.hopRing, hopRingStyle]} />
+        <Animated.View pointerEvents="none" style={[styles.landRing, landRingStyle]} />
         <Animated.View
           pointerEvents="none"
           style={[
@@ -454,9 +572,12 @@ export function PlayField({
           </View>
         ))}
         {cue && !dead && !paused ? (
-          <View style={[styles.hintWrap, { top: groundY + 16 }]} testID="escape-coach">
+          <Animated.View
+            style={[styles.hintWrap, coachStyle, { top: groundY + 18 }]}
+            testID="escape-coach"
+          >
             <Text style={styles.hint}>{CUE[cue]}</Text>
-          </View>
+          </Animated.View>
         ) : null}
       </Pressable>
 
@@ -607,13 +728,55 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: "#140E0A",
   },
+  hopRing: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 3,
+    borderColor: t.glow,
+    backgroundColor: "transparent",
+  },
+  landRing: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    width: 60,
+    height: 16,
+    borderRadius: 999,
+    backgroundColor: t.kraft,
+  },
   floorMark: {
     position: "absolute",
     left: 0,
     top: 0,
-    height: 7,
-    borderRadius: 4,
+    height: MARK_H,
+    borderRadius: 6,
     backgroundColor: t.danger,
+    borderWidth: 1,
+    borderColor: "#F3C56B",
+  },
+  hopGlyph: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    color: t.glow,
+    fontSize: 20,
+    fontWeight: "800",
+    textShadowColor: "#1A120B",
+    textShadowRadius: 4,
+  },
+  stayGlyph: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    color: "#D5E1EA",
+    fontSize: 20,
+    fontWeight: "800",
+    textShadowColor: "#1A120B",
+    textShadowRadius: 4,
   },
   floater: {
     position: "absolute",
@@ -631,15 +794,21 @@ const styles = StyleSheet.create({
   },
   hintWrap: {
     position: "absolute",
-    left: 40,
-    right: 40,
-    paddingVertical: 6,
+    left: 36,
+    right: 36,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    backgroundColor: t.kraft,
+    borderWidth: 2,
+    borderColor: t.glow,
   },
   hint: {
-    color: t.linen,
-    fontFamily: "SourceSans3_600SemiBold",
-    fontSize: 15,
-    letterSpacing: 0.4,
+    color: t.cream,
+    fontFamily: "SourceSans3_700Bold",
+    fontSize: 20,
+    letterSpacing: 1.2,
+    fontWeight: "800",
     textAlign: "center",
   },
   overlay: {

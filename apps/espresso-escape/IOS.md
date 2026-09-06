@@ -6,7 +6,7 @@ Android package: **`com.jrod042.espressoescape`**
 Expo: **`@jrod42/espresso-escape`** (`016d7c24-a7df-4e0d-8e59-00a9d8db352c`)  
 Apple Team: **`FY5H9V76QL`**  
 GitHub base directory: **`apps/espresso-escape`**  
-Store binary: **version 1.0.5 / iOS build 12 / Android versionCode 10** (feel/flow pass — next ASC upload)
+Store binary: **version 1.0.6 / iOS build 13 / Android versionCode 11** (dramatic feel delta vs 1.0.5/12 — next ASC upload)
 
 Jorge’s iOS identity is **`com.jrod042.espressoescape`**. Submit to ASC **`6809059605`**. Do **not** restore `com.vibecode.espressoescape-20z7xb` or point EAS submit at the old vibecode ASC **`6758108565`**.
 

@@ -86,9 +86,9 @@ function gapAfter(run: Course, kind: HazardKind): number {
   const [lo, hi] = GAP_S[phaseFor(run.time)];
   let gap = lo + run.rng() * (hi - lo);
   if (kind === "grinder" || kind === "portafilter") {
-    gap = Math.max(gap, JUMP_AIR_S + 0.3);
+    gap = Math.max(gap, JUMP_AIR_S + 0.42);
   } else {
-    gap = Math.max(gap, 0.64);
+    gap = Math.max(gap, 0.78);
   }
   return gap;
 }
@@ -97,11 +97,11 @@ function cueForKind(run: Course, kind: HazardKind): void {
   if (kind === "portafilter" && !run.seenPorta) {
     run.seenPorta = true;
     run.cue = "tall";
-    run.cueFor = 2.4;
+    run.cueFor = 3.2;
   } else if (kind === "steam" && !run.seenSteam) {
     run.seenSteam = true;
     run.cue = "steam";
-    run.cueFor = 2.6;
+    run.cueFor = 3.4;
   }
 }
 

@@ -18,8 +18,8 @@ import { loadBestScore, loadSeenFirstRun, markFirstRunSeen } from "./storage";
 type Screen = "menu" | "how" | "about" | "privacy" | "play";
 
 const HOW: { title: string; body: string; kit: KitKind }[] = [
-  { title: "Jump", body: "Tap the moment you want to hop. Hold a beat to float for high beans. Late taps still count if you just left the floor.", kit: "player" },
-  { title: "Dodge", body: "Grinders sit low. Portafilters are tall — hop both. Steam hangs — stay on the linen.", kit: "grinder" },
+  { title: "Jump", body: "Tap the moment you want to hop — the bean stretches and the floor thumps. Hold a beat to float for high beans. Late taps still count if you just left the floor.", kit: "player" },
+  { title: "Dodge", body: "Red floor marks and ▲ mean hop. Cool ▬ marks mean stay low under steam. Grinders sit low. Portafilters are tall.", kit: "grinder" },
   { title: "Collect", body: "Honey beans sit on the safe line. +5 each. The run itself scores as you go.", kit: "bean" },
   { title: "Brew again", body: "One hit ends the roast. Tap to go again. No lives to buy. Pause anytime.", kit: "portafilter" },
 ];
