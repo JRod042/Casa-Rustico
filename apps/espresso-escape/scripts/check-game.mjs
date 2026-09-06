@@ -289,6 +289,9 @@ if (!/AUDIO_FIRST_CLASS/.test(sources) || !/whoosh: "live"/.test(sources) || !/s
 if (!/HAPTIC_PROFILES/.test(sources) || !/SFX_GAIN/.test(sources)) {
   throw new Error("densified haptic profiles + per-tone SFX gain must stay");
 }
+if (!/SAME_TICK/.test(sources) || !/justJumped = false/.test(sources)) {
+  throw new Error("hop juice must stay same-tick on touch-down (consume justJumped)");
+}
 if (
   !/death_stamp/.test(sources) ||
   !/honey_bean/.test(sources) ||

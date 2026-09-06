@@ -3,12 +3,13 @@ import * as Haptics from "expo-haptics";
 import { AUDIO_HAPTICS_CONTRACT, type FeelEventId } from "./feelEvents";
 
 /**
- * Core Haptics — contract matrix only.
+ * Core Haptics — contract matrix, same-tick first transient.
  * hop / land / death_stamp / honey_bean / near_miss / menu_ui.
  * AHAP files stay null — intensity/sharpness is the ready seam.
  */
 export const MASTER_PLAN = "2026-09-05-escape-best-in-class-master-plan";
 export const APPDEV_CHECKLIST = "2026-09-05-escape-appdev-element-checklist";
+export const SAME_TICK = true;
 export { AUDIO_HAPTICS_CONTRACT };
 
 export type HapticProfile = FeelEventId;
@@ -85,33 +86,42 @@ export async function playAhap(_profile: HapticProfile): Promise<boolean> {
   return false;
 }
 
-function runStep(step: HapticStep): Promise<void> {
+function runStep(step: HapticStep): void {
   const run =
     step.kind === "notify" && step.notify
       ? Haptics.notificationAsync(step.notify)
       : step.kind === "select"
         ? Haptics.selectionAsync()
         : Haptics.impactAsync(step.impact ?? Haptics.ImpactFeedbackStyle.Soft);
-  return run.catch(() => {
+  void run.catch(() => {
     audioServicesBuzz(step.buzzMs);
   });
 }
 
 function expoProfile(profile: HapticProfile): void {
   const { steps } = HAPTIC_PROFILES[profile];
+  const first = steps[0];
+  if (first) runStep(first);
+  if (steps.length < 2) return;
   void (async () => {
-    for (const step of steps) {
+    for (let i = 1; i < steps.length; i += 1) {
+      const step = steps[i];
       if (step.waitMs > 0) {
         await new Promise((resolve) => setTimeout(resolve, step.waitMs));
       }
-      await runStep(step);
+      runStep(step);
     }
   })();
 }
 
+/** First transient fires on this call — not after a resolved AHAP promise. */
 export function playHaptic(profile: HapticProfile): void {
-  void playAhap(profile).then((played) => {
-    if (played) return;
-    expoProfile(profile);
-  });
+  if (AHAP_SEAMS[profile]) {
+    void playAhap(profile).then((played) => {
+      if (played) return;
+      expoProfile(profile);
+    });
+    return;
+  }
+  expoProfile(profile);
 }

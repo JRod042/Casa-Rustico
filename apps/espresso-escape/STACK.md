@@ -31,7 +31,7 @@ Cited: `2026-09-05-escape-best-in-class-master-plan`, `2026-09-05-escape-appdev-
 
 | Layer | On branch now |
 |---|---|
-| Haptics | Contract `2026-09-05-escape-audio-haptics-hooks`: hop / land / death_stamp / honey_bean / near_miss / menu_ui. AHAP still null |
+| Haptics | Contract IDs. `SAME_TICK`: first transient on the call (tap hop consumes `justJumped`). AHAP still null |
 | Audio | Same IDs. Casa sound owns P0 wavs — placeholders + whoosh/stamp hop-land layers. `SFX_GAIN` per tone. |
 
 Steam / death / retry use tiny placeholder wavs. No AHAP files. Device fps still OPEN.

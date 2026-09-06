@@ -27,6 +27,7 @@ export const SFX_GAIN: Record<Tone, number> = {
 };
 
 const bank: Partial<Record<Tone, Loaded>> = {};
+const pending = new Set<Tone>();
 let booted = false;
 let muted = false;
 
@@ -76,6 +77,9 @@ export function bootSfx(): void {
       void av.Audio.Sound.createAsync(files[name], { shouldPlay: false, volume: SFX_GAIN[name] })
         .then(({ sound }) => {
           bank[name] = { play: () => sound.replayAsync().then(() => undefined) };
+          if (pending.delete(name) && !muted) {
+            void bank[name]?.play().catch(() => undefined);
+          }
         })
         .catch(() => undefined);
     });
@@ -87,6 +91,9 @@ export function bootSfx(): void {
 export function playSfx(name: Tone): void {
   if (muted) return;
   const clip = bank[name];
-  if (!clip) return;
+  if (!clip) {
+    pending.add(name);
+    return;
+  }
   void clip.play().catch(() => undefined);
 }

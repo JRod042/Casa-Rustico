@@ -1,6 +1,8 @@
 import { playAudio } from "./audioHooks";
-import { playHaptic } from "./hapticsManager";
+import { playHaptic, SAME_TICK } from "./hapticsManager";
 import { bootSfx, muteSfx } from "./sfx";
+
+export { SAME_TICK };
 
 /**
  * Core feelings from `2026-09-05-escape-lbp-reviews-core-feel`

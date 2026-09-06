@@ -345,17 +345,17 @@ export function PlayField({
       const beans = run.justBean || pendingBean;
       const warned = run.justTelegraph || pendingWarn;
       if (hopped) {
+        hopTick();
         if (!reduceMotion) {
           stepPaper(squashX, 0.92, 0.96);
           stepPaper(squashY, 1.08, 1.04);
         }
-        hopTick();
       } else if (landed) {
+        landTick();
         if (!reduceMotion) {
           stepPaper(squashX, 1.32, 1.16);
           stepPaper(squashY, 0.62, 0.84);
         }
-        landTick();
       }
       if (beans) {
         const pts = beans;
@@ -368,11 +368,11 @@ export function PlayField({
           setFloaters((prev) => prev.filter((f) => f.id !== id));
         }, 620);
         floaterTimers.current.push(timer);
+        beanTick();
         if (!reduceMotion) {
           stepPaper(squashX, 1.14, 1.06);
           stepPaper(squashY, 0.94, 0.98);
         }
-        beanTick();
       }
       if (warned && !run.dead) {
         if (!reduceMotion) {
@@ -416,7 +416,14 @@ export function PlayField({
   }, []);
 
   const onJumpDown = () => {
-    requestJump(runRef.current);
+    const run = runRef.current;
+    if (!requestJump(run)) return;
+    hopTick();
+    if (!reduceMotion) {
+      stepPaper(squashX, 0.92, 0.96);
+      stepPaper(squashY, 1.08, 1.04);
+    }
+    run.justJumped = false;
   };
   const onJumpUp = () => {
     releaseJump(runRef.current);
