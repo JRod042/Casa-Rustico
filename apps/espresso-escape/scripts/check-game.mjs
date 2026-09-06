@@ -149,6 +149,9 @@ if (!/INTRO_EMPTY_S/.test(sources) || !/COYOTE_S/.test(sources) || !/HEEL_MERCY_
 if (!/testID="escape-coach"/.test(sources)) {
   throw new Error("in-run coach is required so first-run is not a dead how-to wall");
 }
+if (!/hopTick/.test(sources) || !/expo-haptics/.test(sources)) {
+  throw new Error("Apple-style hop haptics must stay wired");
+}
 
 const play = spawnSync(process.execPath, [join(root, "scripts/playtest.mjs")], {
   encoding: "utf8",

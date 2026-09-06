@@ -6,7 +6,6 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
-  Vibration,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -14,11 +13,13 @@ import Animated, {
   makeMutable,
   type SharedValue,
   useAnimatedStyle,
+  useReducedMotion,
   withSequence,
   withTiming,
 } from "react-native-reanimated";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
 import { CafeStage } from "./CafeStage";
+import { beanTick, hopTick, roastTick } from "./feel";
 import {
   createRun,
   releaseJump,
@@ -62,14 +63,6 @@ const ROAST: Record<DeathKind, string> = {
   portafilter: "A portafilter blocked the line. Hop the tall ones.",
   steam: "Steam scalded the leap. Stay low under the cloud.",
 };
-
-function buzz(ms: number) {
-  try {
-    Vibration.vibrate(ms);
-  } catch {
-    // Web / denied haptics should never stall a run.
-  }
-}
 
 function makeSlots(n: number): Slot[] {
   return Array.from({ length: n }, () => ({
@@ -181,6 +174,7 @@ export function PlayField({
   onMenu: () => void;
 }) {
   const { width, height } = useWindowDimensions();
+  const reduceMotion = useReducedMotion();
   const groundY = Math.round(height * 0.72);
   const playerX = Math.round(width * 0.18);
   const world = useMemo(
@@ -192,6 +186,7 @@ export function PlayField({
   const playerY = useRef(makeMutable(world.groundY - PLAYER_H)).current;
   const squashX = useRef(makeMutable(1)).current;
   const squashY = useRef(makeMutable(1)).current;
+  const bob = useRef(makeMutable(1)).current;
   const flash = useRef(makeMutable(0)).current;
   const scroll = useRef(makeMutable(0)).current;
   const hazardSlots = useRef(makeSlots(MAX_HAZARDS)).current;
@@ -217,7 +212,7 @@ export function PlayField({
       { translateX: playerX },
       { translateY: playerY.value },
       { scaleX: squashX.value },
-      { scaleY: squashY.value },
+      { scaleY: squashY.value * bob.value },
     ],
   }));
   const shadowStyle = useAnimatedStyle(() => {
@@ -241,10 +236,11 @@ export function PlayField({
     (run: Run) => {
       playerY.value = run.playerY;
       scroll.value = run.distance;
+      bob.value = run.airborne || reduceMotion ? 1 : 1 + Math.sin(run.distance / 16) * 0.035;
       writeSlots(hazardSlots, run.hazards);
       writeSlots(beanSlots, run.beans);
     },
-    [beanSlots, hazardSlots, playerY, scroll]
+    [beanSlots, hazardSlots, playerY, scroll, bob, reduceMotion]
   );
 
   const reset = useCallback(() => {
@@ -253,6 +249,7 @@ export function PlayField({
     runRef.current = createRun(world, playerX);
     squashX.value = 1;
     squashY.value = 1;
+    bob.value = 1;
     flash.value = 0;
     syncVisual(runRef.current);
     scoreRef.current = 0;
@@ -265,7 +262,7 @@ export function PlayField({
     setFloaters([]);
     for (const id of floaterTimers.current) clearTimeout(id);
     floaterTimers.current = [];
-  }, [flash, playerX, squashX, squashY, syncVisual, world]);
+  }, [bob, flash, playerX, squashX, squashY, syncVisual, world]);
 
   useEffect(() => {
     resizeRun(runRef.current, world, playerX);
@@ -282,12 +279,14 @@ export function PlayField({
       retryAt.current = Date.now() + 380;
       setDead(true);
       setDeathKind(kind);
-      flash.value = withSequence(withTiming(0.55, { duration: 70 }), withTiming(0, { duration: 280 }));
-      buzz(36);
+      if (!reduceMotion) {
+        flash.value = withSequence(withTiming(0.4, { duration: 70 }), withTiming(0, { duration: 280 }));
+      }
+      roastTick();
       const next = await saveBestScore(finalScore);
       onBest(next);
     },
-    [flash, onBest]
+    [flash, onBest, reduceMotion]
   );
 
   useEffect(() => {
@@ -301,14 +300,16 @@ export function PlayField({
       tick(run, dt);
       syncVisual(run);
       if (run.justJumped) {
-        squashX.value = 0.88;
-        squashY.value = 1.14;
-        squashX.value = withTiming(1, { duration: 140 });
-        squashY.value = withTiming(1, { duration: 140 });
-        buzz(8);
-      } else if (run.justLanded) {
-        squashX.value = 1.16;
-        squashY.value = 0.8;
+        if (!reduceMotion) {
+          squashX.value = 0.9;
+          squashY.value = 1.1;
+          squashX.value = withTiming(1, { duration: 140 });
+          squashY.value = withTiming(1, { duration: 140 });
+        }
+        hopTick();
+      } else if (run.justLanded && !reduceMotion) {
+        squashX.value = 1.12;
+        squashY.value = 0.86;
         squashX.value = withTiming(1, { duration: 110 });
         squashY.value = withTiming(1, { duration: 110 });
       }
@@ -323,7 +324,7 @@ export function PlayField({
           setFloaters((prev) => prev.filter((f) => f.id !== id));
         }, 620);
         floaterTimers.current.push(timer);
-        buzz(6);
+        beanTick();
       }
       const nextScore = Math.floor(run.score);
       if (nextScore !== scoreRef.current) {
@@ -343,7 +344,7 @@ export function PlayField({
       for (const id of floaterTimers.current) clearTimeout(id);
       floaterTimers.current = [];
     };
-  }, [finish, playerX, squashX, squashY, syncVisual]);
+  }, [finish, playerX, reduceMotion, squashX, squashY, syncVisual]);
 
   useEffect(() => {
     const onApp = (state: AppStateStatus) => {
@@ -358,11 +359,13 @@ export function PlayField({
 
   const onJumpDown = () => {
     if (requestJump(runRef.current)) {
-      squashX.value = 0.88;
-      squashY.value = 1.14;
-      squashX.value = withTiming(1, { duration: 140 });
-      squashY.value = withTiming(1, { duration: 140 });
-      buzz(8);
+      if (!reduceMotion) {
+        squashX.value = 0.9;
+        squashY.value = 1.1;
+        squashX.value = withTiming(1, { duration: 140 });
+        squashY.value = withTiming(1, { duration: 140 });
+      }
+      hopTick();
     }
   };
   const onJumpUp = () => {
@@ -523,54 +526,47 @@ export function PlayField({
 const styles = StyleSheet.create({
   play: { flex: 1 },
   hud: {
-    paddingTop: 8,
-    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingHorizontal: 18,
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 10,
   },
   scoreChip: {
-    minWidth: 72,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 14,
-    backgroundColor: t.espresso,
-    borderWidth: 1,
-    borderColor: t.kraft,
+    minWidth: 68,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
   },
   hudScore: {
-    color: t.glow,
+    color: t.linen,
     fontFamily: "Fraunces_700Bold",
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: "800",
   },
   bestChip: {
     flex: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 14,
-    backgroundColor: "rgba(245,234,216,0.1)",
-    borderWidth: 1,
-    borderColor: t.line,
   },
   hudBest: {
     color: t.linenDim,
-    fontFamily: "SourceSans3_600SemiBold",
-    fontSize: 15,
+    fontFamily: "SourceSans3_400Regular",
+    fontSize: 14,
+    letterSpacing: 0.3,
   },
   hudBtn: {
     minHeight: 44,
-    minWidth: 88,
-    borderRadius: 14,
-    paddingHorizontal: 14,
+    minWidth: 72,
+    borderRadius: 12,
+    paddingHorizontal: 12,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: t.kraft,
+    borderWidth: 1,
+    borderColor: t.kraft,
+    backgroundColor: "rgba(36,24,15,0.45)",
   },
   hudBtnText: {
-    color: t.cream,
-    fontFamily: "SourceSans3_700Bold",
-    fontWeight: "700",
+    color: t.linen,
+    fontFamily: "SourceSans3_600SemiBold",
+    fontWeight: "600",
   },
   stage: { flex: 1 },
   sprite: { position: "absolute", left: 0, top: 0, overflow: "hidden" },
@@ -631,19 +627,15 @@ const styles = StyleSheet.create({
   },
   hintWrap: {
     position: "absolute",
-    left: 24,
-    right: 24,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    backgroundColor: "rgba(20,14,10,0.62)",
-    borderWidth: 1,
-    borderColor: t.kraft,
+    left: 40,
+    right: 40,
+    paddingVertical: 6,
   },
   hint: {
     color: t.linen,
     fontFamily: "SourceSans3_600SemiBold",
     fontSize: 15,
+    letterSpacing: 0.4,
     textAlign: "center",
   },
   overlay: {
