@@ -2,7 +2,7 @@
 
 Casa Rústico paper-craft sprites. Cream `#F7F3EC`, kraft `#A47C59`, dark kraft `#8D6C4F`.
 
-**V2_HOLD:** Jorge skipped v1 review. Do **not** copy `/workspace/casa-brand/exports/escape-kraft/` until Jorge says WIRE on **denser v2**.
+**V2_HOLD — Jorge: need-changes-before-wire.** Do **not** copy `/workspace/casa-brand/exports/escape-kraft/` until Cacique WIRE after redraw. `USE_CRAFT_ART=false`.
 `INVENTORY.md` is **STALE** (Cacique) — Creative is still finishing 6 parallax plates. Do not treat that file as final.
 `npm run sync:kraft` stays halted unless `ESCAPE_WIRE_KRAFT=1` **and** `ESCAPE_INVENTORY_FRESH=1`.
 

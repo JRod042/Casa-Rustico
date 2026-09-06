@@ -40,7 +40,7 @@ Feel smoke: dedicated leaf-dot ±2px pulse; contact/cavity fake-AO uses **Multip
 
 ## Art
 
-**V2_HOLD.** `USE_CRAFT_ART=false` until Cacique WIRE paste. `WIRE_KEYS` / `WIRE_PLATES` (01–06) + runner / hazards / UI are hooks only. `INVENTORY.md` is STALE.
+**V2_HOLD — Jorge: need-changes-before-wire.** `USE_CRAFT_ART=false` until Cacique WIRE after redraw. `WIRE_KEYS` / `WIRE_PLATES` (01–06) + runner / hazards / UI are hooks only. `INVENTORY.md` is STALE. No Creative PNG require/commit.
 
 ## EAS TestFlight — HOLD (do not fire tonight)
 

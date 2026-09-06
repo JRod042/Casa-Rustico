@@ -2,10 +2,11 @@ import type { ImageSourcePropType } from "react-native";
 
 /**
  * In-repo Casa kraft pack (playable now).
- * USE_CRAFT_ART=false until Jorge says WIRE — no new Creative PNG require().
- * Denser v2 box is HALTED (V2_HOLD).
+ * USE_CRAFT_ART=false — Jorge chose need-changes-before-wire.
+ * No Creative PNG require(). Denser v2 box is HALTED (V2_HOLD).
  */
 export const USE_CRAFT_ART = false;
+export const JORGE_ART_DECISION = "need-changes-before-wire";
 
 export const KRAFT_PACK = {
   runner: require("../../assets/kraft/runner.png"),

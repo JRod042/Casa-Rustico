@@ -315,6 +315,9 @@ if (!/APPDEV_CHECKLIST/.test(sources) || !/escape-appdev-element-checklist/.test
 if (!/USE_CRAFT_ART = false/.test(sources)) {
   throw new Error("USE_CRAFT_ART must stay false until Jorge WIRE");
 }
+if (!/need-changes-before-wire/.test(sources) || !/JORGE_ART_DECISION/.test(sources)) {
+  throw new Error("Jorge art decision must stay need-changes-before-wire (HARD V2_HOLD)");
+}
 if (!/#F7F3EC/.test(sources) || !/#A47C59/.test(sources) || !/#8D6C4F/.test(sources)) {
   throw new Error("kraft cream / kraft / dark kraft tokens must stay on the culture brief");
 }

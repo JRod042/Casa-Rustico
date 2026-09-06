@@ -4,7 +4,7 @@ Device: iPhone. No Simulator in the build VM. Casa rebuilds the IPA after merge.
 
 Brand lock: cream `#F7F3EC`, kraft `#A47C59`, dark kraft `#8D6C4F`. Highland café runner. Handmade paper / cardboard / sackcloth technique only — not a third-party toy reskin. No Sackboy IP.
 
-**V2_HOLD:** Jorge skipped v1 review. Do not wire Creative first-pack PNGs. Target future denser v2. HOLD ASC Submit until Jorge says it feels pro.
+**V2_HOLD — Jorge: need-changes-before-wire.** Do not wire Creative PNGs. `USE_CRAFT_ART=false` until Cacique WIRE after redraw. HOLD ASC Submit.
 
 **Render now:** Skia PRIMARY (`CafeStageSkia` Canvas + Atlas) + Reanimated. Views fallback if web / fps kill / Skia throw. Not expo-gl / R3F.
 
