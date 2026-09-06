@@ -24,6 +24,8 @@ PR #18 changed spawn fairness and packaging. Owner: that binary still “plays b
 **Creative pack:** HALTED until Jorge says WIRE. Hooks only (`npm run sync:kraft` is a no-op without `ESCAPE_WIRE_KRAFT=1`).
 **HOLD ASC Submit** until owner ok.
 
+Core feelings (ops brief `2026-09-05-escape-lbp-reviews-core-feel` — file not on this VM; folded from the collab note): handmade warmth, wonder/inspection, tactile honesty, soft danger, playful weight, charm, invitation, cozy craft, diorama depth, soft-chaos joy. Not a jungle reskin.
+
 ## 10-minute checklist
 
 Cold install (or Settings → Replay first brew):

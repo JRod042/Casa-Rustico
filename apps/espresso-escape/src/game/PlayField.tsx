@@ -56,15 +56,15 @@ type Floater = { id: number; x: number; y: number; pts: number };
 
 const CUE: Record<Exclude<CoachCue, null>, string> = {
   tap: "Tap to hop",
-  tall: "Tall kit — hop",
+  tall: "Tall kit — hop both",
   steam: "Steam — stay low",
   bean: "Grab the honey bean",
 };
 
 const ROAST: Record<DeathKind, string> = {
-  grinder: "A grinder caught the roast. Hop the low kits.",
-  portafilter: "A portafilter blocked the line. Hop the tall ones.",
-  steam: "Steam scalded the leap. Stay low under the cloud.",
+  grinder: "The grinder nicked the roast — a soft bump, not a cheap wall. Hop the low kits.",
+  portafilter: "A tall portafilter filled the line. Hop both. The paper has weight.",
+  steam: "Warm steam, not a spike. Stay on the linen under the cloud.",
 };
 
 function makeSlots(n: number): Slot[] {
@@ -505,7 +505,7 @@ export function PlayField({
           <PaperSheet>
             <Text style={styles.overlayTitle}>Paused</Text>
             <Text style={styles.overlayBody}>
-              The line holds. Resume when you are ready — nothing is for sale here.
+              The café holds still. Look around — then resume. Nothing is for sale here.
             </Text>
             <StickerButton
               primary

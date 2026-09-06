@@ -28,10 +28,10 @@ import {
 type Screen = "menu" | "how" | "about" | "privacy" | "settings" | "play";
 
 const HOW: { title: string; body: string; kit: KitKind }[] = [
-  { title: "Jump", body: "Tap the moment you want to hop. Hold a beat to float for high beans. Late taps still count if you just left the floor.", kit: "player" },
-  { title: "Dodge", body: "Grinders sit low. Portafilters are tall — hop both. Steam hangs — stay on the linen.", kit: "grinder" },
+  { title: "Jump", body: "Tap when you want the hop. The bean has cloth weight — hold a beat to float for high honey. Late taps still count if you just left the floor.", kit: "player" },
+  { title: "Dodge", body: "Read the kits. Grinders sit low. Portafilters are tall — hop both. Steam is warm cardboard cloud — stay on the linen.", kit: "grinder" },
   { title: "Collect", body: "Honey beans sit on the safe line. +5 each. The run itself scores as you go.", kit: "bean" },
-  { title: "Brew again", body: "One hit ends the roast. Tap to go again. No lives to buy. Pause anytime.", kit: "portafilter" },
+  { title: "Brew again", body: "One soft roast ends the line. Tap to go again. No lives to buy. Pause anytime and look around.", kit: "portafilter" },
 ];
 
 const BAR: { kit: KitKind; label: string }[] = [
@@ -299,7 +299,7 @@ function Menu({
       </View>
       <Text style={styles.brand}>CASA RÚSTICO</Text>
       <Text style={styles.title}>Espresso Escape</Text>
-      <Text style={styles.tag}>Dodge the grinders. Chase the beans.</Text>
+      <Text style={styles.tag}>A handmade hop through the highland café.</Text>
       <View style={styles.kitRow}>
         <KitThumb kind="player" size={42} />
         <KitThumb kind="bean" size={36} />

@@ -1,8 +1,10 @@
 import type { ImageSourcePropType } from "react-native";
 
 /**
- * In-repo Casa kraft pack. Creative can overwrite
- * `apps/espresso-escape/assets/kraft/*.png` with the same names.
+ * In-repo Casa kraft pack (playable now).
+ * Creative box `/workspace/casa-brand/exports/escape-kraft/game/` is
+ * HALTED until Jorge says WIRE — then `npm run sync:kraft` with
+ * ESCAPE_WIRE_KRAFT=1. See assets/kraft/README.md.
  */
 export const KRAFT_PACK = {
   runner: require("../../assets/kraft/runner.png"),
