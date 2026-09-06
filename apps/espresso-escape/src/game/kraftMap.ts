@@ -9,8 +9,9 @@
  * the live `require()` files in this table (one commit, no loader rewrite).
  */
 export const V2_HOLD = true;
-/** Jorge 2026-09-06: need-changes-before-wire. Art pack FAIL until visual-training + redraw + Cacique WIRE. */
-export const JORGE_ART_DECISION = "need-changes-before-wire";
+/** Creative/Jorge 2026-09-06: WIRE PULLED — overnight craft pack rejected. */
+export const WIRE_PULLED = true;
+export const JORGE_ART_DECISION = "wire-pulled";
 export const USE_CRAFT_ART = false;
 export const KRAFT_PACK_TARGET = "denser-v2";
 /** Cacique: INVENTORY.md is STALE. Creative still finishing 6 parallax plates. */

@@ -32,7 +32,7 @@ Cited: `2026-09-05-escape-best-in-class-master-plan`, `2026-09-05-escape-appdev-
 | Layer | On branch now |
 |---|---|
 | Haptics | Contract IDs. `SAME_TICK`: first transient on the call (tap hop consumes `justJumped`). AHAP still null |
-| Audio | Same IDs. Casa sound owns P0 wavs — placeholders + whoosh/stamp hop-land layers. `SFX_GAIN` per tone. |
+| Audio | P0 keys hop\|land\|bean\|whoosh\|stamp\|steam. death→stamp, retry→whoosh. `npm run sync:audio` copies the casa-brand box when mounted. |
 
 Steam / death / retry use tiny placeholder wavs. No AHAP files. Device fps still OPEN.
 
@@ -40,7 +40,7 @@ Feel smoke: dedicated leaf-dot ±2px pulse; contact/cavity fake-AO uses **Multip
 
 ## Art
 
-**V2_HOLD — Jorge: need-changes-before-wire.** `USE_CRAFT_ART=false` until Cacique WIRE after redraw. `WIRE_KEYS` / `WIRE_PLATES` (01–06) + runner / hazards / UI are hooks only. `INVENTORY.md` is STALE. No Creative PNG require/commit.
+**WIRE PULLED.** Overnight craft pack rejected. `USE_CRAFT_ART=false`. Do not require() Creative PNGs. Do not invent WIRE. `INVENTORY.md` is STALE.
 
 ## EAS TestFlight — HOLD (do not fire tonight)
 

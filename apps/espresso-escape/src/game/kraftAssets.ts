@@ -2,11 +2,12 @@ import type { ImageSourcePropType } from "react-native";
 
 /**
  * In-repo Casa kraft pack (playable now).
- * USE_CRAFT_ART=false forever until Cacique WIRE after redraw.
- * Jorge: need-changes-before-wire. Art pack FAIL. No Creative PNG require().
+ * USE_CRAFT_ART=false. WIRE PULLED — overnight craft pack rejected.
+ * Do not require() Creative PNGs. Do not invent WIRE.
  */
 export const USE_CRAFT_ART = false;
-export const JORGE_ART_DECISION = "need-changes-before-wire";
+export const WIRE_PULLED = true;
+export const JORGE_ART_DECISION = "wire-pulled";
 
 export const KRAFT_PACK = {
   runner: require("../../assets/kraft/runner.png"),
