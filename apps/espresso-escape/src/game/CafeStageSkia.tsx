@@ -90,6 +90,26 @@ export function CafeStageSkia({
     { translateX: width * 0.72 - ((scroll.value * 0.26) % 22) },
     { translateY: groundY * 0.36 - 2 * life.value },
   ]);
+  const plantSway = useDerivedValue(() => [
+    { translateX: width * 0.08 - ((scroll.value * 0.18) % 36) },
+    { translateY: groundY * 0.3 - 3 * life.value },
+    { rotate: -2.2 + life.value * 3.2 },
+  ]);
+  const clothSway = useDerivedValue(() => [
+    { translateX: width * 0.7 - ((scroll.value * 0.26) % 22) },
+    { translateY: groundY * 0.18 },
+    { rotate: 1.2 - life.value * 2.4 },
+  ]);
+  const propFar = useDerivedValue(() => [
+    { translateX: 14 - ((scroll.value * 0.3) % 40) },
+    { translateY: groundY * 0.36 - 2 * life.value },
+    { rotate: -1.4 + life.value * 0.8 },
+  ]);
+  const dustT = useDerivedValue(() => [
+    { translateX: 12 * life.value },
+    { translateY: -18 * life.value },
+  ]);
+  const dustOp = useDerivedValue(() => 0.16 + life.value * 0.22);
   const atlasSprites = [Skia.XYWHRect(0, 0, 48, 56)];
   const atlasForms = [Skia.RSXform(0.7, 0, 0, 0)];
 
@@ -188,6 +208,25 @@ export function CafeStageSkia({
               <Image image={plate} x={width} y={groundY * 0.48} width={width} height={groundY * 0.28} fit="cover" />
             </>
           ) : null}
+        </Group>
+
+        <Group transform={dustT} opacity={dustOp}>
+          <Circle cx={width * 0.1} cy={groundY * 0.14} r={1.6} color={t.cream} />
+          <Circle cx={width * 0.38} cy={groundY * 0.1} r={1.4} color={t.cream} />
+          <Circle cx={width * 0.66} cy={groundY * 0.16} r={1.6} color={t.cream} />
+          <Circle cx={width * 0.88} cy={groundY * 0.22} r={1.3} color={t.cream} />
+        </Group>
+
+        <Group transform={plantSway}>
+          <RoundedRect x={0} y={6} width={18} height={22} r={10} color={t.kraft} opacity={0.72} />
+          <RoundedRect x={16} y={0} width={14} height={28} r={8} color={t.kraftDeep} opacity={0.7} />
+        </Group>
+        <Group transform={clothSway} opacity={0.6}>
+          <RoundedRect x={0} y={0} width={28} height={36} r={4} color={t.cream} />
+        </Group>
+        <Group transform={propFar}>
+          <RoundedRect x={0} y={0} width={22} height={28} r={6} color={t.kraft} />
+          <RoundedRect x={26} y={14} width={12} height={14} r={3} color={t.cream} />
         </Group>
 
         <Group transform={atlasT} opacity={0.72}>

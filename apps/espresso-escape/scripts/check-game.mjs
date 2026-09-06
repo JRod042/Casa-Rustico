@@ -234,6 +234,9 @@ if (!/CafeStageSkia/.test(sources) || !/from "@shopify\/react-native-skia"/.test
 if (!/CafeStageViews/.test(sources) || !/SKIA_FPS_KILL/.test(sources)) {
   throw new Error("Views fallback + SKIA_FPS_KILL switch must stay wired");
 }
+if (!/SKIA_TIMEBOX/.test(sources) || !/KEEP_PRIMARY/.test(sources)) {
+  throw new Error("Skia time-box must stay KEEP_PRIMARY until a device <55 fps kill");
+}
 if (!/APPSTORE_CONTROLS_BRIEF/.test(sources) || !/escape-appstore-controls-feel-hits/.test(sources)) {
   throw new Error("must cite 2026-09-05-escape-appstore-controls-feel-hits");
 }

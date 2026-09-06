@@ -19,7 +19,7 @@ Kit-eval briefs: `2026-09-05-escape-pro-kit-eval`, `2026-09-05-escape-pro-stack-
 
 **Not adopted:** expo-gl, three.js, R3F, rapier, cannon-es.
 
-`SKIA_FPS_KILL` stays **false** until a mid-iPhone TestFlight run shows sustained fps **< 55**. This Linux VM cannot measure that. If killed, document the reason in `skiaStack.ts` and the Views path remains playable.
+`SKIA_TIMEBOX.decision` is **KEEP_PRIMARY**. `SKIA_FPS_KILL` is **false**. This Linux VM cannot measure mid-iPhone fps — that is **not** a <55 kill. If a Casa TestFlight run holds under 55, set the kill + reason; Views stay playable.
 
 ## Control fairness (App Store brief)
 
