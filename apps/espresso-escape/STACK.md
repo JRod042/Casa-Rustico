@@ -1,35 +1,45 @@
-# Espresso Escape — stack choices (1.0.6 / 13)
+# Espresso Escape — stack (1.0.6 / 13)
 
-Casa Rústico café runner. Mid-iPhone first. HOLD ASC Submit until Jorge ok.
+Casa Rústico café runner. Mid-iPhone first. HOLD ASC Submit until Jorge says it feels pro.
 
-## Render — 2.5D diorama, not full 3D
+**ASC:** `6809059605` only. Never `6758108565`. Never Shop 49. Bundle `com.jrod042.espressoescape`.
 
-Evaluated **expo-gl + three.js / React Three Fiber** and **cannon-es**.
+## Current render stack (for kit-eval)
 
-A side-scrolling tap-jump does not need a perspective camera. LBP-style depth is **layered paper planes** (far mist, mid café, near counter, ground strip) with soft light — that is the craft language, not a mesh jungle.
-
-Full 3D on Expo 57 would add GL surface startup, shader compile stalls, and a second render loop next to Reanimated shared values. On mid iPhones (12/13 class) that is the usual way a 60fps runner drops to 40. **We do not ship R3F this pass.**
-
-What ships: **2.5D** — `react-native-reanimated` layers + kraft PNGs + ambient steam/dust/prop bob. Same RAF play loop. Reads lifelike; stays Expo-native.
-
-## Physics — Matter.js + feel layer
-
-| Candidate | Verdict |
+| Layer | What ships now |
 |---|---|
-| **matter-js** ([liabru/matter-js](https://github.com/liabru/matter-js)) | **Chosen.** Pure JS, Hermes-safe, no WASM. Used by many RN runners. |
-| rapier | WASM + native glue. Extra EAS risk. |
-| cannon-es | 3D world. Overkill without a 3D renderer. |
-| react-native-game-engine | Mature kit, but class-entity loop fights our Reanimated RAF. Not adopted. |
+| Scene | **React Native `View` + `Image` paper planes** |
+| Motion | **`react-native-reanimated` 4.5** shared values (parallax, squash, life loop) |
+| Light | **`expo-linear-gradient`** + cream wash / shafts |
+| Art | Kraft PNGs via `require()` (`assets/kraft/`) |
+| Loop | One `requestAnimationFrame` play tick |
 
-Matter owns **sensor collision queries** (`Query.collides`) so the hurtbox stays ~63% of the sticker.
+**Not on the branch:** Skia (`@shopify/react-native-skia`), `expo-gl`, three.js, React Three Fiber, a GLView / Canvas. Do not add them until kit-eval says the TF cost is worth it.
 
-The hop stepper stays custom: **variable gravity** (fall > rise), **coyote 130ms**, **buffer 150ms**, **heel mercy**, **telegraph 0.62s**, **magnet**. Matter’s constant `world.gravity` cannot express that without fighting the tuned hop.
+LBP craft here is **receding paper plates** (canopy → highland → mid café → shelf → ground) with steam, dust, idle sacks/cups, plant sway, cloth, and soft shafts. That is high-end **2.5D**, not a mesh jungle.
 
-## Other kits (already in-tree)
+Full 3D on Expo 57 adds GL startup, shader compile, and a second render loop next to Reanimated. On iPhone 12/13 class that is how a 60fps runner drops to 40. **No R3F this pass.**
 
-- `react-native-reanimated` — 60fps transforms
+## Physics — already Matter.js (sensors only)
+
+| Candidate | On branch? | Note |
+|---|---|---|
+| **matter-js** 0.20 | **Yes** | Sensor `Query.collides` for ~63% hurtboxes |
+| rapier | No | WASM + native glue. Wait for kit-eval. |
+| cannon-es | No | 3D world. Wait until a 3D renderer exists. |
+| react-native-game-engine | No | Class-entity loop fights Reanimated RAF. |
+
+Hop stepper stays custom: variable gravity (fall 3600 > rise 2200), coyote 130ms, buffer 150ms, heel mercy, telegraph 0.62s, magnet. Matter’s constant gravity cannot express that without fighting the hop.
+
+**Hard kit / physics adoption is paused** until the kit-eval lane reports. Do not swap Matter or add a second engine in this PR.
+
+## Other kits (in-tree)
+
 - `expo-haptics` — cloth hop / cardboard land / fabric bean
-- `expo-linear-gradient` — material light
 - `expo-av` — optional café ticks
+
+## Art
+
+**V2_HOLD.** Jorge skipped v1 review. No Creative PNG copy/commit from `/workspace/casa-brand/exports/escape-kraft/` until Jorge says WIRE on denser v2. Hooks in `kraftMap.ts` / plate aliases in `kraftAssets.ts`.
 
 No ads, IAP, HomeKit, shop, or vibecode ASC.

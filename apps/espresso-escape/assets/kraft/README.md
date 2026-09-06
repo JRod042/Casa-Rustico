@@ -2,10 +2,14 @@
 
 Casa Rústico paper-craft sprites. Cream `#F7F3EC`, kraft `#A47C59`, dark kraft `#8D6C4F`.
 
-**WIRE hold:** do not copy `/workspace/casa-brand/exports/escape-kraft/` until Jorge says WIRE.
-`npm run sync:kraft` stays halted unless `ESCAPE_WIRE_KRAFT=1`.
+**V2_HOLD:** Jorge skipped v1 review. Do **not** copy `/workspace/casa-brand/exports/escape-kraft/` (v1 first pack or later) until Jorge says WIRE on **denser v2**.
+`npm run sync:kraft` stays halted unless `ESCAPE_WIRE_KRAFT=1`, and still refuses a v1-only inventory.
 
-## In-repo playable pack (now)
+Target: denser natural / lifelike craft + LBP **layering** (paper planes), Casa café first. No Sackboy IP.
+
+## In-repo playable pack (not Creative v1)
+
+These files landed as generated Casa kraft art for a playable loop. They are **not** the Creative first pack and are **not** final.
 
 | File | Role |
 |---|---|
@@ -14,21 +18,17 @@ Casa Rústico paper-craft sprites. Cream `#F7F3EC`, kraft `#A47C59`, dark kraft 
 | `portafilter.png` | Tall hop |
 | `steam.png` | Stay-low steam |
 | `bean.png` | Honey bean |
-| `cafe-bg.png` | Café / title paper |
+| `cafe-bg.png` | Stand-in for all world / title plates until v2 WIRE |
 | `menu-panel.png` | Menu chrome |
 
-## Creative inventory (when WIRE)
+## Future denser v2 (hooks only)
 
-From `exports/escape-kraft/game/` — prefer latest mtime, copy `@2x`/`@3x` siblings:
+From `exports/escape-kraft/game/` when Jorge says WIRE — prefer latest mtime, copy `@2x`/`@3x` siblings. Extra plates may appear:
 
 | Creative 1x | Lands in-app as |
 |---|---|
-| `sprites/runner-01.png` … `04.png` | runner frames |
-| `sprites/hazard-grinder.png` | grinder |
-| `sprites/hazard-portafilter.png` | portafilter |
-| `sprites/hazard-steam.png` | steam |
-| `sprites/pickup-honey-bean.png` | bean |
-| `ui/title-bg.png` / `menu-panel.png` / `wordmark-espresso-escape.png` | title |
-| `ui/panel-game-over.png` / `panel-best-run.png` | roast sheets |
-| `world/ground-strip.png` / `scroll-backdrop.png` / `kraft-cafe-backdrop.png` | diorama plates |
+| `sprites/runner-01.png` … `06.png` | runner frames |
+| `sprites/hazard-*.png` / `pickup-honey-bean.png` | kits |
+| `ui/title-bg.png` / `menu-panel.png` / wordmark / roast sheets | menus |
+| `world/far-highland.png` / `canopy-mist.png` / `mid-cafe.png` / `near-counter.png` / `window-light.png` / `ground-strip.png` | diorama plates |
 | `../escape-icon-1024-asc.png` | ASC listing only — not the in-game loop |

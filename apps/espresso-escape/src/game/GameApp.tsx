@@ -13,7 +13,7 @@ import { SteamMark } from "../welcome/SteamMark";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
 import { type FeelPrefs, armFeel } from "./feel";
 import { kraftSource } from "./kraftAssets";
-import { PaperChip, StickerButton } from "./MenuChrome";
+import { PaperChip, PaperSheet, StickerButton } from "./MenuChrome";
 import { PlayField } from "./PlayField";
 import { KitThumb, type KitKind } from "./sprites";
 import {
@@ -158,9 +158,11 @@ function Menu({
           contentContainerStyle={styles.menu}
           showsVerticalScrollIndicator={false}
         >
+        <PaperSheet>
         <Text style={styles.panelTitle}>How to play</Text>
         <Text style={styles.legendLabel}>Meet the bar</Text>
         <View style={styles.legend}>
+          <View style={styles.stampRing} />
           {BAR.map((item) => (
             <View key={item.label} style={styles.legendItem}>
               <KitThumb kind={item.kit} size={40} />
@@ -170,6 +172,7 @@ function Menu({
         </View>
         {HOW.map((step, i) => (
           <View key={step.title} style={styles.step}>
+            <View style={styles.stampRing} />
             <View style={styles.stepKit}>
               <KitThumb kind={step.kit} size={36} />
             </View>
@@ -180,6 +183,7 @@ function Menu({
             </View>
           </View>
         ))}
+        </PaperSheet>
         <StickerButton
           primary
           label="Play"
@@ -198,8 +202,10 @@ function Menu({
           contentContainerStyle={styles.menu}
           showsVerticalScrollIndicator={false}
         >
+        <PaperSheet>
         <Text style={styles.panelTitle}>About</Text>
         <View style={styles.copyCard}>
+        <View style={styles.stampRing} />
         <Text style={styles.panelBody}>
           Espresso Escape is a free Casa Rústico coffee mini-game — a playable
           run through the café line.
@@ -213,6 +219,7 @@ function Menu({
           game — there is no checkout here.
         </Text>
         </View>
+        </PaperSheet>
         <StickerButton primary label="Back" accessibilityLabel="Back to menu" onPress={onBack} />
         </ScrollView>
       </SafeAreaView>
@@ -225,8 +232,10 @@ function Menu({
           contentContainerStyle={styles.menu}
           showsVerticalScrollIndicator={false}
         >
+        <PaperSheet>
         <Text style={styles.panelTitle}>Privacy</Text>
         <View style={styles.copyCard}>
+        <View style={styles.stampRing} />
         <Text style={styles.panelBody}>
           Espresso Escape keeps a high score and a welcome flag on this device.
         </Text>
@@ -239,6 +248,7 @@ function Menu({
           payments.
         </Text>
         </View>
+        </PaperSheet>
         <StickerButton primary label="Back" accessibilityLabel="Back to menu" onPress={onBack} />
         </ScrollView>
       </SafeAreaView>
@@ -251,6 +261,7 @@ function Menu({
           contentContainerStyle={styles.menu}
           showsVerticalScrollIndicator={false}
         >
+        <PaperSheet>
         <Text style={styles.panelTitle}>Settings</Text>
         <Text style={styles.tag}>Haptics and café ticks. Nothing to buy.</Text>
         <Pressable
@@ -260,6 +271,7 @@ function Menu({
           onPress={() => onToggle("haptics")}
           style={styles.toggleRow}
         >
+          <View style={styles.stampRing} />
           <Text style={styles.toggleLabel}>Haptics</Text>
           <Text style={styles.toggleValue}>{prefs.haptics ? "On" : "Off"}</Text>
         </Pressable>
@@ -270,9 +282,11 @@ function Menu({
           onPress={() => onToggle("sfx")}
           style={styles.toggleRow}
         >
+          <View style={styles.stampRing} />
           <Text style={styles.toggleLabel}>Sound</Text>
           <Text style={styles.toggleValue}>{prefs.sfx ? "On" : "Off"}</Text>
         </Pressable>
+        </PaperSheet>
         <StickerButton
           primary
           label="Replay first brew"
@@ -288,7 +302,7 @@ function Menu({
   }
   return (
     <SafeAreaView style={styles.safe} testID="escape-menu">
-      <Image source={kraftSource("cafeBg")} style={styles.titleBg} resizeMode="cover" />
+      <Image source={kraftSource("titleBg")} style={styles.titleBg} resizeMode="cover" />
       <View style={styles.titleWash} />
       <ScrollView
         contentContainerStyle={styles.menu}
@@ -349,14 +363,15 @@ const styles = StyleSheet.create({
   heroMark: {
     width: 120,
     height: 120,
-    borderRadius: 28,
+    borderRadius: 18,
     backgroundColor: t.cream,
     borderWidth: 2,
     borderColor: t.kraftDeep,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 4,
-    transform: [{ rotate: "-1.2deg" }],
+    transform: [{ rotate: "-1.4deg" }],
+    borderStyle: "dashed",
   },
   brand: {
     color: t.kraftDeep,
@@ -398,12 +413,23 @@ const styles = StyleSheet.create({
   copyCard: {
     alignSelf: "stretch",
     backgroundColor: t.cream,
-    borderRadius: 18,
+    borderRadius: 12,
     borderWidth: 2,
-    borderColor: t.kraft,
+    borderColor: t.kraftDeep,
     paddingHorizontal: 18,
     paddingVertical: 16,
     marginBottom: 8,
+    overflow: "hidden",
+    transform: [{ rotate: "-0.3deg" }],
+  },
+  stampRing: {
+    ...StyleSheet.absoluteFill,
+    margin: 4,
+    borderWidth: 1,
+    borderColor: t.kraft,
+    borderStyle: "dashed",
+    borderRadius: 8,
+    opacity: 0.55,
   },
   panelBody: {
     color: t.muted,
@@ -434,12 +460,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     backgroundColor: t.cream,
-    borderRadius: 16,
+    borderRadius: 12,
     borderWidth: 2,
-    borderColor: t.kraft,
+    borderColor: t.kraftDeep,
     paddingHorizontal: 10,
     paddingVertical: 12,
     marginBottom: 4,
+    overflow: "hidden",
+    transform: [{ rotate: "0.4deg" }],
   },
   legendItem: { flex: 1, alignItems: "center", gap: 6 },
   legendText: {
@@ -453,11 +481,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     backgroundColor: t.cream,
-    borderRadius: 14,
+    borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: t.kraft,
+    borderColor: t.kraftDeep,
     paddingHorizontal: 12,
     paddingVertical: 12,
+    overflow: "hidden",
+    transform: [{ rotate: "-0.25deg" }],
   },
   stepKit: {
     width: 40,
@@ -490,12 +520,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: t.cream,
-    borderRadius: 14,
+    borderRadius: 10,
     borderWidth: 2,
     borderColor: t.kraftDeep,
     paddingHorizontal: 16,
     paddingVertical: 14,
     minHeight: 52,
+    overflow: "hidden",
+    transform: [{ rotate: "0.3deg" }],
   },
   toggleLabel: {
     color: t.ink,

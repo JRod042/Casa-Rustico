@@ -142,11 +142,11 @@ const HazardSprite = memo(function HazardSprite({
       width: Math.max(22, slot.w.value + 8),
       height: hot ? 11 : 7,
       opacity: slot.on.value * (hot ? 1 : near ? 0.85 : 0.28),
-      backgroundColor: steam ? "#D5E1EA" : hot ? t.glow : t.danger,
+      backgroundColor: steam ? t.linenDim : hot ? t.kraft : t.kraftDeep,
     };
   });
   const kit = useAnimatedStyle(() => ({
-    borderColor: slot.warn.value ? t.glow : slot.kind.value === 2 ? "#D5E1EA" : t.kraft,
+    borderColor: slot.warn.value ? t.kraftDeep : slot.kind.value === 2 ? t.linenDim : t.kraft,
     borderWidth: slot.warn.value ? 3 : 2,
   }));
   return (
@@ -591,13 +591,14 @@ const styles = StyleSheet.create({
   hudBtn: {
     minHeight: 44,
     minWidth: 72,
-    borderRadius: 12,
+    borderRadius: 8,
     paddingHorizontal: 12,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 2,
+    borderStyle: "dashed",
     borderColor: t.kraft,
-    backgroundColor: "rgba(247,243,236,0.16)",
+    backgroundColor: "rgba(247,243,236,0.18)",
   },
   hudBtnText: {
     color: t.cream,
@@ -630,7 +631,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: "hidden",
     borderWidth: 2,
-    borderColor: t.glow,
+    borderColor: t.kraft,
     backgroundColor: t.cream,
   },
   shadow: {
@@ -654,7 +655,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   floaterText: {
-    color: t.glow,
+    color: t.cream,
     fontFamily: "SourceSans3_700Bold",
     fontSize: 18,
     fontWeight: "800",
@@ -669,10 +670,12 @@ const styles = StyleSheet.create({
     right: 40,
     paddingVertical: 8,
     paddingHorizontal: 12,
-    borderRadius: 12,
-    backgroundColor: "rgba(247,243,236,0.88)",
-    borderWidth: 1.5,
-    borderColor: t.kraft,
+    borderRadius: 8,
+    backgroundColor: "rgba(247,243,236,0.9)",
+    borderWidth: 2,
+    borderStyle: "dashed",
+    borderColor: t.kraftDeep,
+    transform: [{ rotate: "-0.4deg" }],
   },
   hint: {
     color: t.ink,

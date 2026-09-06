@@ -114,6 +114,7 @@ export function EscapeWelcome({ onFinished }: Props) {
             onPress={onFinished}
             style={[styles.primary, !canInteract && styles.disabled]}
           >
+            <View style={styles.primaryStitch} />
             <Text style={styles.primaryText}>Start brewing</Text>
           </Pressable>
           <Text style={styles.house}>A Casa Rústico game</Text>
@@ -192,12 +193,21 @@ const styles = StyleSheet.create({
   primary: {
     alignSelf: "stretch",
     backgroundColor: t.kraft,
-    borderRadius: 16,
+    borderRadius: 12,
     paddingVertical: 17,
     alignItems: "center",
     borderWidth: 2,
     borderColor: t.kraftDeep,
-    transform: [{ rotate: "-0.4deg" }],
+    overflow: "hidden",
+    transform: [{ rotate: "-0.6deg" }],
+  },
+  primaryStitch: {
+    ...StyleSheet.absoluteFill,
+    margin: 5,
+    borderWidth: 1,
+    borderColor: "rgba(247,243,236,0.35)",
+    borderStyle: "dashed",
+    borderRadius: 8,
   },
   primaryText: {
     color: t.cream,

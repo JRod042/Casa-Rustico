@@ -15,20 +15,22 @@ import { kraftSource } from "./kraftAssets";
 
 const SLAT = 56;
 const DUST = [
-  { left: 0.1, top: 0.16, s: 3, d: 0.07 },
-  { left: 0.24, top: 0.3, s: 2, d: 0.11 },
-  { left: 0.4, top: 0.12, s: 3, d: 0.09 },
-  { left: 0.58, top: 0.24, s: 2, d: 0.13 },
-  { left: 0.74, top: 0.18, s: 3, d: 0.08 },
-  { left: 0.88, top: 0.34, s: 2, d: 0.1 },
-  { left: 0.16, top: 0.44, s: 2, d: 0.09 },
-  { left: 0.67, top: 0.4, s: 3, d: 0.07 },
+  { left: 0.08, top: 0.14, s: 3, d: 0.07 },
+  { left: 0.22, top: 0.28, s: 2, d: 0.11 },
+  { left: 0.38, top: 0.1, s: 3, d: 0.09 },
+  { left: 0.52, top: 0.22, s: 2, d: 0.13 },
+  { left: 0.66, top: 0.16, s: 3, d: 0.08 },
+  { left: 0.78, top: 0.32, s: 2, d: 0.1 },
+  { left: 0.9, top: 0.2, s: 3, d: 0.07 },
+  { left: 0.14, top: 0.42, s: 2, d: 0.09 },
+  { left: 0.48, top: 0.38, s: 2, d: 0.08 },
+  { left: 0.72, top: 0.44, s: 3, d: 0.07 },
 ];
 
 /**
- * Six-plate highland café diorama.
- * Depth language only (layered paper, not a jungle reskin).
- * v2 world plates hook the same cafe-bg until Jorge wires Creative.
+ * Living highland café diorama on the current RN + Reanimated stack.
+ * LBP craft = receding paper planes + idle life, not a jungle reskin.
+ * v2 plate keys alias cafe-bg until Jorge wires denser art (V2_HOLD).
  */
 export function CafeStage({
   width,
@@ -57,6 +59,9 @@ export function CafeStage({
     );
   }, [life, reduce]);
 
+  const canopy = useAnimatedStyle(() => ({
+    transform: [{ translateX: -(((scroll.value * 0.02) % width)) }],
+  }));
   const farSky = useAnimatedStyle(() => ({
     transform: [{ translateX: -(((scroll.value * 0.035) % width)) }],
   }));
@@ -81,6 +86,10 @@ export function CafeStage({
   const lightStyle = useAnimatedStyle(() => ({
     opacity: 0.08 + life.value * 0.12,
   }));
+  const lightShaft = useAnimatedStyle(() => ({
+    opacity: 0.05 + life.value * 0.07,
+    transform: [{ rotate: `${8 + life.value * 1.4}deg` }],
+  }));
   const steamA = useAnimatedStyle(() => ({
     opacity: 0.14 + life.value * 0.18,
     transform: [{ translateY: -8 * life.value }, { translateX: 10 * life.value }, { scale: 1 + life.value * 0.08 }],
@@ -92,6 +101,24 @@ export function CafeStage({
   const steamC = useAnimatedStyle(() => ({
     opacity: 0.08 + life.value * 0.1,
     transform: [{ translateY: -5 * life.value }, { translateX: 4 * (1 - life.value) }],
+  }));
+  const steamD = useAnimatedStyle(() => ({
+    opacity: 0.06 + (1 - life.value) * 0.1,
+    transform: [{ translateY: -7 * life.value }, { translateX: 6 * (1 - life.value) }],
+  }));
+  const plantSway = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: -((scroll.value * 0.18) % 36) },
+      { rotate: `${-2.2 + life.value * 3.2}deg` },
+      { translateY: -3 * life.value },
+    ],
+  }));
+  const clothSway = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: -((scroll.value * 0.26) % 22) },
+      { rotate: `${1.2 - life.value * 2.4}deg` },
+    ],
+    opacity: 0.55 + life.value * 0.2,
   }));
   const propFar = useAnimatedStyle(() => ({
     transform: [
@@ -106,12 +133,13 @@ export function CafeStage({
       { translateY: -4 * life.value },
     ],
   }));
+  const cupBob = useAnimatedStyle(() => ({
+    transform: [{ translateY: -3 * life.value }, { rotate: `${-0.6 + life.value * 1.1}deg` }],
+  }));
   const dustStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: -18 * life.value }, { translateX: 12 * life.value }],
     opacity: 0.16 + life.value * 0.22,
   }));
-
-  const bg = kraftSource("cafeBg");
 
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill} testID="escape-diorama">
@@ -121,32 +149,47 @@ export function CafeStage({
         style={StyleSheet.absoluteFill}
       />
 
+      <Animated.View
+        style={[styles.plane, { top: 0, height: groundY * 0.55, width: width * 2, opacity: 0.28 }, canopy]}
+      >
+        <Image source={kraftSource("canopyMist")} style={{ width, height: groundY * 0.55 }} resizeMode="cover" />
+        <Image source={kraftSource("canopyMist")} style={{ width, height: groundY * 0.55 }} resizeMode="cover" />
+      </Animated.View>
+
       <Animated.View style={[styles.plane, { top: 0, height: groundY, width: width * 2, opacity: 0.42 }, farSky]}>
-        <Image source={bg} style={{ width, height: groundY }} resizeMode="cover" />
-        <Image source={bg} style={{ width, height: groundY }} resizeMode="cover" />
+        <Image source={kraftSource("farHighland")} style={{ width, height: groundY }} resizeMode="cover" />
+        <Image source={kraftSource("farHighland")} style={{ width, height: groundY }} resizeMode="cover" />
       </Animated.View>
       <View style={[styles.haze, { height: groundY * 0.45, backgroundColor: "rgba(26,18,11,0.28)" }]} />
 
       <Animated.View
         style={[styles.plane, { top: groundY * 0.06, height: groundY * 0.78, width: width * 2, opacity: 0.5 }, highland]}
       >
-        <Image source={bg} style={{ width, height: groundY * 0.78 }} resizeMode="cover" />
-        <Image source={bg} style={{ width, height: groundY * 0.78 }} resizeMode="cover" />
+        <Image source={kraftSource("cafeBg")} style={{ width, height: groundY * 0.78 }} resizeMode="cover" />
+        <Image source={kraftSource("cafeBg")} style={{ width, height: groundY * 0.78 }} resizeMode="cover" />
       </Animated.View>
       <View style={[styles.haze, { top: groundY * 0.2, height: 36, backgroundColor: "rgba(247,243,236,0.08)" }]} />
 
       <Animated.View
         style={[styles.plane, { top: groundY * 0.14, height: groundY * 0.7, width: width * 2, opacity: 0.62 }, cafeMid]}
       >
-        <Image source={bg} style={{ width, height: groundY * 0.7 }} resizeMode="cover" />
-        <Image source={bg} style={{ width, height: groundY * 0.7 }} resizeMode="cover" />
+        <Image source={kraftSource("midCafe")} style={{ width, height: groundY * 0.7 }} resizeMode="cover" />
+        <Image source={kraftSource("midCafe")} style={{ width, height: groundY * 0.7 }} resizeMode="cover" />
       </Animated.View>
 
       <Animated.View style={[styles.lightShift, { height: groundY }, lightStyle]} />
+      <Animated.View
+        style={[styles.shaft, { top: 8, left: width * 0.18, height: groundY * 0.72 }, lightShaft]}
+      />
+      <Animated.View
+        style={[styles.shaft, { top: 20, left: width * 0.58, height: groundY * 0.62, width: 46 }, lightShaft]}
+      />
+      <View style={[styles.windowGlow, { top: groundY * 0.12, left: width * 0.62, width: width * 0.22 }]} />
 
       <Animated.View style={[styles.steam, { top: groundY * 0.2, left: width * 0.64, width: 78, height: 58 }, steamA]} />
       <Animated.View style={[styles.steam, { top: groundY * 0.14, left: width * 0.16, width: 56, height: 42 }, steamB]} />
       <Animated.View style={[styles.steam, { top: groundY * 0.28, left: width * 0.42, width: 40, height: 30 }, steamC]} />
+      <Animated.View style={[styles.steam, { top: groundY * 0.34, left: width * 0.78, width: 34, height: 26 }, steamD]} />
 
       <Animated.View style={[StyleSheet.absoluteFill, dustStyle]}>
         {DUST.map((d, i) => (
@@ -166,20 +209,30 @@ export function CafeStage({
         ))}
       </Animated.View>
 
+      <Animated.View style={[styles.plantRow, { top: groundY * 0.3, left: width * 0.08 }, plantSway]}>
+        <View style={styles.bush} />
+        <View style={[styles.bush, styles.bushTall]} />
+        <View style={styles.leaf} />
+      </Animated.View>
+      <Animated.View style={[styles.cloth, { top: groundY * 0.18, left: width * 0.72 }, clothSway]} />
+
       <Animated.View style={[styles.prop, { top: groundY * 0.36, left: 14 }, propFar]}>
         <View style={styles.sack} />
-        <View style={styles.cup} />
+        <Animated.View style={cupBob}>
+          <View style={styles.cup} />
+        </Animated.View>
       </Animated.View>
       <Animated.View style={[styles.prop, { top: groundY * 0.4, right: 18, left: undefined }, propNear]}>
         <View style={[styles.sack, { width: 26, height: 32, backgroundColor: t.kraftDeep }]} />
+        <View style={[styles.cup, { width: 10, height: 12 }]} />
       </Animated.View>
 
       <Animated.View style={[styles.mistBand, { top: groundY * 0.1, width: width + 240 }, mistStyle]} />
       <Animated.View
         style={[styles.plane, { top: groundY * 0.48, height: groundY * 0.28, width: width * 2, opacity: 0.28 }, shelfNear]}
       >
-        <Image source={bg} style={{ width, height: groundY * 0.28 }} resizeMode="cover" />
-        <Image source={bg} style={{ width, height: groundY * 0.28 }} resizeMode="cover" />
+        <Image source={kraftSource("nearCounter")} style={{ width, height: groundY * 0.28 }} resizeMode="cover" />
+        <Image source={kraftSource("nearCounter")} style={{ width, height: groundY * 0.28 }} resizeMode="cover" />
       </Animated.View>
 
       <View style={[styles.shelfRail, { top: groundY * 0.22 + 30, width }]} />
@@ -227,6 +280,19 @@ const styles = StyleSheet.create({
     top: 0,
     backgroundColor: t.cream,
   },
+  shaft: {
+    position: "absolute",
+    width: 54,
+    backgroundColor: t.cream,
+    borderRadius: 8,
+  },
+  windowGlow: {
+    position: "absolute",
+    height: 64,
+    borderRadius: 10,
+    backgroundColor: t.cream,
+    opacity: 0.1,
+  },
   steam: {
     position: "absolute",
     borderRadius: 999,
@@ -236,6 +302,44 @@ const styles = StyleSheet.create({
     position: "absolute",
     borderRadius: 999,
     backgroundColor: t.cream,
+  },
+  plantRow: {
+    position: "absolute",
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 4,
+  },
+  bush: {
+    width: 18,
+    height: 22,
+    borderRadius: 10,
+    backgroundColor: t.kraft,
+    borderWidth: 1,
+    borderColor: t.kraftDeep,
+    opacity: 0.72,
+  },
+  bushTall: {
+    width: 14,
+    height: 28,
+    borderRadius: 8,
+    backgroundColor: t.kraftDeep,
+  },
+  leaf: {
+    width: 10,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: t.kraft,
+    opacity: 0.6,
+    transform: [{ rotate: "18deg" }],
+  },
+  cloth: {
+    position: "absolute",
+    width: 28,
+    height: 36,
+    borderRadius: 4,
+    backgroundColor: t.cream,
+    borderWidth: 1,
+    borderColor: t.kraft,
   },
   prop: {
     position: "absolute",

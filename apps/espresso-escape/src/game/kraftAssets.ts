@@ -2,9 +2,9 @@ import type { ImageSourcePropType } from "react-native";
 
 /**
  * In-repo Casa kraft pack (playable now).
- * Creative box `/workspace/casa-brand/exports/escape-kraft/game/` is
- * HALTED until Jorge says WIRE — then `npm run sync:kraft` with
- * ESCAPE_WIRE_KRAFT=1. See assets/kraft/README.md.
+ * Denser v2 box is HALTED (V2_HOLD) until Jorge says WIRE.
+ * Extra plate names alias cafe-bg so a later overwrite is one commit.
+ * See kraftMap.ts — do not treat v1 first pack as final.
  */
 export const KRAFT_PACK = {
   runner: require("../../assets/kraft/runner.png"),
@@ -14,6 +14,14 @@ export const KRAFT_PACK = {
   bean: require("../../assets/kraft/bean.png"),
   cafeBg: require("../../assets/kraft/cafe-bg.png"),
   menuPanel: require("../../assets/kraft/menu-panel.png"),
+  /** v2 plate aliases — same file until Jorge wires denser art. */
+  farHighland: require("../../assets/kraft/cafe-bg.png"),
+  canopyMist: require("../../assets/kraft/cafe-bg.png"),
+  midCafe: require("../../assets/kraft/cafe-bg.png"),
+  nearCounter: require("../../assets/kraft/cafe-bg.png"),
+  windowLight: require("../../assets/kraft/cafe-bg.png"),
+  groundStrip: require("../../assets/kraft/cafe-bg.png"),
+  titleBg: require("../../assets/kraft/cafe-bg.png"),
 } as const;
 
 export type KraftSprite = keyof typeof KRAFT_PACK;

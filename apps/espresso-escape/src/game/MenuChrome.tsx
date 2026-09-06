@@ -9,7 +9,7 @@ import {
 import { escapeWelcomeTheme as t } from "../welcome/theme";
 import { kraftSource } from "./kraftAssets";
 
-/** Cream paper sheet — sticker chrome, Casa stationery. */
+/** Scrapbook sheet: cardboard back, cream face, stitch, paper edge. Casa only. */
 export function PaperSheet({
   children,
   testID,
@@ -18,14 +18,18 @@ export function PaperSheet({
   testID?: string;
 }) {
   return (
-    <View style={chrome.sheetWrap} testID={testID}>
-      <Image
-        source={kraftSource("menuPanel")}
-        style={chrome.sheetArt}
-        resizeMode="stretch"
-      />
-      <View style={chrome.stitch} />
-      <View style={chrome.sheetInner}>{children}</View>
+    <View style={chrome.stack} testID={testID}>
+      <View style={chrome.cardboard} />
+      <View style={chrome.sheetWrap}>
+        <Image
+          source={kraftSource("menuPanel")}
+          style={chrome.sheetArt}
+          resizeMode="stretch"
+        />
+        <View style={chrome.paperEdge} />
+        <View style={chrome.stitch} />
+        <View style={chrome.sheetInner}>{children}</View>
+      </View>
     </View>
   );
 }
@@ -48,6 +52,7 @@ export function StickerButton({
       onPress={onPress}
       style={[chrome.sticker, primary ? chrome.stickerPrimary : chrome.stickerGhost]}
     >
+      <View style={chrome.stickerStitch} />
       <Text style={primary ? chrome.stickerPrimaryText : chrome.stickerGhostText}>
         {label}
       </Text>
@@ -58,37 +63,57 @@ export function StickerButton({
 export function PaperChip({ children }: { children: ReactNode }) {
   return (
     <View style={chrome.chip}>
+      <View style={chrome.stampRing} />
       <Text style={chrome.chipText}>{children}</Text>
     </View>
   );
 }
 
 const chrome = StyleSheet.create({
+  stack: {
+    alignSelf: "stretch",
+  },
+  cardboard: {
+    position: "absolute",
+    left: 6,
+    right: -4,
+    top: 8,
+    bottom: -5,
+    backgroundColor: t.kraftDeep,
+    borderRadius: 16,
+    transform: [{ rotate: "1.1deg" }],
+    opacity: 0.88,
+  },
   sheetWrap: {
     alignSelf: "stretch",
-    borderRadius: 18,
+    borderRadius: 16,
     overflow: "hidden",
     borderWidth: 2,
-    borderColor: t.kraftDeep,
+    borderColor: t.kraft,
     backgroundColor: t.cream,
-    shadowColor: t.espresso,
-    shadowOpacity: 0.26,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 6,
+    transform: [{ rotate: "-0.5deg" }],
   },
   sheetArt: {
     ...StyleSheet.absoluteFill,
-    opacity: 0.55,
+    opacity: 0.5,
+  },
+  paperEdge: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    height: 7,
+    backgroundColor: t.kraft,
+    opacity: 0.22,
   },
   stitch: {
     ...StyleSheet.absoluteFill,
-    margin: 8,
+    margin: 7,
     borderWidth: 1,
     borderColor: t.kraftDeep,
     borderStyle: "dashed",
-    borderRadius: 14,
-    opacity: 0.45,
+    borderRadius: 12,
+    opacity: 0.5,
   },
   sheetInner: {
     paddingHorizontal: 22,
@@ -97,12 +122,21 @@ const chrome = StyleSheet.create({
   },
   sticker: {
     alignSelf: "stretch",
-    borderRadius: 14,
+    borderRadius: 12,
     paddingVertical: 16,
     alignItems: "center",
     minHeight: 52,
     justifyContent: "center",
-    transform: [{ rotate: "-0.4deg" }],
+    overflow: "hidden",
+    transform: [{ rotate: "-0.5deg" }],
+  },
+  stickerStitch: {
+    ...StyleSheet.absoluteFill,
+    margin: 5,
+    borderWidth: 1,
+    borderColor: "rgba(42,24,16,0.28)",
+    borderStyle: "dashed",
+    borderRadius: 8,
   },
   stickerPrimary: {
     backgroundColor: t.kraft,
@@ -129,10 +163,19 @@ const chrome = StyleSheet.create({
   chip: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 999,
+    borderRadius: 8,
     backgroundColor: t.cream,
-    borderWidth: 1.5,
+    borderWidth: 2,
+    borderColor: t.kraftDeep,
+    transform: [{ rotate: "0.8deg" }],
+  },
+  stampRing: {
+    ...StyleSheet.absoluteFill,
+    margin: 3,
+    borderWidth: 1,
     borderColor: t.kraft,
+    borderStyle: "dashed",
+    borderRadius: 6,
   },
   chipText: {
     color: t.ink,

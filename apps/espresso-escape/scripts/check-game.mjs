@@ -164,6 +164,20 @@ if (!/escape-diorama/.test(sources) || !/scroll.value \* 0.035/.test(sources)) {
 if (!/KRAFT_DROPIN/.test(sources)) {
   throw new Error("Creative v2 filename map (hooks only) must stay in kraftMap");
 }
+if (!/V2_HOLD/.test(sources) || !/denser-v2/.test(sources)) {
+  throw new Error("denser v2 hold must stay in kraftMap — do not treat v1 as final");
+}
+if (!/scrapbook|paperEdge|stampRing/.test(sources)) {
+  throw new Error("menus must keep scrapbook stitch / paper-edge chrome");
+}
+if (!/plantSway/.test(sources) || !/lightShaft/.test(sources)) {
+  throw new Error("diorama must keep idle plant sway and soft light shafts");
+}
+if (!/expo-gl|three|react-three|skia/i.test(readFileSync(join(root, "package.json"), "utf8"))) {
+  // current stack: RN views + Reanimated. Kit-eval may add GL later.
+} else {
+  throw new Error("do not add expo-gl / three / Skia until kit-eval reports");
+}
 if (!/ESCAPE_WIRE_KRAFT/.test(readFileSync(join(root, "scripts/sync-kraft.mjs"), "utf8"))) {
   throw new Error("Creative drop-in must stay halted behind ESCAPE_WIRE_KRAFT");
 }
