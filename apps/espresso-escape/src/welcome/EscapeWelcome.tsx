@@ -98,11 +98,8 @@ export function EscapeWelcome({ onFinished }: Props) {
 
         <View style={[styles.playArt, { top: height * 0.16 }]}>
           <View style={styles.kitRow}>
-            <KitThumb kind="grinder" size={52} />
-            <KitThumb kind="portafilter" size={56} />
-            <SteamMark size={64} />
-            <KitThumb kind="steam" size={52} />
-            <KitThumb kind="bean" size={40} />
+            <SteamMark size={72} />
+            <KitThumb kind="bean" size={44} />
           </View>
         </View>
 

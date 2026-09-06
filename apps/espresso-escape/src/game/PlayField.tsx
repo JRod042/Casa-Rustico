@@ -152,7 +152,11 @@ const HazardSprite = memo(function HazardSprite({
 
 const BeanSprite = memo(function BeanSprite({ slot }: { slot: Slot }) {
   const anim = useAnimatedStyle(() => ({
-    transform: [{ translateX: slot.x.value }, { translateY: slot.y.value }],
+    transform: [
+      { translateX: slot.x.value },
+      { translateY: slot.y.value },
+      { scale: slot.on.value ? 1 + 0.05 * Math.sin(slot.x.value / 20) : 1 },
+    ],
     width: slot.w.value,
     height: slot.h.value,
     opacity: slot.on.value,

@@ -152,6 +152,9 @@ if (!/testID="escape-coach"/.test(sources)) {
 if (!/hopTick/.test(sources) || !/expo-haptics/.test(sources)) {
   throw new Error("Apple-style hop haptics must stay wired");
 }
+if (!/#F7F3EC/.test(sources) || !/#A47C59/.test(sources) || !/#8D6C4F/.test(sources)) {
+  throw new Error("kraft cream / kraft / dark kraft tokens must stay on the culture brief");
+}
 
 const play = spawnSync(process.execPath, [join(root, "scripts/playtest.mjs")], {
   encoding: "utf8",
