@@ -35,45 +35,49 @@ export function armFeel(): void {
   bootSfx();
 }
 
-function tick(haptic: Parameters<typeof playHaptic>[0], audio: Parameters<typeof playAudio>[0]): void {
-  if (prefs.haptics) playHaptic(haptic);
-  if (prefs.sfx) playAudio(audio);
+function tick(id: Parameters<typeof playHaptic>[0]): void {
+  if (prefs.haptics) playHaptic(id);
+  if (prefs.sfx) playAudio(id);
 }
 
-/** Light hop — haptic + hop click + whoosh air. Never throws. */
+/** Light hop — contract `hop` + whoosh air layer. Never throws. */
 export function hopTick(): void {
-  tick("hop", "hop");
+  tick("hop");
   if (prefs.sfx) playAudio("whoosh");
 }
 
-/** Cardboard thud — haptic + land + stamp. */
+/** Cardboard thud — contract `land` + stamp layer. */
 export function landTick(): void {
-  tick("land", "land");
+  tick("land");
   if (prefs.sfx) playAudio("stamp");
 }
 
 export function beanTick(): void {
-  tick("bean", "bean");
+  tick("honey_bean");
 }
 
-/** Stay-low steam cloud — soft puff, not a roast. */
+/** Stay-low steam / kit telegraph — contract `near_miss`. */
 export function steamTick(): void {
-  tick("steam", "steam");
+  tick("near_miss");
 }
 
 export function deathTick(): void {
-  tick("death", "death");
+  tick("death_stamp");
 }
 
-/** Roast alias — death path stays named for PlayField. */
+/** Roast alias — death_stamp path stays named for PlayField. */
 export function roastTick(): void {
   deathTick();
 }
 
 export function retryTick(): void {
-  tick("retry", "retry");
+  tick("menu_ui");
+}
+
+export function menuUiTick(): void {
+  tick("menu_ui");
 }
 
 export function warnTick(): void {
-  tick("warn", "warn");
+  tick("near_miss");
 }

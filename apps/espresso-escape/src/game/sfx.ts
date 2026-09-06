@@ -1,26 +1,22 @@
+import type { FeelEventId } from "./feelEvents";
+
 /**
- * Same-tick café SFX. Creative can replace the wavs in assets/sfx/.
- * expo-av is optional — hops still juice with haptics if audio is missing.
+ * Same-tick café SFX. Casa sound owns P0 contract wavs.
+ * In-repo files are placeholders until that drop — no new packs.
  */
-export type Tone =
-  | "hop"
-  | "bean"
-  | "land"
-  | "steam"
-  | "death"
-  | "retry"
-  | "roast"
-  | "warn"
-  | "whoosh"
-  | "stamp";
+export type Tone = FeelEventId | "bean" | "steam" | "death" | "retry" | "roast" | "warn" | "whoosh" | "stamp";
 
 type Loaded = { play: () => Promise<void> };
 
 /** Per-tone gain — cloth hop quiet, cardboard land louder, steam a hush. */
 export const SFX_GAIN: Record<Tone, number> = {
   hop: 0.46,
-  whoosh: 0.3,
   land: 0.64,
+  death_stamp: 0.7,
+  honey_bean: 0.5,
+  near_miss: 0.38,
+  menu_ui: 0.44,
+  whoosh: 0.3,
   stamp: 0.52,
   bean: 0.5,
   steam: 0.26,
@@ -59,10 +55,15 @@ export function bootSfx(): void {
       staysActiveInBackground: false,
       shouldDuckAndroid: true,
     }).catch(() => undefined);
+    /** Placeholders. Casa sound P0 replaces these files, same keys. */
     const files: Record<Tone, number> = {
       hop: require("../../assets/sfx/hop.wav"),
-      bean: require("../../assets/sfx/bean.wav"),
       land: require("../../assets/sfx/land.wav"),
+      death_stamp: require("../../assets/sfx/death.wav"),
+      honey_bean: require("../../assets/sfx/bean.wav"),
+      near_miss: require("../../assets/sfx/warn.wav"),
+      menu_ui: require("../../assets/sfx/retry.wav"),
+      bean: require("../../assets/sfx/bean.wav"),
       steam: require("../../assets/sfx/steam.wav"),
       death: require("../../assets/sfx/death.wav"),
       retry: require("../../assets/sfx/retry.wav"),

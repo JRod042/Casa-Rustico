@@ -1,16 +1,23 @@
+import { AUDIO_HAPTICS_CONTRACT, type FeelEventId } from "./feelEvents";
 import { playSfx, type Tone } from "./sfx";
 
 /**
- * Jorge: AUDIO is first-class. Full hop/land/bean/steam/death/retry/whoosh/stamp
- * live through this module (tiny placeholders OK). No art PNG wire.
+ * Jorge: AUDIO is first-class. Contract IDs from
+ * `2026-09-05-escape-audio-haptics-hooks`. Casa sound owns P0 wavs —
+ * in-repo files are placeholders. whoosh / stamp stay hop/land layers.
  */
 export const AUDIO_FIRST_CLASS = true;
+export { AUDIO_HAPTICS_CONTRACT };
 
-export type AudioHook = Tone;
+export type AudioHook = FeelEventId | Tone;
 
 export const AUDIO_SEAMS: Record<AudioHook, "live" | "hook"> = {
   hop: "live",
   land: "live",
+  death_stamp: "live",
+  honey_bean: "live",
+  near_miss: "live",
+  menu_ui: "live",
   bean: "live",
   steam: "live",
   death: "live",
@@ -21,7 +28,17 @@ export const AUDIO_SEAMS: Record<AudioHook, "live" | "hook"> = {
   stamp: "live",
 };
 
+const ALIAS: Partial<Record<AudioHook, FeelEventId>> = {
+  bean: "honey_bean",
+  death: "death_stamp",
+  roast: "death_stamp",
+  steam: "near_miss",
+  warn: "near_miss",
+  retry: "menu_ui",
+};
+
 export function playAudio(name: AudioHook): void {
   if (AUDIO_SEAMS[name] === "hook") return;
-  playSfx(name);
+  const id = ALIAS[name] ?? name;
+  playSfx(id);
 }

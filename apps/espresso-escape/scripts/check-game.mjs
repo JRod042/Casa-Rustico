@@ -289,6 +289,15 @@ if (!/AUDIO_FIRST_CLASS/.test(sources) || !/whoosh: "live"/.test(sources) || !/s
 if (!/HAPTIC_PROFILES/.test(sources) || !/SFX_GAIN/.test(sources)) {
   throw new Error("densified haptic profiles + per-tone SFX gain must stay");
 }
+if (
+  !/death_stamp/.test(sources) ||
+  !/honey_bean/.test(sources) ||
+  !/near_miss/.test(sources) ||
+  !/menu_ui/.test(sources) ||
+  !/escape-audio-haptics-hooks/.test(sources)
+) {
+  throw new Error("audio/haptics must use the contract matrix (hop/land/death_stamp/honey_bean/near_miss/menu_ui)");
+}
 if (!/steamTick/.test(sources) || !/deathTick/.test(sources) || !/retryTick/.test(sources)) {
   throw new Error("steam / death / retry must stay wired through feel ticks");
 }

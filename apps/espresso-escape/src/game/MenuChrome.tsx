@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
+import { menuUiTick } from "./feel";
 import { kraftSource } from "./kraftAssets";
 
 /** Scrapbook sheet: soft paper shadow, cardboard, cream face, stitch. Casa only. */
@@ -42,17 +43,23 @@ export function StickerButton({
   onPress,
   primary = false,
   accessibilityLabel,
+  quiet = false,
 }: {
   label: string;
   onPress: () => void;
   primary?: boolean;
   accessibilityLabel?: string;
+  /** Skip menu_ui — caller already ticks (Brew again). */
+  quiet?: boolean;
 }) {
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
-      onPress={onPress}
+      onPress={() => {
+        if (!quiet) menuUiTick();
+        onPress();
+      }}
       style={[chrome.sticker, primary ? chrome.stickerPrimary : chrome.stickerGhost]}
     >
       <View style={chrome.stickerStitch} />

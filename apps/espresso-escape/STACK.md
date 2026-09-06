@@ -31,8 +31,8 @@ Cited: `2026-09-05-escape-best-in-class-master-plan`, `2026-09-05-escape-appdev-
 
 | Layer | On branch now |
 |---|---|
-| Haptics | `HAPTIC_PROFILES` — distinct hop / land / bean / steam / death / retry / warn (intensity + sharpness; 2-step land/death). AHAP still null |
-| Audio | **First-class** — live hop / land / bean / steam / death / retry / whoosh / stamp (+ roast / warn). `SFX_GAIN` per tone. Tiny placeholders. |
+| Haptics | Contract `2026-09-05-escape-audio-haptics-hooks`: hop / land / death_stamp / honey_bean / near_miss / menu_ui. AHAP still null |
+| Audio | Same IDs. Casa sound owns P0 wavs — placeholders + whoosh/stamp hop-land layers. `SFX_GAIN` per tone. |
 
 Steam / death / retry use tiny placeholder wavs. No AHAP files. Device fps still OPEN.
 

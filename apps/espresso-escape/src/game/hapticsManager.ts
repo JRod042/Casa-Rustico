@@ -1,15 +1,17 @@
 import { Vibration } from "react-native";
 import * as Haptics from "expo-haptics";
+import { AUDIO_HAPTICS_CONTRACT, type FeelEventId } from "./feelEvents";
 
 /**
- * Core Haptics — Sony-quality feel target, placeholders only.
- * Distinct hop / land / bean / steam / death / retry / warn.
+ * Core Haptics — contract matrix only.
+ * hop / land / death_stamp / honey_bean / near_miss / menu_ui.
  * AHAP files stay null — intensity/sharpness is the ready seam.
  */
 export const MASTER_PLAN = "2026-09-05-escape-best-in-class-master-plan";
 export const APPDEV_CHECKLIST = "2026-09-05-escape-appdev-element-checklist";
+export { AUDIO_HAPTICS_CONTRACT };
 
-export type HapticProfile = "hop" | "land" | "bean" | "steam" | "death" | "retry" | "warn";
+export type HapticProfile = FeelEventId;
 
 export type HapticStep = {
   kind: "impact" | "notify" | "select";
@@ -19,7 +21,7 @@ export type HapticStep = {
   waitMs: number;
 };
 
-/** AHAP-shaped table. Files stay null until a .ahap lands. */
+/** AHAP-shaped table keyed to the contract matrix. */
 export const HAPTIC_PROFILES: Record<
   HapticProfile,
   { intensity: number; sharpness: number; steps: HapticStep[] }
@@ -37,17 +39,7 @@ export const HAPTIC_PROFILES: Record<
       { kind: "impact", impact: Haptics.ImpactFeedbackStyle.Medium, buzzMs: 10, waitMs: 28 },
     ],
   },
-  bean: {
-    intensity: 0.22,
-    sharpness: 0.55,
-    steps: [{ kind: "select", buzzMs: 6, waitMs: 0 }],
-  },
-  steam: {
-    intensity: 0.18,
-    sharpness: 0.12,
-    steps: [{ kind: "impact", impact: Haptics.ImpactFeedbackStyle.Soft, buzzMs: 7, waitMs: 0 }],
-  },
-  death: {
+  death_stamp: {
     intensity: 0.86,
     sharpness: 0.44,
     steps: [
@@ -55,26 +47,30 @@ export const HAPTIC_PROFILES: Record<
       { kind: "impact", impact: Haptics.ImpactFeedbackStyle.Heavy, buzzMs: 18, waitMs: 40 },
     ],
   },
-  retry: {
-    intensity: 0.42,
-    sharpness: 0.3,
-    steps: [{ kind: "impact", impact: Haptics.ImpactFeedbackStyle.Medium, buzzMs: 12, waitMs: 0 }],
+  honey_bean: {
+    intensity: 0.22,
+    sharpness: 0.55,
+    steps: [{ kind: "select", buzzMs: 6, waitMs: 0 }],
   },
-  warn: {
+  near_miss: {
     intensity: 0.26,
     sharpness: 0.4,
     steps: [{ kind: "impact", impact: Haptics.ImpactFeedbackStyle.Light, buzzMs: 8, waitMs: 0 }],
+  },
+  menu_ui: {
+    intensity: 0.42,
+    sharpness: 0.3,
+    steps: [{ kind: "impact", impact: Haptics.ImpactFeedbackStyle.Medium, buzzMs: 12, waitMs: 0 }],
   },
 };
 
 export const AHAP_SEAMS: Record<HapticProfile, string | null> = {
   hop: null,
   land: null,
-  bean: null,
-  steam: null,
-  death: null,
-  retry: null,
-  warn: null,
+  death_stamp: null,
+  honey_bean: null,
+  near_miss: null,
+  menu_ui: null,
 };
 
 function audioServicesBuzz(ms: number): void {

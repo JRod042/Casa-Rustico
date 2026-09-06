@@ -551,6 +551,7 @@ export function PlayField({
             </Text>
             <StickerButton
               primary
+              quiet
               label="Brew again"
               accessibilityLabel="Play again"
               onPress={onRetry}
