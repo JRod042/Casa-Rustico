@@ -5,11 +5,10 @@ import Animated, {
 } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
-import { KitThumb } from "./sprites";
 
 const SLAT = 56;
 
-/** Linen floor, kraft counter, espresso wall — the café line behind the run. */
+/** Kraft counter, cream linen, highlands mist — café line without tourist clutter. */
 export function CafeStage({
   width,
   height,
@@ -25,8 +24,11 @@ export function CafeStage({
   const slatStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: -((scroll.value % SLAT) + SLAT) }],
   }));
-  const railStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: -(((scroll.value * 0.35) % SLAT) + SLAT) }],
+  const mistFar = useAnimatedStyle(() => ({
+    transform: [{ translateX: -(((scroll.value * 0.12) % 180) + 40) }],
+  }));
+  const mistNear = useAnimatedStyle(() => ({
+    transform: [{ translateX: -(((scroll.value * 0.22) % 160) + 20) }],
   }));
 
   return (
@@ -36,30 +38,32 @@ export function CafeStage({
         locations={[0, 0.42, 1]}
         style={StyleSheet.absoluteFill}
       />
-      <View style={[styles.shelf, { top: groundY * 0.22 }]}>
-        <KitThumb kind="grinder" size={28} />
-        <KitThumb kind="portafilter" size={28} />
-        <KitThumb kind="steam" size={28} />
-        <KitThumb kind="bean" size={22} />
-      </View>
-      <View style={[styles.shelfRail, { top: groundY * 0.22 + 30, width }]} />
-      <View style={[styles.backsplash, { top: groundY - 36, height: 36 }]} />
       <Animated.View
         style={[
-          styles.railRow,
-          { top: groundY - 28, width: width + SLAT * 4 },
-          railStyle,
+          styles.mistBand,
+          { top: groundY * 0.1, width: width + 220, opacity: 0.14 },
+          mistFar,
         ]}
-      >
-        {Array.from({ length: 18 }, (_, i) => (
-          <View key={`r${i}`} style={styles.railTick} />
-        ))}
-      </Animated.View>
+      />
+      <Animated.View
+        style={[
+          styles.mistBand,
+          {
+            top: groundY * 0.26,
+            width: width + 180,
+            height: 36,
+            opacity: 0.1,
+          },
+          mistNear,
+        ]}
+      />
+      <View style={[styles.shelfRail, { top: groundY * 0.22 + 30, width }]} />
+      <View style={[styles.backsplash, { top: groundY - 36, height: 36 }]} />
       <View style={[styles.counter, { top: groundY - 10 }]} />
       <View style={[styles.counterLip, { top: groundY - 2 }]} />
       <LinearGradient
-        colors={[t.linenDim, "#D8C4A4", t.wood]}
-        locations={[0, 0.35, 1]}
+        colors={[t.linen, "#E4D2B8", t.kraftDeep]}
+        locations={[0, 0.38, 1]}
         style={[styles.floor, { top: groundY, height: floorH }]}
       />
       <Animated.View
@@ -80,23 +84,20 @@ export function CafeStage({
 }
 
 const styles = StyleSheet.create({
-  shelf: {
+  mistBand: {
     position: "absolute",
-    left: 28,
-    right: 28,
-    height: 32,
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    alignItems: "flex-end",
-    opacity: 0.38,
+    left: -40,
+    height: 48,
+    borderRadius: 999,
+    backgroundColor: t.linen,
   },
   shelfRail: {
     position: "absolute",
     left: 20,
-    height: 3,
+    height: 2,
     borderRadius: 2,
     backgroundColor: t.kraft,
-    opacity: 0.55,
+    opacity: 0.35,
   },
   backsplash: {
     position: "absolute",
@@ -106,20 +107,6 @@ const styles = StyleSheet.create({
     opacity: 0.55,
     borderTopWidth: 1,
     borderTopColor: t.line,
-  },
-  railRow: {
-    position: "absolute",
-    left: 0,
-    height: 10,
-    flexDirection: "row",
-    gap: 40,
-  },
-  railTick: {
-    width: 16,
-    height: 10,
-    borderRadius: 2,
-    backgroundColor: t.glow,
-    opacity: 0.22,
   },
   counter: {
     position: "absolute",
@@ -132,9 +119,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
-    height: 4,
-    backgroundColor: t.glow,
-    opacity: 0.55,
+    height: 3,
+    backgroundColor: t.kraft,
+    opacity: 0.85,
   },
   floor: {
     position: "absolute",
@@ -153,7 +140,7 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 2,
     backgroundColor: t.kraftDeep,
-    opacity: 0.35,
+    opacity: 0.28,
   },
   plank: {
     position: "absolute",
@@ -161,6 +148,6 @@ const styles = StyleSheet.create({
     right: 0,
     height: 2,
     backgroundColor: t.kraftDeep,
-    opacity: 0.28,
+    opacity: 0.22,
   },
 });
