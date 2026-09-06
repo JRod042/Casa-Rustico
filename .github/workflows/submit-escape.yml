@@ -1,0 +1,49 @@
+name: Submit Escape IPA
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_id:
+        description: "EAS iOS build UUID to submit"
+        required: true
+        default: "e9d33c9b-c694-473c-bdef-7273e5dbad5c"
+        type: string
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/espresso-escape
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/espresso-escape/package-lock.json
+
+      - name: Setup Expo / EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: 16.28.0
+          packager: npm
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Submit existing IPA
+        env:
+          EXPO_ASC_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          EXPO_ASC_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+          APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
+        run: |
+          if [ -n "${APPLE_API_KEY_P8:-}" ]; then
+            printf '%s\n' "$APPLE_API_KEY_P8" > asc-api-key.p8
+            export EXPO_ASC_API_KEY_PATH="$PWD/asc-api-key.p8"
+          fi
+          eas submit --platform ios --id ${{ inputs.build_id }} --profile production --non-interactive
