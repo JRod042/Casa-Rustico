@@ -24,7 +24,7 @@ Full 3D on Expo 57 adds GL startup, shader compile, and a second render loop nex
 
 | Candidate | On branch? | Note |
 |---|---|---|
-| **matter-js** 0.20 | **Yes** | Sensor `Query.collides` for ~63% hurtboxes |
+| **matter-js** 0.20 | **Yes** | Sensor `Query.collides` — hurtbox 18×24 on 30×38 sticker |
 | rapier | No | WASM + native glue. Wait for kit-eval. |
 | cannon-es | No | 3D world. Wait until a 3D renderer exists. |
 | react-native-game-engine | No | Class-entity loop fights Reanimated RAF. |
