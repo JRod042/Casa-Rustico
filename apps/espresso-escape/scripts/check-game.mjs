@@ -170,6 +170,30 @@ if (!/V2_HOLD/.test(sources) || !/denser-v2/.test(sources)) {
 if (!/CORE_FEEL_BRIEF/.test(sources) || !/escape-lbp-reviews-core-feel/.test(sources)) {
   throw new Error("must cite 2026-09-05-escape-lbp-reviews-core-feel in feel");
 }
+if (!/FEEL_QA_LOCKED/.test(sources)) {
+  throw new Error("Feel QA lock must stay on physics");
+}
+const phys = readFileSync(join(root, "src/game/physics.ts"), "utf8");
+const tel = phys.match(/TELEGRAPH_S = ([\d.]+)/);
+if (!tel || Number(tel[1]) < 0.55) {
+  throw new Error("soft-danger telegraph must stay ≥550ms");
+}
+const gUp = phys.match(/GRAVITY_UP = (\d+)/);
+const gDown = phys.match(/GRAVITY_DOWN = (\d+)/);
+if (!gUp || !gDown || Number(gDown[1]) <= Number(gUp[1])) {
+  throw new Error("fall gravity must stay heavier than rise (not a floaty jump)");
+}
+if (!/squashX.value = 0.92/.test(sources) || !/squashX.value = 1.32/.test(sources)) {
+  throw new Error("squash hop + cardboard land thump must stay wired");
+}
+if (
+  !/scroll.value \* 0.02/.test(sources) ||
+  !/scroll.value \* 0.08/.test(sources) ||
+  !/scroll.value \* 0.16/.test(sources) ||
+  !/scroll.value \* 0.3/.test(sources)
+) {
+  throw new Error("diorama must keep ≥4 parallax plates");
+}
 if (!/CRAFT_TECHNIQUE_BRIEF/.test(sources) || !/escape-lbp-craft-technique/.test(sources)) {
   throw new Error("must cite 2026-09-05-escape-lbp-craft-technique in kraftMap");
 }

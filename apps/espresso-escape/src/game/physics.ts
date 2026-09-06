@@ -36,6 +36,13 @@ export const BEAN_W = 18;
 export const BEAN_H = 24;
 
 /**
+ * Feel QA lock (`2026-09-05-escape-lbp-reviews-core-feel`):
+ * squash hop + fall>rise + land thump — not a floaty toy jump.
+ * Soft-danger telegraph must stay ≥550ms. Casa kraft only.
+ */
+export const FEEL_QA_LOCKED = true;
+
+/**
  * Committed tap-hop. Fall is heavier than rise so the bean lands with weight.
  * Hold only eases the fall for high honey beans.
  */
