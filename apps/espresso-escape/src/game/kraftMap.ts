@@ -9,6 +9,7 @@
  * the live `require()` files in this table (one commit, no loader rewrite).
  */
 export const V2_HOLD = true;
+export const USE_CRAFT_ART = false;
 export const KRAFT_PACK_TARGET = "denser-v2";
 /** Cacique: INVENTORY.md is STALE. Creative still finishing 6 parallax plates. */
 export const INVENTORY_STALE = true;

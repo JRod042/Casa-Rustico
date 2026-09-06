@@ -271,6 +271,21 @@ if (!/testID="escape-coach"/.test(sources)) {
 if (!/hopTick/.test(sources) || !/expo-haptics/.test(sources)) {
   throw new Error("Apple-style hop haptics must stay wired");
 }
+if (!/hapticsManager/.test(sources) || !/AHAP_SEAMS/.test(sources)) {
+  throw new Error("Core Haptics scaffolding must stay in hapticsManager");
+}
+if (!/AUDIO_SEAMS/.test(sources) || !/whoosh/.test(sources) || !/stamp/.test(sources)) {
+  throw new Error("audio hook seams (whoosh/stamp/steam) must stay in audioHooks");
+}
+if (!/MASTER_PLAN/.test(sources) || !/escape-best-in-class-master-plan/.test(sources)) {
+  throw new Error("must cite 2026-09-05-escape-best-in-class-master-plan");
+}
+if (!/APPDEV_CHECKLIST/.test(sources) || !/escape-appdev-element-checklist/.test(sources)) {
+  throw new Error("must cite 2026-09-05-escape-appdev-element-checklist");
+}
+if (!/USE_CRAFT_ART = false/.test(sources)) {
+  throw new Error("USE_CRAFT_ART must stay false until Jorge WIRE");
+}
 if (!/#F7F3EC/.test(sources) || !/#A47C59/.test(sources) || !/#8D6C4F/.test(sources)) {
   throw new Error("kraft cream / kraft / dark kraft tokens must stay on the culture brief");
 }

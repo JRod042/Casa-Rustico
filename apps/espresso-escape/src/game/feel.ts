@@ -1,6 +1,6 @@
-import { Vibration } from "react-native";
-import * as Haptics from "expo-haptics";
-import { bootSfx, muteSfx, playSfx } from "./sfx";
+import { playAudio } from "./audioHooks";
+import { playHaptic } from "./hapticsManager";
+import { bootSfx, muteSfx } from "./sfx";
 
 /**
  * Core feelings from `2026-09-05-escape-lbp-reviews-core-feel`
@@ -35,57 +35,29 @@ export function armFeel(): void {
   bootSfx();
 }
 
-function buzz(ms: number): void {
-  try {
-    Vibration.vibrate(ms);
-  } catch {
-    // Web / denied haptics should never stall a run.
-  }
-}
-
-/** Light hop — iOS impact, Android vibrate fallback. Never throws. */
+/** Light hop — hapticsManager + audio hook. Never throws. */
 export function hopTick(): void {
-  if (prefs.haptics) {
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft).catch(() => {
-      buzz(8);
-    });
-  }
-  if (prefs.sfx) playSfx("hop");
+  if (prefs.haptics) playHaptic("hop");
+  if (prefs.sfx) playAudio("hop");
 }
 
 /** Cardboard thud — heavier than the cloth hop. */
 export function landTick(): void {
-  if (prefs.haptics) {
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {
-      buzz(14);
-    });
-  }
-  if (prefs.sfx) playSfx("land");
+  if (prefs.haptics) playHaptic("land");
+  if (prefs.sfx) playAudio("land");
 }
 
 export function beanTick(): void {
-  if (prefs.haptics) {
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft).catch(() => {
-      buzz(6);
-    });
-  }
-  if (prefs.sfx) playSfx("bean");
+  if (prefs.haptics) playHaptic("bean");
+  if (prefs.sfx) playAudio("bean");
 }
 
 export function roastTick(): void {
-  if (prefs.haptics) {
-    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {
-      buzz(36);
-    });
-  }
-  if (prefs.sfx) playSfx("roast");
+  if (prefs.haptics) playHaptic("death");
+  if (prefs.sfx) playAudio("roast");
 }
 
 export function warnTick(): void {
-  if (prefs.haptics) {
-    void Haptics.selectionAsync().catch(() => {
-      buzz(4);
-    });
-  }
-  if (prefs.sfx) playSfx("warn");
+  if (prefs.haptics) playHaptic("hop");
+  if (prefs.sfx) playAudio("warn");
 }

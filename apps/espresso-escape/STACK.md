@@ -25,6 +25,17 @@ Kit-eval briefs: `2026-09-05-escape-pro-kit-eval`, `2026-09-05-escape-pro-stack-
 
 Cited: `2026-09-05-escape-appstore-controls-feel-hits`. Live: coyote 130ms, buffer 150ms, hurtbox 18×24 on 30×38, telegraph 0.62s, retry 320ms.
 
+## Haptics + audio (scaffold only — master plan §10)
+
+Cited: `2026-09-05-escape-best-in-class-master-plan`, `2026-09-05-escape-appdev-element-checklist`.
+
+| Layer | On branch now |
+|---|---|
+| Haptics | `hapticsManager` — hop / land / death / bean. Expo Haptics first; Vibration as AudioServices-class fallback. `AHAP_SEAMS` all `null` |
+| Audio | `audioHooks` — live hop / land / bean / roast / warn wavs. whoosh / stamp / steam are **hooks** (no packs) |
+
+No new wav packs. No AHAP files. Device fps still OPEN.
+
 ## Art
 
-**V2_HOLD.** No Creative PNG wire. `INVENTORY.md` is STALE.
+**V2_HOLD.** `USE_CRAFT_ART=false` until Jorge WIRE. No Creative PNG wire. `INVENTORY.md` is STALE.

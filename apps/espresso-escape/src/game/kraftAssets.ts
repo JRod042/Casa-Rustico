@@ -2,10 +2,11 @@ import type { ImageSourcePropType } from "react-native";
 
 /**
  * In-repo Casa kraft pack (playable now).
- * Denser v2 box is HALTED (V2_HOLD) until Jorge says WIRE.
- * Extra plate names alias cafe-bg so a later overwrite is one commit.
- * See kraftMap.ts — do not treat v1 first pack as final.
+ * USE_CRAFT_ART=false until Jorge says WIRE — no new Creative PNG require().
+ * Denser v2 box is HALTED (V2_HOLD).
  */
+export const USE_CRAFT_ART = false;
+
 export const KRAFT_PACK = {
   runner: require("../../assets/kraft/runner.png"),
   grinder: require("../../assets/kraft/grinder.png"),

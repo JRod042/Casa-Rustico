@@ -46,7 +46,7 @@ Feel (2–3 deaths + 1 long run):
 - [ ] Roast → one tap Brew again in under half a second. Next opener is easy (≥2s).
 - [ ] Hop feels like cloth; landing is a cardboard thud; beans pop like fabric.
 - [ ] Café has depth and idle life (planes, steam, dust, plants, cloth, cups).
-- [ ] Hop / bean / roast / land fire haptics + SFX **after** the physics tick.
+- [ ] Hop / bean / roast / land fire haptics + SFX **after** the physics tick (`hapticsManager` + `audioHooks`; whoosh/stamp/steam not shipped).
 
 Menus:
 
