@@ -104,7 +104,7 @@ export function EscapeWelcome({ onFinished }: Props) {
         </View>
 
         <Text style={styles.wordmark}>Espresso Escape</Text>
-        <Text style={styles.tagline}>A handmade hop through the highland café.</Text>
+        <Text style={styles.tagline}>A handmade hop through a living highland café.</Text>
 
         <View style={styles.actions}>
           <Pressable

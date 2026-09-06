@@ -29,7 +29,8 @@ const DUST = [
 
 /**
  * Living highland café diorama on the current RN + Reanimated stack.
- * LBP craft = receding paper planes + idle life, not a jungle reskin.
+ * Core feel brief `2026-09-05-escape-lbp-reviews-core-feel`: diorama depth,
+ * wonder/inspection, cozy craft. LBP = receding paper planes — not a jungle reskin.
  * v2 plate keys alias cafe-bg until Jorge wires denser art (V2_HOLD).
  */
 export function CafeStage({

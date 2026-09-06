@@ -343,10 +343,10 @@ export function PlayField({
         hopTick();
       } else if (landed) {
         if (!reduceMotion) {
-          squashX.value = 1.26;
-          squashY.value = 0.68;
-          squashX.value = withTiming(1, { duration: 200 });
-          squashY.value = withTiming(1, { duration: 200 });
+          squashX.value = 1.32;
+          squashY.value = 0.62;
+          squashX.value = withTiming(1, { duration: 170 });
+          squashY.value = withTiming(1, { duration: 170 });
         }
         landTick();
       }
@@ -509,7 +509,7 @@ export function PlayField({
           <PaperSheet>
             <Text style={styles.overlayTitle}>Paused</Text>
             <Text style={styles.overlayBody}>
-              The café holds still. Look around — then resume. Nothing is for sale here.
+              The café holds still. Look around the paper diorama — then hop again. Nothing is for sale here.
             </Text>
             <StickerButton
               primary

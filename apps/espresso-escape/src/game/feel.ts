@@ -2,6 +2,15 @@ import { Vibration } from "react-native";
 import * as Haptics from "expo-haptics";
 import { bootSfx, muteSfx, playSfx } from "./sfx";
 
+/**
+ * Core feelings from `2026-09-05-escape-lbp-reviews-core-feel`
+ * (file may live on the ops box; names stay in-repo).
+ * Handmade warmth → wonder → tactile honesty → soft danger → playful
+ * weight → charm → invitation → cozy craft → diorama depth → soft-chaos joy.
+ * Juice is cloth hop + cardboard land thump — not a floaty toy jump.
+ */
+export const CORE_FEEL_BRIEF = "2026-09-05-escape-lbp-reviews-core-feel";
+
 /** Death → retry lock. Crossy/Flappy-fast, but long enough that the roast tap does not eat the next run. */
 export const RETRY_LOCK_MS = 320;
 

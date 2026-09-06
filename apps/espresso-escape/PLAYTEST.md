@@ -20,7 +20,7 @@ Brand lock: cream `#F7F3EC`, kraft `#A47C59`, dark kraft `#8D6C4F`. Highland caf
 
 PR #18 changed spawn fairness and packaging. Owner: that binary still “plays but nothing changed.” This pass is feel + menus + living depth + **hooks** for denser v2 — not a v1 art swap.
 
-Core feelings (ops briefs `escape-lbp-reviews-core-feel` + `escape-lbp-craft-technique` — files not always on this VM): handmade warmth, wonder, tactile honesty, soft danger, playful weight, charm, invitation, cozy craft, diorama depth, soft-chaos joy. Not a jungle reskin. Not Pandora / blue-alien.
+Cited brief: `2026-09-05-escape-lbp-reviews-core-feel` (ops file not always on this VM). Ranked: handmade warmth → wonder/inspection → tactile honesty → soft danger → playful weight → charm → creativity-as-invitation → cozy craft → diorama depth → soft-chaos joy. Juice: cloth hop + cardboard land thump — not a floaty toy jump. Not a jungle reskin. Not Pandora / blue-alien.
 
 ## 10-minute checklist
 

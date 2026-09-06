@@ -28,10 +28,10 @@ import {
 type Screen = "menu" | "how" | "about" | "privacy" | "settings" | "play";
 
 const HOW: { title: string; body: string; kit: KitKind }[] = [
-  { title: "Jump", body: "Tap when you want the hop. The bean has cloth weight — hold a beat to float for high honey. Late taps still count if you just left the floor.", kit: "player" },
-  { title: "Dodge", body: "Read the kits. Grinders sit low. Portafilters are tall — hop both. Steam is warm cardboard cloud — stay on the linen.", kit: "grinder" },
+  { title: "Jump", body: "Tap when you want the hop. Cloth rise, cardboard land — not a floaty toy. Hold a beat only for high honey. Late taps still count if you just left the floor.", kit: "player" },
+  { title: "Dodge", body: "Read the kits. Soft danger: grinders sit low, portafilters are tall, steam is a warm cardboard cloud. Stay on the linen.", kit: "grinder" },
   { title: "Collect", body: "Honey beans sit on the safe line. +5 each. The run itself scores as you go.", kit: "bean" },
-  { title: "Brew again", body: "One soft roast ends the line. Tap to go again. No lives to buy. Pause anytime and look around.", kit: "portafilter" },
+  { title: "Brew again", body: "One soft roast ends the line. Tap to go again — the café invites another hop. Pause anytime and look around.", kit: "portafilter" },
 ];
 
 const BAR: { kit: KitKind; label: string }[] = [
@@ -263,7 +263,7 @@ function Menu({
         >
         <PaperSheet>
         <Text style={styles.panelTitle}>Settings</Text>
-        <Text style={styles.tag}>Haptics and café ticks. Nothing to buy.</Text>
+        <Text style={styles.tag}>Cloth hops, cardboard landings. Nothing to buy.</Text>
         <Pressable
           accessibilityRole="switch"
           accessibilityState={{ checked: prefs.haptics }}
@@ -313,7 +313,7 @@ function Menu({
       </View>
       <Text style={styles.brand}>CASA RÚSTICO</Text>
       <Text style={styles.title}>Espresso Escape</Text>
-      <Text style={styles.tag}>A handmade hop through the highland café.</Text>
+      <Text style={styles.tag}>A handmade hop through a living highland café.</Text>
       <View style={styles.kitRow}>
         <KitThumb kind="player" size={42} />
         <KitThumb kind="bean" size={36} />

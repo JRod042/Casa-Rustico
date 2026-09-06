@@ -167,6 +167,9 @@ if (!/KRAFT_DROPIN/.test(sources)) {
 if (!/V2_HOLD/.test(sources) || !/denser-v2/.test(sources)) {
   throw new Error("denser v2 hold must stay in kraftMap — do not treat v1 as final");
 }
+if (!/CORE_FEEL_BRIEF/.test(sources) || !/escape-lbp-reviews-core-feel/.test(sources)) {
+  throw new Error("must cite 2026-09-05-escape-lbp-reviews-core-feel in feel");
+}
 if (!/scrapbook|paperEdge|stampRing/.test(sources)) {
   throw new Error("menus must keep scrapbook stitch / paper-edge chrome");
 }
