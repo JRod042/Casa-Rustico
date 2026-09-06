@@ -16,11 +16,11 @@ function aabbHits(a, b, pad = 0) {
 
 const PLAYER_H = 38;
 const JUMP_V = -880;
-const GRAVITY_UP = 2300;
+const GRAVITY_UP = 2200;
 const BASE_SPEED = 280;
 const MAX_SPEED = 400;
 const MAX_DT = 1 / 30;
-const INTRO_EMPTY_S = 2.2;
+const INTRO_EMPTY_S = 2.3;
 
 function speedForRun(time) {
   const t = Math.min(1, Math.max(0, time / 90));
@@ -28,7 +28,7 @@ function speedForRun(time) {
   return BASE_SPEED + (MAX_SPEED - BASE_SPEED) * eased;
 }
 
-const player = { x: 46, y: 205, w: 18, h: 28 };
+const player = { x: 46, y: 205, w: 18, h: 24 };
 const miss = { x: 120, y: 200, w: 42, h: 48 };
 const hit = { x: 50, y: 210, w: 32, h: 40 };
 if (aabbHits(player, miss)) throw new Error("false positive collision");
@@ -58,7 +58,7 @@ if (INTRO_EMPTY_S < 2) throw new Error("intro must leave a teach beat before the
 const jumpH = (JUMP_V * JUMP_V) / (2 * GRAVITY_UP);
 if (jumpH < 88) throw new Error("committed hop must clear a portafilter");
 
-const roasted = { x: 70, y: 200, w: 18, h: 28 };
+const roasted = { x: 70, y: 200, w: 18, h: 24 };
 if (!aabbHits(roasted, { x: 70, y: 200, w: 32, h: 40 })) {
   throw new Error("overlap should roast the run");
 }
@@ -133,6 +133,18 @@ if (!/testID="escape-privacy"/.test(sources)) {
 }
 if (!/testID="escape-how"/.test(sources) || !/Play Espresso Escape/.test(sources)) {
   throw new Error("How-to must offer a working Play path");
+}
+if (!/testID="escape-settings"/.test(sources)) {
+  throw new Error("Settings screen is required");
+}
+if (!/MAGNET_R/.test(sources) || !/TELEGRAPH_S/.test(sources)) {
+  throw new Error("pickup magnet and hazard telegraph must stay wired");
+}
+if (!/scriptBeat/.test(sources) || !/Grab the honey bean/.test(sources)) {
+  throw new Error("first-run TAP→steam→bean micro-script must stay wired");
+}
+if (!/kraft\/runner\.png/.test(sources) || !/assets\/kraft/.test(sources)) {
+  throw new Error("in-run art must use the Casa kraft PNG pack");
 }
 if (!/Meet the bar/.test(sources) || !/KitThumb/.test(sources)) {
   throw new Error("How-to must show café kits (grinder, portafilter, steam)");

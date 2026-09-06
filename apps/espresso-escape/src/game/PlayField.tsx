@@ -19,7 +19,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
 import { CafeStage } from "./CafeStage";
-import { beanTick, hopTick, roastTick, RETRY_LOCK_MS } from "./feel";
+import { PaperSheet, StickerButton } from "./MenuChrome";
+import { beanTick, hopTick, roastTick, warnTick, RETRY_LOCK_MS } from "./feel";
 import {
   createRun,
   releaseJump,
@@ -48,6 +49,7 @@ type Slot = {
   h: SharedValue<number>;
   on: SharedValue<number>;
   kind: SharedValue<number>;
+  warn: SharedValue<number>;
 };
 
 type Floater = { id: number; x: number; y: number; pts: number };
@@ -56,6 +58,7 @@ const CUE: Record<Exclude<CoachCue, null>, string> = {
   tap: "Tap to hop",
   tall: "Tall kit — hop",
   steam: "Steam — stay low",
+  bean: "Grab the honey bean",
 };
 
 const ROAST: Record<DeathKind, string> = {
@@ -72,18 +75,20 @@ function makeSlots(n: number): Slot[] {
     h: makeMutable(20),
     on: makeMutable(0),
     kind: makeMutable(0),
+    warn: makeMutable(0),
   }));
 }
 
 function writeSlots(
   slots: Slot[],
-  items: { x: number; y: number; w: number; h: number; kind?: HazardKind }[]
+  items: { x: number; y: number; w: number; h: number; kind?: HazardKind; warned?: boolean }[]
 ): void {
   for (let i = 0; i < slots.length; i += 1) {
     const item = items[i];
     const slot = slots[i];
     if (!item) {
       slot.on.value = 0;
+      slot.warn.value = 0;
       continue;
     }
     slot.x.value = item.x;
@@ -92,6 +97,7 @@ function writeSlots(
     slot.h.value = item.h;
     slot.kind.value = item.kind ? KIND_CODE[item.kind] : 0;
     slot.on.value = 1;
+    slot.warn.value = item.warned ? 1 : 0;
   }
 }
 
@@ -105,7 +111,11 @@ const HazardSprite = memo(function HazardSprite({
   playerX: number;
 }) {
   const anim = useAnimatedStyle(() => ({
-    transform: [{ translateX: slot.x.value }, { translateY: slot.y.value }],
+    transform: [
+      { translateX: slot.x.value },
+      { translateY: slot.y.value },
+      { scale: slot.warn.value ? 1.08 : 1 },
+    ],
     width: slot.w.value,
     height: slot.h.value,
     opacity: slot.on.value,
@@ -122,15 +132,18 @@ const HazardSprite = memo(function HazardSprite({
   const mark = useAnimatedStyle(() => {
     const near = slot.x.value < playerX + 210 && slot.x.value > playerX - 10;
     const steam = slot.kind.value === 2;
+    const hot = slot.warn.value > 0;
     return {
-      transform: [{ translateX: slot.x.value }, { translateY: groundY - 8 }],
-      width: Math.max(18, slot.w.value),
-      opacity: slot.on.value * (near ? 0.85 : 0.28),
-      backgroundColor: steam ? "#D5E1EA" : t.danger,
+      transform: [{ translateX: slot.x.value - 4 }, { translateY: groundY - 10 }],
+      width: Math.max(22, slot.w.value + 8),
+      height: hot ? 11 : 7,
+      opacity: slot.on.value * (hot ? 1 : near ? 0.85 : 0.28),
+      backgroundColor: steam ? "#D5E1EA" : hot ? t.glow : t.danger,
     };
   });
   const kit = useAnimatedStyle(() => ({
-    borderColor: slot.kind.value === 2 ? "#D5E1EA" : t.glow,
+    borderColor: slot.warn.value ? t.glow : slot.kind.value === 2 ? "#D5E1EA" : t.kraft,
+    borderWidth: slot.warn.value ? 3 : 2,
   }));
   return (
     <>
@@ -155,7 +168,7 @@ const BeanSprite = memo(function BeanSprite({ slot }: { slot: Slot }) {
     transform: [
       { translateX: slot.x.value },
       { translateY: slot.y.value },
-      { scale: slot.on.value ? 1 + 0.05 * Math.sin(slot.x.value / 20) : 1 },
+      { scale: slot.on.value ? 1 + 0.06 * Math.sin(slot.x.value / 18) : 1 },
     ],
     width: slot.w.value,
     height: slot.h.value,
@@ -172,10 +185,12 @@ export function PlayField({
   best,
   onBest,
   onMenu,
+  tutorial = false,
 }: {
   best: number;
   onBest: (n: number) => void;
   onMenu: () => void;
+  tutorial?: boolean;
 }) {
   const { width, height } = useWindowDimensions();
   const reduceMotion = useReducedMotion();
@@ -186,7 +201,7 @@ export function PlayField({
     [width, height, groundY]
   );
 
-  const runRef = useRef<Run>(createRun(world, playerX));
+  const runRef = useRef<Run>(createRun(world, playerX, Date.now(), { tutorial }));
   const playerY = useRef(makeMutable(world.groundY - PLAYER_H)).current;
   const squashX = useRef(makeMutable(1)).current;
   const squashY = useRef(makeMutable(1)).current;
@@ -201,6 +216,7 @@ export function PlayField({
   const retryAt = useRef(0);
   const floaterId = useRef(1);
   const floaterTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const tutorialRef = useRef(tutorial);
 
   const [score, setScore] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -240,7 +256,7 @@ export function PlayField({
     (run: Run) => {
       playerY.value = run.playerY;
       scroll.value = run.distance;
-      bob.value = run.airborne || reduceMotion ? 1 : 1 + Math.sin(run.distance / 16) * 0.035;
+      bob.value = run.airborne || reduceMotion ? 1 : 1 + Math.sin(run.distance / 16) * 0.04;
       writeSlots(hazardSlots, run.hazards);
       writeSlots(beanSlots, run.beans);
     },
@@ -250,7 +266,9 @@ export function PlayField({
   const reset = useCallback(() => {
     finishing.current = false;
     retryAt.current = 0;
-    runRef.current = createRun(world, playerX);
+    runRef.current = createRun(world, playerX, Date.now(), {
+      tutorial: tutorialRef.current,
+    });
     squashX.value = 1;
     squashY.value = 1;
     bob.value = 1;
@@ -281,12 +299,12 @@ export function PlayField({
       if (finishing.current) return;
       finishing.current = true;
       retryAt.current = Date.now() + RETRY_LOCK_MS;
+      tutorialRef.current = false;
       setDead(true);
       setDeathKind(kind);
       if (!reduceMotion) {
-        flash.value = withSequence(withTiming(0.4, { duration: 70 }), withTiming(0, { duration: 280 }));
+        flash.value = withSequence(withTiming(0.45, { duration: 70 }), withTiming(0, { duration: 280 }));
       }
-      roastTick();
       const next = await saveBestScore(finalScore);
       onBest(next);
     },
@@ -301,24 +319,32 @@ export function PlayField({
       const dt = Math.min(0.05, (now - last.current) / 1000);
       last.current = now;
       const beforeDead = run.dead;
+      const pendingHop = run.justJumped;
+      const pendingLand = run.justLanded;
+      const pendingBean = run.justBean;
+      const pendingWarn = run.justTelegraph;
       tick(run, dt);
       syncVisual(run);
-      if (run.justJumped) {
+      const hopped = run.justJumped || pendingHop;
+      const landed = run.justLanded || pendingLand;
+      const beans = run.justBean || pendingBean;
+      const warned = run.justTelegraph || pendingWarn;
+      if (hopped) {
         if (!reduceMotion) {
-          squashX.value = 0.9;
-          squashY.value = 1.1;
-          squashX.value = withTiming(1, { duration: 140 });
-          squashY.value = withTiming(1, { duration: 140 });
+          squashX.value = 0.86;
+          squashY.value = 1.16;
+          squashX.value = withTiming(1, { duration: 160 });
+          squashY.value = withTiming(1, { duration: 160 });
         }
         hopTick();
-      } else if (run.justLanded && !reduceMotion) {
-        squashX.value = 1.12;
-        squashY.value = 0.86;
-        squashX.value = withTiming(1, { duration: 110 });
-        squashY.value = withTiming(1, { duration: 110 });
+      } else if (landed && !reduceMotion) {
+        squashX.value = 1.18;
+        squashY.value = 0.78;
+        squashX.value = withTiming(1, { duration: 130 });
+        squashY.value = withTiming(1, { duration: 130 });
       }
-      if (run.justBean) {
-        const pts = run.justBean;
+      if (beans) {
+        const pts = beans;
         const id = floaterId.current++;
         setFloaters((prev) => {
           const next = [...prev, { id, x: playerX, y: run.playerY - 12, pts }];
@@ -328,7 +354,19 @@ export function PlayField({
           setFloaters((prev) => prev.filter((f) => f.id !== id));
         }, 620);
         floaterTimers.current.push(timer);
+        if (!reduceMotion) {
+          squashX.value = 1.12;
+          squashY.value = 1.12;
+          squashX.value = withTiming(1, { duration: 120 });
+          squashY.value = withTiming(1, { duration: 120 });
+        }
         beanTick();
+      }
+      if (warned && !run.dead) {
+        if (!reduceMotion) {
+          flash.value = withSequence(withTiming(0.12, { duration: 50 }), withTiming(0, { duration: 180 }));
+        }
+        warnTick();
       }
       const nextScore = Math.floor(run.score);
       if (nextScore !== scoreRef.current) {
@@ -339,7 +377,10 @@ export function PlayField({
         cueRef.current = run.cue;
         setCue(run.cue);
       }
-      if (run.dead && !beforeDead) void finish(nextScore, run.deathKind);
+      if (run.dead && !beforeDead) {
+        roastTick();
+        void finish(nextScore, run.deathKind);
+      }
       raf.current = requestAnimationFrame(loop);
     };
     raf.current = requestAnimationFrame(loop);
@@ -348,7 +389,7 @@ export function PlayField({
       for (const id of floaterTimers.current) clearTimeout(id);
       floaterTimers.current = [];
     };
-  }, [finish, playerX, reduceMotion, squashX, squashY, syncVisual]);
+  }, [finish, flash, playerX, reduceMotion, squashX, squashY, syncVisual]);
 
   useEffect(() => {
     const onApp = (state: AppStateStatus) => {
@@ -362,15 +403,7 @@ export function PlayField({
   }, []);
 
   const onJumpDown = () => {
-    if (requestJump(runRef.current)) {
-      if (!reduceMotion) {
-        squashX.value = 0.9;
-        squashY.value = 1.1;
-        squashX.value = withTiming(1, { duration: 140 });
-        squashY.value = withTiming(1, { duration: 140 });
-      }
-      hopTick();
-    }
+    requestJump(runRef.current);
   };
   const onJumpUp = () => {
     releaseJump(runRef.current);
@@ -389,6 +422,8 @@ export function PlayField({
     if (Date.now() < retryAt.current) return;
     reset();
   };
+
+  const newBest = dead && score > 0 && score >= best;
 
   return (
     <View style={styles.play} testID="escape-play">
@@ -464,28 +499,23 @@ export function PlayField({
 
       {paused && !dead ? (
         <View style={styles.overlay} testID="escape-paused">
-          <View style={styles.sheet}>
+          <PaperSheet>
             <Text style={styles.overlayTitle}>Paused</Text>
             <Text style={styles.overlayBody}>
               The line holds. Resume when you are ready — nothing is for sale here.
             </Text>
-            <Pressable
-              accessibilityRole="button"
+            <StickerButton
+              primary
+              label="Resume"
               accessibilityLabel="Resume run"
               onPress={togglePause}
-              style={styles.primary}
-            >
-              <Text style={styles.primaryText}>Resume</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
+            />
+            <StickerButton
+              label="Menu"
               accessibilityLabel="Leave run"
               onPress={onMenu}
-              style={styles.ghost}
-            >
-              <Text style={styles.ghostText}>Menu</Text>
-            </Pressable>
-          </View>
+            />
+          </PaperSheet>
         </View>
       ) : null}
 
@@ -497,30 +527,25 @@ export function PlayField({
             onPress={onRetry}
             style={StyleSheet.absoluteFill}
           />
-          <View style={styles.sheet}>
-            <Text style={styles.overlayTitle}>Roasted</Text>
+          <PaperSheet>
+            <Text style={styles.overlayTitle}>{newBest ? "Best Run" : "Roasted"}</Text>
             <Text style={styles.overlayScore}>Score {score}</Text>
             <Text style={styles.tag}>Best {best}</Text>
             <Text style={styles.overlayBody}>
               {deathKind ? ROAST[deathKind] : "The line caught the roast."} Tap to brew again.
             </Text>
-            <Pressable
-              accessibilityRole="button"
+            <StickerButton
+              primary
+              label="Brew again"
               accessibilityLabel="Play again"
               onPress={onRetry}
-              style={styles.primary}
-            >
-              <Text style={styles.primaryText}>Brew again</Text>
-            </Pressable>
-            <Pressable
-              accessibilityRole="button"
+            />
+            <StickerButton
+              label="Menu"
               accessibilityLabel="Back to menu"
               onPress={onMenu}
-              style={styles.ghost}
-            >
-              <Text style={styles.ghostText}>Menu</Text>
-            </Pressable>
-          </View>
+            />
+          </PaperSheet>
         </View>
       ) : null}
     </View>
@@ -542,7 +567,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   hudScore: {
-    color: t.linen,
+    color: t.cream,
     fontFamily: "Fraunces_700Bold",
     fontSize: 34,
     fontWeight: "800",
@@ -563,12 +588,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: t.kraft,
-    backgroundColor: "rgba(36,24,15,0.45)",
+    backgroundColor: "rgba(247,243,236,0.16)",
   },
   hudBtnText: {
-    color: t.linen,
+    color: t.cream,
     fontFamily: "SourceSans3_600SemiBold",
     fontWeight: "600",
   },
@@ -577,9 +602,9 @@ const styles = StyleSheet.create({
   kit: {
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: t.glow,
+    borderColor: t.kraft,
     overflow: "hidden",
-    backgroundColor: t.espressoDeep,
+    backgroundColor: t.cream,
   },
   artFill: {
     ...StyleSheet.absoluteFill,
@@ -588,16 +613,18 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     top: 0,
-    borderRadius: 14,
+    borderRadius: 12,
     overflow: "hidden",
     borderWidth: 2,
-    borderColor: t.kraft,
+    borderColor: t.kraftDeep,
+    backgroundColor: t.cream,
   },
   gold: {
     borderRadius: 10,
     overflow: "hidden",
     borderWidth: 2,
-    borderColor: "#FFF1C2",
+    borderColor: t.glow,
+    backgroundColor: t.cream,
   },
   shadow: {
     position: "absolute",
@@ -633,10 +660,15 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 40,
     right: 40,
-    paddingVertical: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: "rgba(247,243,236,0.88)",
+    borderWidth: 1.5,
+    borderColor: t.kraft,
   },
   hint: {
-    color: t.linen,
+    color: t.ink,
     fontFamily: "SourceSans3_600SemiBold",
     fontSize: 15,
     letterSpacing: 0.4,
@@ -644,23 +676,13 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: "rgba(10,7,5,0.72)",
+    backgroundColor: "rgba(42,24,16,0.45)",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 24,
   },
-  sheet: {
-    alignSelf: "stretch",
-    backgroundColor: t.panel,
-    borderRadius: 22,
-    borderWidth: 1,
-    borderColor: t.kraft,
-    paddingHorizontal: 22,
-    paddingVertical: 22,
-    gap: 10,
-  },
   overlayTitle: {
-    color: t.linen,
+    color: t.ink,
     fontFamily: "Fraunces_700Bold",
     fontSize: 34,
     fontWeight: "800",
@@ -675,49 +697,17 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   overlayScore: {
-    color: t.glow,
+    color: t.kraftDeep,
     fontFamily: "SourceSans3_700Bold",
     fontSize: 22,
     fontWeight: "700",
     textAlign: "center",
   },
   tag: {
-    color: t.linenDim,
+    color: t.ink,
     fontFamily: "SourceSans3_600SemiBold",
     fontSize: 16,
     textAlign: "center",
     marginBottom: 4,
-  },
-  primary: {
-    alignSelf: "stretch",
-    backgroundColor: t.kraft,
-    borderRadius: 16,
-    paddingVertical: 16,
-    alignItems: "center",
-    marginTop: 6,
-    minHeight: 52,
-    justifyContent: "center",
-  },
-  primaryText: {
-    color: t.cream,
-    fontFamily: "SourceSans3_700Bold",
-    fontSize: 17,
-    fontWeight: "800",
-  },
-  ghost: {
-    alignSelf: "stretch",
-    borderRadius: 16,
-    paddingVertical: 14,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: t.brand,
-    minHeight: 48,
-    justifyContent: "center",
-  },
-  ghostText: {
-    color: t.linen,
-    fontFamily: "SourceSans3_700Bold",
-    fontSize: 16,
-    fontWeight: "700",
   },
 });

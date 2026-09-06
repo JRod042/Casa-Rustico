@@ -195,6 +195,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 17,
     alignItems: "center",
+    borderWidth: 2,
+    borderColor: t.kraftDeep,
+    transform: [{ rotate: "-0.4deg" }],
   },
   primaryText: {
     color: t.cream,
