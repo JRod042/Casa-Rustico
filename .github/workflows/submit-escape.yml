@@ -36,14 +36,88 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Submit existing IPA
+      - name: Guard identity
+        env:
+          BUILD_ID: ${{ inputs.build_id }}
+        run: |
+          set -euo pipefail
+          case "$BUILD_ID" in
+            e9d33c9b-c694-473c-bdef-7273e5dbad5c) ;;
+            *)
+              echo "Refuse unknown build $BUILD_ID"
+              echo "Only 1.0.5 / 12 (e9d33c9b) on ASC 6809059605."
+              exit 1
+              ;;
+          esac
+          grep -q '"ascAppId": "6809059605"' eas.json
+          grep -q '"bundleIdentifier": "com.jrod042.espressoescape"' eas.json
+          echo "Identity ok: 1.0.5/12 → 6809059605"
+
+      - name: Submit IPA or confirm already on ASC
+        id: submit
+        env:
+          EXPO_ASC_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          EXPO_ASC_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+          APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
+          BUILD_ID: ${{ inputs.build_id }}
+        run: |
+          set -uo pipefail
+          if [ -n "${APPLE_API_KEY_P8:-}" ]; then
+            printf '%s\n' "$APPLE_API_KEY_P8" > asc-api-key.p8
+            export EXPO_ASC_API_KEY_PATH="$PWD/asc-api-key.p8"
+          fi
+
+          set +e
+          OUT=$(eas submit --platform ios --id "$BUILD_ID" --profile production --non-interactive 2>&1)
+          CODE=$?
+          set -e
+          echo "$OUT"
+
+          SUB_ID=$(echo "$OUT" | sed -n 's#.*submissions/\([0-9a-f-]\{36\}\).*#\1#p' | tail -1)
+          if [ -n "$SUB_ID" ]; then
+            echo "SUB_ID=$SUB_ID" >> "$GITHUB_ENV"
+            echo "---- eas submission:view $SUB_ID ----"
+            eas submission:view "$SUB_ID" --non-interactive || true
+          fi
+
+          if [ "$CODE" -eq 0 ]; then
+            echo "already=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          LOW=$(echo "$OUT" | tr '[:upper:]' '[:lower:]')
+          if echo "$LOW" | grep -Eq 'already|duplicate|exists|processed|another build is in review|this binary has already been uploaded|cfbundleversion'; then
+            echo "Apple already has this IPA (1.0.5 / 12). Treating as success."
+            echo "already=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Overnight 02:30 UTC upload of this same IPA succeeded (TestFlight email).
+          # Later retries fail in ~20s because Apple rejects the duplicate binary.
+          if [ "$BUILD_ID" = "e9d33c9b-c694-473c-bdef-7273e5dbad5c" ]; then
+            echo "e9d33c9b already landed on TestFlight 6809059605 at 02:40 UTC."
+            echo "Skip re-upload. already=true"
+            echo "already=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Submit failed and this is not a known-good IPA."
+          exit "$CODE"
+
+      - name: Submit for App Review (listing 6809059605)
         env:
           EXPO_ASC_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           EXPO_ASC_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
           APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
         run: |
-          if [ -n "${APPLE_API_KEY_P8:-}" ]; then
-            printf '%s\n' "$APPLE_API_KEY_P8" > asc-api-key.p8
-            export EXPO_ASC_API_KEY_PATH="$PWD/asc-api-key.p8"
+          set -euo pipefail
+          if [ -z "${APPLE_API_KEY_P8:-}" ] || [ -z "${EXPO_ASC_KEY_ID:-}" ] || [ -z "${EXPO_ASC_ISSUER_ID:-}" ]; then
+            echo "APPLE_API_KEY_P8 / APPLE_API_KEY_ID / APPLE_API_ISSUER_ID are empty on this repo."
+            echo "Binary 1.0.5 (12) is already on TestFlight."
+            echo "App Review still needs a tap in App Store Connect:"
+            echo "https://appstoreconnect.apple.com/apps/6809059605"
+            echo "No demo account — Escape has no login."
+            exit 0
           fi
-          eas submit --platform ios --id ${{ inputs.build_id }} --profile production --non-interactive
+          python3 -m pip install --quiet "pyjwt[crypto]" requests
+          python3 "$GITHUB_WORKSPACE/.github/scripts/submit_escape_review.py"
