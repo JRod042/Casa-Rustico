@@ -91,6 +91,9 @@ export function CafeStage({
     opacity: 0.05 + life.value * 0.07,
     transform: [{ rotate: `${8 + life.value * 1.4}deg` }],
   }));
+  const windowShimmer = useAnimatedStyle(() => ({
+    opacity: 0.07 + life.value * 0.08,
+  }));
   const steamA = useAnimatedStyle(() => ({
     opacity: 0.14 + life.value * 0.18,
     transform: [{ translateY: -8 * life.value }, { translateX: 10 * life.value }, { scale: 1 + life.value * 0.08 }],
@@ -185,7 +188,9 @@ export function CafeStage({
       <Animated.View
         style={[styles.shaft, { top: 20, left: width * 0.58, height: groundY * 0.62, width: 46 }, lightShaft]}
       />
-      <View style={[styles.windowGlow, { top: groundY * 0.12, left: width * 0.62, width: width * 0.22 }]} />
+      <Animated.View
+        style={[styles.windowGlow, { top: groundY * 0.12, left: width * 0.62, width: width * 0.22 }, windowShimmer]}
+      />
 
       <Animated.View style={[styles.steam, { top: groundY * 0.2, left: width * 0.64, width: 78, height: 58 }, steamA]} />
       <Animated.View style={[styles.steam, { top: groundY * 0.14, left: width * 0.16, width: 56, height: 42 }, steamB]} />
@@ -292,7 +297,7 @@ const styles = StyleSheet.create({
     height: 64,
     borderRadius: 10,
     backgroundColor: t.cream,
-    opacity: 0.1,
+    opacity: 1,
   },
   steam: {
     position: "absolute",

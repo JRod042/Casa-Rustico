@@ -41,6 +41,8 @@ export const BEAN_H = 24;
  * Soft-danger telegraph must stay ≥550ms. Casa kraft only.
  */
 export const FEEL_QA_LOCKED = true;
+/** App Store control fairness — coyote, buffer, insets, telegraph, retry. */
+export const CONTROL_FAIRNESS = true;
 
 /**
  * Committed tap-hop. Fall is heavier than rise so the bean lands with weight.

@@ -10,6 +10,7 @@ import { bootSfx, muteSfx, playSfx } from "./sfx";
  * Juice is cloth hop + cardboard land thump — not a floaty toy jump.
  */
 export const CORE_FEEL_BRIEF = "2026-09-05-escape-lbp-reviews-core-feel";
+export const UNIFIED_PLAYBOOK = "2026-09-05-escape-unified-revision-playbook";
 
 /** Death → retry lock. Crossy/Flappy-fast, but long enough that the roast tap does not eat the next run. */
 export const RETRY_LOCK_MS = 320;

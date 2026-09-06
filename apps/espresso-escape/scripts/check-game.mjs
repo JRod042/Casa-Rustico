@@ -173,6 +173,15 @@ if (!/INVENTORY_STALE/.test(sources)) {
 if (!/CORE_FEEL_BRIEF/.test(sources) || !/escape-lbp-reviews-core-feel/.test(sources)) {
   throw new Error("must cite 2026-09-05-escape-lbp-reviews-core-feel in feel");
 }
+if (!/UNIFIED_PLAYBOOK/.test(sources) || !/escape-unified-revision-playbook/.test(sources)) {
+  throw new Error("must cite 2026-09-05-escape-unified-revision-playbook");
+}
+if (!/CONTROL_FAIRNESS/.test(sources)) {
+  throw new Error("App Store control-fairness lock must stay on physics");
+}
+if (!/windowShimmer/.test(sources)) {
+  throw new Error("diorama must keep living window light for wonder/immersion");
+}
 if (!/FEEL_QA_LOCKED/.test(sources)) {
   throw new Error("Feel QA lock must stay on physics");
 }

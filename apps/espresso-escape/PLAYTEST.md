@@ -20,7 +20,7 @@ Brand lock: cream `#F7F3EC`, kraft `#A47C59`, dark kraft `#8D6C4F`. Highland caf
 
 PR #18 changed spawn fairness and packaging. Owner: that binary still “plays but nothing changed.” This pass is feel + menus + living depth + **hooks** for denser v2 — not a v1 art swap.
 
-Cited briefs: `2026-09-05-escape-lbp-reviews-core-feel` and `2026-09-05-escape-lbp-craft-technique` (ops files not always on this VM).
+Cited playbook: `2026-09-05-escape-unified-revision-playbook` (ops file not always on this VM). Also `2026-09-05-escape-lbp-reviews-core-feel` and `2026-09-05-escape-lbp-craft-technique`.
 
 **Feel QA lock:** squash hop (0.92 / 1.08) + fall **3600 > 2200** rise + land thump (1.32 / 0.62). Telegraph **0.62s ≥ 550ms**. ≥4 parallax plates (7 paper planes). Not a floaty toy jump.
 

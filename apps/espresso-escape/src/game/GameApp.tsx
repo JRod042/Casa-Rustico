@@ -208,7 +208,7 @@ function Menu({
         <View style={styles.stampRing} />
         <Text style={styles.panelBody}>
           Espresso Escape is a free Casa Rústico coffee mini-game — a playable
-          run through the café line.
+          hop through a living highland café of cream paper and kraft kits.
         </Text>
         <Text style={styles.panelBody}>
           No accounts. No ads. No in-app purchases. This game does not sell coffee
