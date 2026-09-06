@@ -286,6 +286,9 @@ if (!/AUDIO_SEAMS/.test(sources) || !/whoosh/.test(sources) || !/stamp/.test(sou
 if (!/AUDIO_FIRST_CLASS/.test(sources) || !/whoosh: "live"/.test(sources) || !/stamp: "live"/.test(sources)) {
   throw new Error("whoosh/stamp must stay live — Jorge: AUDIO is first-class");
 }
+if (!/HAPTIC_PROFILES/.test(sources) || !/SFX_GAIN/.test(sources)) {
+  throw new Error("densified haptic profiles + per-tone SFX gain must stay");
+}
 if (!/steamTick/.test(sources) || !/deathTick/.test(sources) || !/retryTick/.test(sources)) {
   throw new Error("steam / death / retry must stay wired through feel ticks");
 }

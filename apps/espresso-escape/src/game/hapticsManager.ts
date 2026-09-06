@@ -2,16 +2,71 @@ import { Vibration } from "react-native";
 import * as Haptics from "expo-haptics";
 
 /**
- * Core Haptics — master plan §10 / appdev checklist.
- * hop / land / bean / steam / death / retry. AHAP files are seams (null).
- * Fallback: Expo Haptics, then Vibration (AudioServices-class buzz).
+ * Core Haptics — Sony-quality feel target, placeholders only.
+ * Distinct hop / land / bean / steam / death / retry / warn.
+ * AHAP files stay null — intensity/sharpness is the ready seam.
  */
 export const MASTER_PLAN = "2026-09-05-escape-best-in-class-master-plan";
 export const APPDEV_CHECKLIST = "2026-09-05-escape-appdev-element-checklist";
 
-export type HapticProfile = "hop" | "land" | "bean" | "steam" | "death" | "retry";
+export type HapticProfile = "hop" | "land" | "bean" | "steam" | "death" | "retry" | "warn";
 
-/** AHAP-ready paths — do not require() missing files. */
+export type HapticStep = {
+  kind: "impact" | "notify" | "select";
+  impact?: Haptics.ImpactFeedbackStyle;
+  notify?: Haptics.NotificationFeedbackType;
+  buzzMs: number;
+  waitMs: number;
+};
+
+/** AHAP-shaped table. Files stay null until a .ahap lands. */
+export const HAPTIC_PROFILES: Record<
+  HapticProfile,
+  { intensity: number; sharpness: number; steps: HapticStep[] }
+> = {
+  hop: {
+    intensity: 0.28,
+    sharpness: 0.22,
+    steps: [{ kind: "impact", impact: Haptics.ImpactFeedbackStyle.Soft, buzzMs: 8, waitMs: 0 }],
+  },
+  land: {
+    intensity: 0.72,
+    sharpness: 0.38,
+    steps: [
+      { kind: "impact", impact: Haptics.ImpactFeedbackStyle.Rigid, buzzMs: 16, waitMs: 0 },
+      { kind: "impact", impact: Haptics.ImpactFeedbackStyle.Medium, buzzMs: 10, waitMs: 28 },
+    ],
+  },
+  bean: {
+    intensity: 0.22,
+    sharpness: 0.55,
+    steps: [{ kind: "select", buzzMs: 6, waitMs: 0 }],
+  },
+  steam: {
+    intensity: 0.18,
+    sharpness: 0.12,
+    steps: [{ kind: "impact", impact: Haptics.ImpactFeedbackStyle.Soft, buzzMs: 7, waitMs: 0 }],
+  },
+  death: {
+    intensity: 0.86,
+    sharpness: 0.44,
+    steps: [
+      { kind: "notify", notify: Haptics.NotificationFeedbackType.Warning, buzzMs: 36, waitMs: 0 },
+      { kind: "impact", impact: Haptics.ImpactFeedbackStyle.Heavy, buzzMs: 18, waitMs: 40 },
+    ],
+  },
+  retry: {
+    intensity: 0.42,
+    sharpness: 0.3,
+    steps: [{ kind: "impact", impact: Haptics.ImpactFeedbackStyle.Medium, buzzMs: 12, waitMs: 0 }],
+  },
+  warn: {
+    intensity: 0.26,
+    sharpness: 0.4,
+    steps: [{ kind: "impact", impact: Haptics.ImpactFeedbackStyle.Light, buzzMs: 8, waitMs: 0 }],
+  },
+};
+
 export const AHAP_SEAMS: Record<HapticProfile, string | null> = {
   hop: null,
   land: null,
@@ -19,6 +74,7 @@ export const AHAP_SEAMS: Record<HapticProfile, string | null> = {
   steam: null,
   death: null,
   retry: null,
+  warn: null,
 };
 
 function audioServicesBuzz(ms: number): void {
@@ -29,23 +85,32 @@ function audioServicesBuzz(ms: number): void {
   }
 }
 
-/** Core Haptics AHAP play — stub until a .ahap lands. */
 export async function playAhap(_profile: HapticProfile): Promise<boolean> {
   return false;
 }
 
-function expoProfile(profile: HapticProfile): void {
+function runStep(step: HapticStep): Promise<void> {
   const run =
-    profile === "land" || profile === "retry"
-      ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
-      : profile === "death"
-        ? Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning)
-        : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
-  const fallback =
-    profile === "death" ? 36 : profile === "land" ? 14 : profile === "retry" ? 12 : profile === "steam" ? 7 : profile === "bean" ? 6 : 8;
-  void run.catch(() => {
-    audioServicesBuzz(fallback);
+    step.kind === "notify" && step.notify
+      ? Haptics.notificationAsync(step.notify)
+      : step.kind === "select"
+        ? Haptics.selectionAsync()
+        : Haptics.impactAsync(step.impact ?? Haptics.ImpactFeedbackStyle.Soft);
+  return run.catch(() => {
+    audioServicesBuzz(step.buzzMs);
   });
+}
+
+function expoProfile(profile: HapticProfile): void {
+  const { steps } = HAPTIC_PROFILES[profile];
+  void (async () => {
+    for (const step of steps) {
+      if (step.waitMs > 0) {
+        await new Promise((resolve) => setTimeout(resolve, step.waitMs));
+      }
+      await runStep(step);
+    }
+  })();
 }
 
 export function playHaptic(profile: HapticProfile): void {

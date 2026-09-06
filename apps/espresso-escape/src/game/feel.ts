@@ -75,5 +75,5 @@ export function retryTick(): void {
 }
 
 export function warnTick(): void {
-  tick("hop", "warn");
+  tick("warn", "warn");
 }

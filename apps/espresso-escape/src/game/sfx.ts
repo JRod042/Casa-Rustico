@@ -16,6 +16,20 @@ export type Tone =
 
 type Loaded = { play: () => Promise<void> };
 
+/** Per-tone gain — cloth hop quiet, cardboard land louder, steam a hush. */
+export const SFX_GAIN: Record<Tone, number> = {
+  hop: 0.46,
+  whoosh: 0.3,
+  land: 0.64,
+  stamp: 0.52,
+  bean: 0.5,
+  steam: 0.26,
+  death: 0.7,
+  retry: 0.44,
+  roast: 0.58,
+  warn: 0.38,
+};
+
 const bank: Partial<Record<Tone, Loaded>> = {};
 let booted = false;
 let muted = false;
@@ -58,7 +72,7 @@ export function bootSfx(): void {
       stamp: require("../../assets/sfx/stamp.wav"),
     };
     (Object.keys(files) as Tone[]).forEach((name) => {
-      void av.Audio.Sound.createAsync(files[name], { shouldPlay: false, volume: 0.55 })
+      void av.Audio.Sound.createAsync(files[name], { shouldPlay: false, volume: SFX_GAIN[name] })
         .then(({ sound }) => {
           bank[name] = { play: () => sound.replayAsync().then(() => undefined) };
         })

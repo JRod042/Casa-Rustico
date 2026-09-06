@@ -31,8 +31,8 @@ Cited: `2026-09-05-escape-best-in-class-master-plan`, `2026-09-05-escape-appdev-
 
 | Layer | On branch now |
 |---|---|
-| Haptics | `hapticsManager` — hop / land / bean / steam / death / retry. Expo Haptics first; Vibration fallback. `AHAP_SEAMS` all `null` |
-| Audio | **First-class** `audioHooks` — live hop / land / bean / steam / death / retry / whoosh / stamp (+ roast / warn). Tiny placeholders. |
+| Haptics | `HAPTIC_PROFILES` — distinct hop / land / bean / steam / death / retry / warn (intensity + sharpness; 2-step land/death). AHAP still null |
+| Audio | **First-class** — live hop / land / bean / steam / death / retry / whoosh / stamp (+ roast / warn). `SFX_GAIN` per tone. Tiny placeholders. |
 
 Steam / death / retry use tiny placeholder wavs. No AHAP files. Device fps still OPEN.
 
