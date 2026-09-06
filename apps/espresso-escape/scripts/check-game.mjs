@@ -170,6 +170,12 @@ if (!/V2_HOLD/.test(sources) || !/denser-v2/.test(sources)) {
 if (!/CORE_FEEL_BRIEF/.test(sources) || !/escape-lbp-reviews-core-feel/.test(sources)) {
   throw new Error("must cite 2026-09-05-escape-lbp-reviews-core-feel in feel");
 }
+if (!/CRAFT_TECHNIQUE_BRIEF/.test(sources) || !/escape-lbp-craft-technique/.test(sources)) {
+  throw new Error("must cite 2026-09-05-escape-lbp-craft-technique in kraftMap");
+}
+if (!/softShadow/.test(sources)) {
+  throw new Error("scrapbook chrome must keep a soft paper-cast shadow");
+}
 if (!/scrapbook|paperEdge|stampRing/.test(sources)) {
   throw new Error("menus must keep scrapbook stitch / paper-edge chrome");
 }

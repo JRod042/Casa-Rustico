@@ -10,6 +10,8 @@
  */
 export const V2_HOLD = true;
 export const KRAFT_PACK_TARGET = "denser-v2";
+/** Research lane — sackcloth / cardboard / scrapbook / parallax. No Sackboy IP. */
+export const CRAFT_TECHNIQUE_BRIEF = "2026-09-05-escape-lbp-craft-technique";
 
 export const CREATIVE_BOX = "/workspace/casa-brand/exports/escape-kraft/game";
 

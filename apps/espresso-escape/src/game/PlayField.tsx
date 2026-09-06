@@ -241,15 +241,15 @@ export function PlayField({
   }));
   const shadowStyle = useAnimatedStyle(() => {
     const lift = Math.max(0, groundY - PLAYER_H - playerY.value);
-    const s = Math.max(0.4, 1 - lift / 150);
+    const s = Math.max(0.36, 1 - lift / 160);
     return {
       transform: [
-        { translateX: playerX + 3 },
-        { translateY: groundY - 8 },
+        { translateX: playerX - 2 },
+        { translateY: groundY - 6 },
         { scaleX: s },
       ],
-      opacity: 0.22 + s * 0.28,
-      width: PLAYER_W - 4,
+      opacity: 0.1 + s * 0.16,
+      width: PLAYER_W + 8,
     };
   });
   const flashStyle = useAnimatedStyle(() => ({
@@ -638,9 +638,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     top: 0,
-    height: 8,
+    height: 12,
     borderRadius: 999,
-    backgroundColor: "#140E0A",
+    backgroundColor: t.espresso,
   },
   floorMark: {
     position: "absolute",

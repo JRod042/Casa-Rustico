@@ -9,7 +9,7 @@ import {
 import { escapeWelcomeTheme as t } from "../welcome/theme";
 import { kraftSource } from "./kraftAssets";
 
-/** Scrapbook sheet: cardboard back, cream face, stitch, paper edge. Casa only. */
+/** Scrapbook sheet: soft paper shadow, cardboard, cream face, stitch. Casa only. */
 export function PaperSheet({
   children,
   testID,
@@ -19,6 +19,7 @@ export function PaperSheet({
 }) {
   return (
     <View style={chrome.stack} testID={testID}>
+      <View style={chrome.softShadow} />
       <View style={chrome.cardboard} />
       <View style={chrome.sheetWrap}>
         <Image
@@ -72,6 +73,17 @@ export function PaperChip({ children }: { children: ReactNode }) {
 const chrome = StyleSheet.create({
   stack: {
     alignSelf: "stretch",
+  },
+  softShadow: {
+    position: "absolute",
+    left: 10,
+    right: -10,
+    top: 14,
+    bottom: -12,
+    backgroundColor: t.espresso,
+    borderRadius: 18,
+    opacity: 0.16,
+    transform: [{ rotate: "1.4deg" }],
   },
   cardboard: {
     position: "absolute",

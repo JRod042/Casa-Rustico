@@ -308,8 +308,11 @@ function Menu({
         contentContainerStyle={styles.menu}
         showsVerticalScrollIndicator={false}
       >
-      <View style={styles.heroMark}>
-        <SteamMark size={88} />
+      <View style={styles.heroStack}>
+        <View style={styles.heroBlot} />
+        <View style={styles.heroMark}>
+          <SteamMark size={88} />
+        </View>
       </View>
       <Text style={styles.brand}>CASA RÚSTICO</Text>
       <Text style={styles.title}>Espresso Escape</Text>
@@ -360,6 +363,24 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     gap: 10,
   },
+  heroStack: {
+    width: 128,
+    height: 128,
+    marginBottom: 4,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  heroBlot: {
+    position: "absolute",
+    left: 8,
+    right: -4,
+    top: 10,
+    bottom: -4,
+    backgroundColor: t.espresso,
+    borderRadius: 20,
+    opacity: 0.14,
+    transform: [{ rotate: "1.2deg" }],
+  },
   heroMark: {
     width: 120,
     height: 120,
@@ -369,7 +390,6 @@ const styles = StyleSheet.create({
     borderColor: t.kraftDeep,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 4,
     transform: [{ rotate: "-1.4deg" }],
     borderStyle: "dashed",
   },
