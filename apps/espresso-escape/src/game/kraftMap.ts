@@ -19,6 +19,36 @@ export const UNIFIED_PLAYBOOK = "2026-09-05-escape-unified-revision-playbook";
 
 export const CREATIVE_BOX = "/workspace/casa-brand/exports/escape-kraft/game";
 
+/**
+ * WIRE-ready keys — plates 01–06, runner, hazards, UI.
+ * Cacique WIRE paste overwrites `to` files. USE_CRAFT_ART stays false until then.
+ */
+export const WIRE_KEYS = {
+  plate01: "world/plate-01-far-highland.png",
+  plate02: "world/plate-02-canopy-mist.png",
+  plate03: "world/plate-03-mid-cafe.png",
+  plate04: "world/plate-04-near-counter.png",
+  plate05: "world/plate-05-window-light.png",
+  plate06: "world/plate-06-ground-strip.png",
+  runner: "sprites/runner-01.png",
+  hazardGrinder: "sprites/hazard-grinder.png",
+  hazardPortafilter: "sprites/hazard-portafilter.png",
+  hazardSteam: "sprites/hazard-steam.png",
+  pickupBean: "sprites/pickup-honey-bean.png",
+  uiMenu: "ui/menu-panel.png",
+  uiTitle: "ui/title-bg.png",
+  uiWordmark: "ui/wordmark-espresso-escape.png",
+} as const;
+
+export const WIRE_PLATES = [
+  { key: "plate01", from: WIRE_KEYS.plate01, to: "cafe-bg.png", role: "01 far highland" },
+  { key: "plate02", from: WIRE_KEYS.plate02, to: "cafe-bg.png", role: "02 canopy mist" },
+  { key: "plate03", from: WIRE_KEYS.plate03, to: "cafe-bg.png", role: "03 mid café" },
+  { key: "plate04", from: WIRE_KEYS.plate04, to: "cafe-bg.png", role: "04 near counter" },
+  { key: "plate05", from: WIRE_KEYS.plate05, to: "cafe-bg.png", role: "05 window light" },
+  { key: "plate06", from: WIRE_KEYS.plate06, to: "cafe-bg.png", role: "06 ground strip" },
+] as const;
+
 /** Live Metro files. Distinct v2 plates still alias cafe-bg until WIRE. */
 export const KRAFT_DROPIN: readonly {
   from: string;
@@ -40,6 +70,12 @@ export const KRAFT_DROPIN: readonly {
   { from: "ui/wordmark-espresso-escape.png", to: "menu-panel.png", role: "wordmark overlay later" },
   { from: "ui/panel-game-over.png", to: "menu-panel.png", role: "roast sheet later" },
   { from: "ui/panel-best-run.png", to: "menu-panel.png", role: "best-run sheet later" },
+  { from: WIRE_KEYS.plate01, to: "cafe-bg.png", role: "plate 01 far highland" },
+  { from: WIRE_KEYS.plate02, to: "cafe-bg.png", role: "plate 02 canopy mist" },
+  { from: WIRE_KEYS.plate03, to: "cafe-bg.png", role: "plate 03 mid café" },
+  { from: WIRE_KEYS.plate04, to: "cafe-bg.png", role: "plate 04 near counter" },
+  { from: WIRE_KEYS.plate05, to: "cafe-bg.png", role: "plate 05 window light" },
+  { from: WIRE_KEYS.plate06, to: "cafe-bg.png", role: "plate 06 ground strip" },
   { from: "world/far-highland.png", to: "cafe-bg.png", role: "far highland plate (denser v2)" },
   { from: "world/scroll-backdrop.png", to: "cafe-bg.png", role: "far scroll plate" },
   { from: "world/canopy-mist.png", to: "cafe-bg.png", role: "canopy / mist plate (denser v2)" },

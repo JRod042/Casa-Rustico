@@ -1,4 +1,4 @@
-# Espresso Escape — stack (1.0.6 / 13)
+# Espresso Escape — stack (1.0.6 / 14)
 
 Casa Rústico café runner. Mid-iPhone first. HOLD ASC Submit until Jorge says it feels pro.
 
@@ -25,19 +25,37 @@ Kit-eval briefs: `2026-09-05-escape-pro-kit-eval`, `2026-09-05-escape-pro-stack-
 
 Cited: `2026-09-05-escape-appstore-controls-feel-hits`. Live: coyote 130ms, buffer 150ms, hurtbox 18×24 on 30×38, telegraph 0.62s, retry 320ms.
 
-## Haptics + audio (scaffold only — master plan §10)
+## Haptics + audio
 
 Cited: `2026-09-05-escape-best-in-class-master-plan`, `2026-09-05-escape-appdev-element-checklist`.
 
 | Layer | On branch now |
 |---|---|
-| Haptics | `hapticsManager` — hop / land / death / bean. Expo Haptics first; Vibration as AudioServices-class fallback. `AHAP_SEAMS` all `null` |
-| Audio | `audioHooks` — live hop / land / bean / roast / warn wavs. whoosh / stamp / steam are **hooks** (no packs) |
+| Haptics | `hapticsManager` — hop / land / bean / steam / death / retry. Expo Haptics first; Vibration fallback. `AHAP_SEAMS` all `null` |
+| Audio | `audioHooks` — live hop / land / bean / steam / death / retry (+ roast / warn). whoosh / stamp stay hooks |
 
-No new wav packs. No AHAP files. Device fps still OPEN.
+Steam / death / retry use tiny placeholder wavs. No AHAP files. Device fps still OPEN.
 
-Feel smoke: dedicated leaf-dot ±2px pulse; contact/cavity fake-AO uses **Multiply** (Skia `BlendMode.Multiply`, Views `mixBlendMode`).
+Feel smoke: dedicated leaf-dot ±2px pulse; contact/cavity fake-AO uses **Multiply** (Skia `blendMode="multiply"`, Views `mixBlendMode`).
 
 ## Art
 
-**V2_HOLD.** `USE_CRAFT_ART=false` until Jorge WIRE. No Creative PNG wire. `INVENTORY.md` is STALE.
+**V2_HOLD.** `USE_CRAFT_ART=false` until Cacique WIRE paste. `WIRE_KEYS` / `WIRE_PLATES` (01–06) + runner / hazards / UI are hooks only. `INVENTORY.md` is STALE.
+
+## EAS TestFlight — HOLD (do not fire tonight)
+
+Ready: version **1.0.6**, iOS **14**, Android **12**, profile `production`, ASC `6809059605`.
+
+AFTER Cacique says **build** or **WIRE** — from `apps/espresso-escape`:
+
+```bash
+npx --yes eas-cli@16.28.0 build --platform ios --profile production --non-interactive
+```
+
+HOLD Submit:
+
+```bash
+npx --yes eas-cli@16.28.0 submit --platform ios --profile production --latest
+```
+
+Do not queue either command unless instructed. Shop 49 stays alone.

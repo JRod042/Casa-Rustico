@@ -35,29 +35,43 @@ export function armFeel(): void {
   bootSfx();
 }
 
+function tick(haptic: Parameters<typeof playHaptic>[0], audio: Parameters<typeof playAudio>[0]): void {
+  if (prefs.haptics) playHaptic(haptic);
+  if (prefs.sfx) playAudio(audio);
+}
+
 /** Light hop — hapticsManager + audio hook. Never throws. */
 export function hopTick(): void {
-  if (prefs.haptics) playHaptic("hop");
-  if (prefs.sfx) playAudio("hop");
+  tick("hop", "hop");
 }
 
 /** Cardboard thud — heavier than the cloth hop. */
 export function landTick(): void {
-  if (prefs.haptics) playHaptic("land");
-  if (prefs.sfx) playAudio("land");
+  tick("land", "land");
 }
 
 export function beanTick(): void {
-  if (prefs.haptics) playHaptic("bean");
-  if (prefs.sfx) playAudio("bean");
+  tick("bean", "bean");
 }
 
+/** Stay-low steam cloud — soft puff, not a roast. */
+export function steamTick(): void {
+  tick("steam", "steam");
+}
+
+export function deathTick(): void {
+  tick("death", "death");
+}
+
+/** Roast alias — death path stays named for PlayField. */
 export function roastTick(): void {
-  if (prefs.haptics) playHaptic("death");
-  if (prefs.sfx) playAudio("roast");
+  deathTick();
+}
+
+export function retryTick(): void {
+  tick("retry", "retry");
 }
 
 export function warnTick(): void {
-  if (prefs.haptics) playHaptic("hop");
-  if (prefs.sfx) playAudio("warn");
+  tick("hop", "warn");
 }

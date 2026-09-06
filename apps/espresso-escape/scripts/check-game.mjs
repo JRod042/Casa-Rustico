@@ -281,7 +281,30 @@ if (!/hapticsManager/.test(sources) || !/AHAP_SEAMS/.test(sources)) {
   throw new Error("Core Haptics scaffolding must stay in hapticsManager");
 }
 if (!/AUDIO_SEAMS/.test(sources) || !/whoosh/.test(sources) || !/stamp/.test(sources)) {
-  throw new Error("audio hook seams (whoosh/stamp/steam) must stay in audioHooks");
+  throw new Error("audio hook seams (whoosh/stamp) must stay in audioHooks");
+}
+if (!/steamTick/.test(sources) || !/deathTick/.test(sources) || !/retryTick/.test(sources)) {
+  throw new Error("steam / death / retry must stay wired through feel ticks");
+}
+if (!/WIRE_KEYS/.test(sources) || !/plate01/.test(sources) || !/plate06/.test(sources)) {
+  throw new Error("WIRE-ready plates 01–06 keys must stay in kraftMap / craftAssets");
+}
+const appJson = JSON.parse(readFileSync(join(root, "app.json"), "utf8"));
+if (appJson.expo?.version !== "1.0.6") {
+  throw new Error("marketing version must stay 1.0.6 (not 1.0.5)");
+}
+if (String(appJson.expo?.ios?.buildNumber) !== "14") {
+  throw new Error("ios.buildNumber must be 14 so TF is newer than build 12");
+}
+if (Number(appJson.expo?.android?.versionCode) !== 12) {
+  throw new Error("android.versionCode must be 12 (newer than the 1.0.5 line)");
+}
+if (!/IOS_BUILD = "14"/.test(sources) || !/BUILD_LABEL/.test(sources)) {
+  throw new Error("About must show BUILD_LABEL 1.0.6 · 14");
+}
+const eas = readFileSync(join(root, "eas.json"), "utf8");
+if (!/6809059605/.test(eas) || /6758108565/.test(eas)) {
+  throw new Error("eas.json must target ASC 6809059605 only");
 }
 if (!/MASTER_PLAN/.test(sources) || !/escape-best-in-class-master-plan/.test(sources)) {
   throw new Error("must cite 2026-09-05-escape-best-in-class-master-plan");

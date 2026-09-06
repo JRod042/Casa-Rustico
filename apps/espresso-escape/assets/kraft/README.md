@@ -31,5 +31,6 @@ From `exports/escape-kraft/game/` when Jorge says WIRE — prefer latest mtime, 
 | `sprites/runner-01.png` … `06.png` | runner frames |
 | `sprites/hazard-*.png` / `pickup-honey-bean.png` | kits |
 | `ui/title-bg.png` / `menu-panel.png` / wordmark / roast sheets | menus |
-| `world/far-highland.png` / `canopy-mist.png` / `mid-cafe.png` / `near-counter.png` / `window-light.png` / `ground-strip.png` | diorama plates |
+| `world/plate-01-far-highland.png` … `plate-06-ground-strip.png` | diorama plates 01–06 (`WIRE_KEYS`) |
+| `world/far-highland.png` / `canopy-mist.png` / `mid-cafe.png` / `near-counter.png` / `window-light.png` / `ground-strip.png` | alias names for the same plates |
 | `../escape-icon-1024-asc.png` | ASC listing only — not the in-game loop |

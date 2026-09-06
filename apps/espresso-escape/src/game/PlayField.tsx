@@ -20,7 +20,7 @@ import Animated, {
 import { escapeWelcomeTheme as t } from "../welcome/theme";
 import { CafeStage } from "./CafeStage";
 import { PaperChip, PaperSheet, StickerButton } from "./MenuChrome";
-import { beanTick, hopTick, landTick, roastTick, warnTick, RETRY_LOCK_MS } from "./feel";
+import { beanTick, hopTick, landTick, retryTick, roastTick, steamTick, warnTick, RETRY_LOCK_MS } from "./feel";
 import { stepPaper } from "./juice";
 import {
   createRun,
@@ -378,7 +378,8 @@ export function PlayField({
         if (!reduceMotion) {
           flash.value = withSequence(withTiming(0.08, { duration: 70 }), withTiming(0, { duration: 220 }));
         }
-        warnTick();
+        if (warned === "steam") steamTick();
+        else warnTick();
       }
       const nextScore = Math.floor(run.score);
       if (nextScore !== scoreRef.current) {
@@ -432,6 +433,7 @@ export function PlayField({
 
   const onRetry = () => {
     if (Date.now() < retryAt.current) return;
+    retryTick();
     reset();
   };
 

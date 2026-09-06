@@ -6,7 +6,7 @@ Android package: **`com.jrod042.espressoescape`**
 Expo: **`@jrod42/espresso-escape`** (`016d7c24-a7df-4e0d-8e59-00a9d8db352c`)  
 Apple Team: **`FY5H9V76QL`**  
 GitHub base directory: **`apps/espresso-escape`**  
-Store binary: **version 1.0.6 / iOS build 13 / Android versionCode 11** (art + feel + menus — next ASC upload)
+Store binary: **version 1.0.6 / iOS build 14 / Android versionCode 12** (overnight TF-ready — HOLD Submit)
 
 Jorge’s iOS identity is **`com.jrod042.espressoescape`**. Submit to ASC **`6809059605`**. Do **not** restore `com.vibecode.espressoescape-20z7xb` or point EAS submit at the old vibecode ASC **`6758108565`**.
 
@@ -80,15 +80,17 @@ Do **not** invent payments. Physical bags stay in Casa Rustico Go (Shopify perma
 | `internal` / `preview` | internal | Device testers via Expo (needs Ad Hoc devices) |
 | `development` | internal + dev client | Native debug |
 
+**HOLD:** do not queue EAS tonight unless Cacique says **build** or **WIRE**.
+
 ```bash
 cd apps/espresso-escape
 npm ci
 npm run preflight:ios
 npm run check:game
-# TestFlight path (after credentials exist):
-npx eas-cli build --platform ios --profile production
-# or both stores:
-npx eas-cli build --platform all --profile production
+# AFTER wire/build instruction only:
+npx --yes eas-cli@16.28.0 build --platform ios --profile production --non-interactive
+# HOLD Submit until Jorge okays:
+# npx --yes eas-cli@16.28.0 submit --platform ios --profile production --latest
 ```
 
 GitHub → Expo: base directory **`apps/espresso-escape`**, profile **`production`**.

@@ -23,6 +23,13 @@ export const KRAFT_PACK = {
   windowLight: require("../../assets/kraft/cafe-bg.png"),
   groundStrip: require("../../assets/kraft/cafe-bg.png"),
   titleBg: require("../../assets/kraft/cafe-bg.png"),
+  /** WIRE_KEYS plates 01–06 — same stand-in until Cacique WIRE paste. */
+  plate01: require("../../assets/kraft/cafe-bg.png"),
+  plate02: require("../../assets/kraft/cafe-bg.png"),
+  plate03: require("../../assets/kraft/cafe-bg.png"),
+  plate04: require("../../assets/kraft/cafe-bg.png"),
+  plate05: require("../../assets/kraft/cafe-bg.png"),
+  plate06: require("../../assets/kraft/cafe-bg.png"),
 } as const;
 
 export type KraftSprite = keyof typeof KRAFT_PACK;

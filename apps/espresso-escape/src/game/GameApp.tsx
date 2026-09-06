@@ -11,6 +11,7 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { SteamMark } from "../welcome/SteamMark";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
+import { BUILD_LABEL } from "./buildMeta";
 import { type FeelPrefs, armFeel } from "./feel";
 import { kraftSource } from "./kraftAssets";
 import { PaperChip, PaperSheet, StickerButton } from "./MenuChrome";
@@ -216,7 +217,7 @@ function Menu({
         </Text>
         <Text style={styles.panelBodyLast}>
           Physical bags stay in the Casa Rústico shop. This app is only the
-          game — there is no checkout here.
+          game — there is no checkout here. Build {BUILD_LABEL} — not the 1.0.5 / 12 line.
         </Text>
         </View>
         </PaperSheet>
