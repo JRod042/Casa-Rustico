@@ -36,11 +36,21 @@ function buzz(ms: number): void {
 /** Light hop — iOS impact, Android vibrate fallback. Never throws. */
 export function hopTick(): void {
   if (prefs.haptics) {
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft).catch(() => {
       buzz(8);
     });
   }
   if (prefs.sfx) playSfx("hop");
+}
+
+/** Cardboard thud — heavier than the cloth hop. */
+export function landTick(): void {
+  if (prefs.haptics) {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {
+      buzz(14);
+    });
+  }
+  if (prefs.sfx) playSfx("land");
 }
 
 export function beanTick(): void {

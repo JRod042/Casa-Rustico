@@ -20,7 +20,7 @@ import Animated, {
 import { escapeWelcomeTheme as t } from "../welcome/theme";
 import { CafeStage } from "./CafeStage";
 import { PaperSheet, StickerButton } from "./MenuChrome";
-import { beanTick, hopTick, roastTick, warnTick, RETRY_LOCK_MS } from "./feel";
+import { beanTick, hopTick, landTick, roastTick, warnTick, RETRY_LOCK_MS } from "./feel";
 import {
   createRun,
   releaseJump,
@@ -303,7 +303,7 @@ export function PlayField({
       setDead(true);
       setDeathKind(kind);
       if (!reduceMotion) {
-        flash.value = withSequence(withTiming(0.45, { duration: 70 }), withTiming(0, { duration: 280 }));
+        flash.value = withSequence(withTiming(0.28, { duration: 90 }), withTiming(0, { duration: 320 }));
       }
       const next = await saveBestScore(finalScore);
       onBest(next);
@@ -331,17 +331,20 @@ export function PlayField({
       const warned = run.justTelegraph || pendingWarn;
       if (hopped) {
         if (!reduceMotion) {
-          squashX.value = 0.86;
-          squashY.value = 1.16;
-          squashX.value = withTiming(1, { duration: 160 });
-          squashY.value = withTiming(1, { duration: 160 });
+          squashX.value = 0.92;
+          squashY.value = 1.08;
+          squashX.value = withTiming(1, { duration: 220 });
+          squashY.value = withTiming(1, { duration: 220 });
         }
         hopTick();
-      } else if (landed && !reduceMotion) {
-        squashX.value = 1.18;
-        squashY.value = 0.78;
-        squashX.value = withTiming(1, { duration: 130 });
-        squashY.value = withTiming(1, { duration: 130 });
+      } else if (landed) {
+        if (!reduceMotion) {
+          squashX.value = 1.22;
+          squashY.value = 0.72;
+          squashX.value = withTiming(1, { duration: 180 });
+          squashY.value = withTiming(1, { duration: 180 });
+        }
+        landTick();
       }
       if (beans) {
         const pts = beans;
@@ -355,16 +358,16 @@ export function PlayField({
         }, 620);
         floaterTimers.current.push(timer);
         if (!reduceMotion) {
-          squashX.value = 1.12;
-          squashY.value = 1.12;
-          squashX.value = withTiming(1, { duration: 120 });
-          squashY.value = withTiming(1, { duration: 120 });
+          squashX.value = 1.14;
+          squashY.value = 0.94;
+          squashX.value = withTiming(1, { duration: 160 });
+          squashY.value = withTiming(1, { duration: 160 });
         }
         beanTick();
       }
       if (warned && !run.dead) {
         if (!reduceMotion) {
-          flash.value = withSequence(withTiming(0.12, { duration: 50 }), withTiming(0, { duration: 180 }));
+          flash.value = withSequence(withTiming(0.08, { duration: 70 }), withTiming(0, { duration: 220 }));
         }
         warnTick();
       }
@@ -654,7 +657,7 @@ const styles = StyleSheet.create({
   },
   flash: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: "#C45C4A",
+    backgroundColor: t.kraftDeep,
   },
   hintWrap: {
     position: "absolute",

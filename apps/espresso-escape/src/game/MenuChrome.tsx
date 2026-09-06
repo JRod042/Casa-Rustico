@@ -24,6 +24,7 @@ export function PaperSheet({
         style={chrome.sheetArt}
         resizeMode="stretch"
       />
+      <View style={chrome.stitch} />
       <View style={chrome.sheetInner}>{children}</View>
     </View>
   );
@@ -79,6 +80,15 @@ const chrome = StyleSheet.create({
   sheetArt: {
     ...StyleSheet.absoluteFill,
     opacity: 0.55,
+  },
+  stitch: {
+    ...StyleSheet.absoluteFill,
+    margin: 8,
+    borderWidth: 1,
+    borderColor: t.kraftDeep,
+    borderStyle: "dashed",
+    borderRadius: 14,
+    opacity: 0.45,
   },
   sheetInner: {
     paddingHorizontal: 22,

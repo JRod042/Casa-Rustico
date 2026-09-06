@@ -152,6 +152,15 @@ if (!/Meet the bar/.test(sources) || !/KitThumb/.test(sources)) {
 if (!/CafeStage/.test(sources)) {
   throw new Error("Play field must use the linen café stage");
 }
+if (!/matterHitsHazard/.test(sources) || !/matter-js/.test(sources)) {
+  throw new Error("Matter.js collision world must stay wired");
+}
+if (!/landTick/.test(sources) || !/life.value/.test(sources)) {
+  throw new Error("handmade land juice and living café life loop must stay wired");
+}
+if (!/ESCAPE_WIRE_KRAFT/.test(readFileSync(join(root, "scripts/sync-kraft.mjs"), "utf8"))) {
+  throw new Error("Creative drop-in must stay halted behind ESCAPE_WIRE_KRAFT");
+}
 if (!/onPressIn/.test(sources) || !/requestJump/.test(sources)) {
   throw new Error("jump must fire on touch-down, not release");
 }

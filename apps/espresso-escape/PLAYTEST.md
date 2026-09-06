@@ -9,7 +9,7 @@ Brand lock: cream `#F7F3EC`, kraft `#A47C59`, dark kraft `#8D6C4F`. Highland caf
 | Surface | 1.0.5 / 12 (PR #18) | This build |
 |---|---|---|
 | Loop art | View-box ovals and kit rectangles | Casa kraft PNG stickers (runner, grinder, portafilter, steam, bean) on cream paper |
-| Stage | Gradient + slats | Kraft café backdrop + paper counter / linen floor |
+| Stage | Gradient + slats | Living 2.5D café: far/mid/near/ground, steam, dust, idle props, soft light |
 | Jump feel | Coyote 100ms, buffer 120ms, near-equal gravity | Coyote **130ms**, buffer **150ms**, fall **3600 > 2200** rise |
 | Hurtbox | ~74% tall | **~63%** of the sticker |
 | Magnet / telegraph | Missing / faint floor tick | Bean pull + **0.62s** kraft glow warn |
@@ -18,6 +18,11 @@ Brand lock: cream `#F7F3EC`, kraft `#A47C59`, dark kraft `#8D6C4F`. Highland caf
 | Menus | Dark espresso stack | Cream stationery: title, how-to, **Settings**, pause, Best Run |
 
 PR #18 changed spawn fairness and packaging. Owner: that binary still “plays but nothing changed.” This pass is art + feel + menus, not another version stamp.
+
+**Render:** 2.5D paper planes (not R3F). Full 3D would fight mid-iPhone 60fps — see `STACK.md`.
+**Physics:** Matter.js sensor queries + custom variable-gravity hop (coyote/buffer/telegraph on top).
+**Creative pack:** HALTED until Jorge says WIRE. Hooks only (`npm run sync:kraft` is a no-op without `ESCAPE_WIRE_KRAFT=1`).
+**HOLD ASC Submit** until owner ok.
 
 ## 10-minute checklist
 
@@ -37,7 +42,9 @@ Feel (2–3 deaths + 1 long run):
 - [ ] Honey beans ease toward the runner when close.
 - [ ] Kits glow / floor mark brightens ~0.6s before contact.
 - [ ] Roast → one tap Brew again in under half a second. Next opener is easy (≥2s).
-- [ ] Hop / bean / roast fire haptics + SFX **after** the physics tick (no double hop buzz).
+- [ ] Hop feels like cloth; landing is a cardboard thud; beans pop like fabric — not neon arcade.
+- [ ] Café backdrop has depth (planes, steam, dust, idle sacks). Not a flat wallpaper.
+- [ ] Hop / bean / roast / land fire haptics + SFX **after** the physics tick (no double hop buzz).
 
 Menus:
 

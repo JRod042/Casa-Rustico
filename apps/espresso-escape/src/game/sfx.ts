@@ -2,7 +2,7 @@
  * Same-tick café SFX. Creative can replace the wavs in assets/sfx/.
  * expo-av is optional — hops still juice with haptics if audio is missing.
  */
-type Tone = "hop" | "bean" | "roast" | "warn";
+type Tone = "hop" | "bean" | "roast" | "warn" | "land";
 
 type Loaded = { play: () => Promise<void> };
 
@@ -40,6 +40,7 @@ export function bootSfx(): void {
       bean: require("../../assets/sfx/bean.wav"),
       roast: require("../../assets/sfx/roast.wav"),
       warn: require("../../assets/sfx/warn.wav"),
+      land: require("../../assets/sfx/land.wav"),
     };
     (Object.keys(files) as Tone[]).forEach((name) => {
       void av.Audio.Sound.createAsync(files[name], { shouldPlay: false, volume: 0.55 })

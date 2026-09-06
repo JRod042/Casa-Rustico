@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import {
+  Image,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -11,6 +12,7 @@ import { StatusBar } from "expo-status-bar";
 import { SteamMark } from "../welcome/SteamMark";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
 import { type FeelPrefs, armFeel } from "./feel";
+import { kraftSource } from "./kraftAssets";
 import { PaperChip, StickerButton } from "./MenuChrome";
 import { PlayField } from "./PlayField";
 import { KitThumb, type KitKind } from "./sprites";
@@ -286,6 +288,8 @@ function Menu({
   }
   return (
     <SafeAreaView style={styles.safe} testID="escape-menu">
+      <Image source={kraftSource("cafeBg")} style={styles.titleBg} resizeMode="cover" />
+      <View style={styles.titleWash} />
       <ScrollView
         contentContainerStyle={styles.menu}
         showsVerticalScrollIndicator={false}
@@ -326,6 +330,14 @@ function Menu({
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: t.cream },
   safe: { flex: 1, backgroundColor: t.cream },
+  titleBg: {
+    ...StyleSheet.absoluteFill,
+    opacity: 0.28,
+  },
+  titleWash: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: "rgba(247,243,236,0.72)",
+  },
   menu: {
     flexGrow: 1,
     alignItems: "center",

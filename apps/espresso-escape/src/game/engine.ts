@@ -1,5 +1,11 @@
 import { direct } from "./director";
 import {
+  createMatterWorld,
+  matterHitsBean,
+  matterHitsHazard,
+  type MatterWorld,
+} from "./matterWorld";
+import {
   type Bean,
   type Hazard,
   type HazardKind,
@@ -16,12 +22,8 @@ import {
   PLAYER_H,
   PLAYER_W,
   TELEGRAPH_S,
-  aabbHits,
-  beanHitbox,
   gravityFor,
-  hazardHitbox,
   mulberry32,
-  playerHitbox,
   speedForRun,
 } from "./physics";
 
@@ -65,6 +67,7 @@ export type Run = {
   tutorial: boolean;
   scriptBeat: ScriptBeat;
   scriptWait: number;
+  sim: MatterWorld;
 };
 
 export function createRun(
@@ -110,6 +113,7 @@ export function createRun(
     tutorial,
     scriptBeat: tutorial ? "tap" : "done",
     scriptWait: 0,
+    sim: createMatterWorld(world, playerX),
   };
 }
 
@@ -223,7 +227,6 @@ export function tick(run: Run, dt: number): void {
     } else i += 1;
   }
 
-  const me = playerHitbox(playerX, run.playerY);
   for (let i = 0; i < run.beans.length; ) {
     const b = run.beans[i];
     b.x -= speed * step;
@@ -232,7 +235,7 @@ export function tick(run: Run, dt: number): void {
       swapPop(run.beans, i);
       continue;
     }
-    if (aabbHits(me, beanHitbox(b))) {
+    if (matterHitsBean(run.sim, playerX, run.playerY, b)) {
       run.score += 5;
       run.beansTaken += 1;
       run.justBean += 5;
@@ -249,11 +252,12 @@ export function tick(run: Run, dt: number): void {
       h.warned = true;
       run.justTelegraph = h.kind;
     }
-    if (aabbHits(me, hazardHitbox(h))) {
-      if (run.heelMercy > 0 && h.kind !== "steam") continue;
+  }
+  const roast = matterHitsHazard(run.sim, playerX, run.playerY, run.hazards);
+  if (roast) {
+    if (!(run.heelMercy > 0 && roast.kind !== "steam")) {
       run.dead = true;
-      run.deathKind = h.kind;
-      return;
+      run.deathKind = roast.kind;
     }
   }
 }
