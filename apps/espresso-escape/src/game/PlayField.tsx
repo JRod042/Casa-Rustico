@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
+  Vibration,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -13,11 +14,29 @@ import Animated, {
   makeMutable,
   type SharedValue,
   useAnimatedStyle,
+  withSequence,
+  withTiming,
 } from "react-native-reanimated";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
 import { CafeStage } from "./CafeStage";
-import { createRun, jump, MAX_BEANS, MAX_HAZARDS, resizeRun, tick, type Run } from "./engine";
-import { type HazardKind, PLAYER_H, PLAYER_W } from "./physics";
+import {
+  createRun,
+  releaseJump,
+  requestJump,
+  resizeRun,
+  tick,
+  type DeathKind,
+  type Run,
+} from "./engine";
+import {
+  type CoachCue,
+  type HazardKind,
+  KIND_CODE,
+  MAX_BEANS,
+  MAX_HAZARDS,
+  PLAYER_H,
+  PLAYER_W,
+} from "./physics";
 import { BeanArt, HazardArt } from "./sprites";
 import { saveBestScore } from "./storage";
 
@@ -27,7 +46,30 @@ type Slot = {
   w: SharedValue<number>;
   h: SharedValue<number>;
   on: SharedValue<number>;
+  kind: SharedValue<number>;
 };
+
+type Floater = { id: number; x: number; y: number; pts: number };
+
+const CUE: Record<Exclude<CoachCue, null>, string> = {
+  tap: "Tap to hop",
+  tall: "Tall kit — hop",
+  steam: "Steam — stay low",
+};
+
+const ROAST: Record<DeathKind, string> = {
+  grinder: "A grinder caught the roast. Hop the low kits.",
+  portafilter: "A portafilter blocked the line. Hop the tall ones.",
+  steam: "Steam scalded the leap. Stay low under the cloud.",
+};
+
+function buzz(ms: number) {
+  try {
+    Vibration.vibrate(ms);
+  } catch {
+    // Web / denied haptics should never stall a run.
+  }
+}
 
 function makeSlots(n: number): Slot[] {
   return Array.from({ length: n }, () => ({
@@ -36,12 +78,13 @@ function makeSlots(n: number): Slot[] {
     w: makeMutable(20),
     h: makeMutable(20),
     on: makeMutable(0),
+    kind: makeMutable(0),
   }));
 }
 
 function writeSlots(
   slots: Slot[],
-  items: { x: number; y: number; w: number; h: number }[]
+  items: { x: number; y: number; w: number; h: number; kind?: HazardKind }[]
 ): void {
   for (let i = 0; i < slots.length; i += 1) {
     const item = items[i];
@@ -54,26 +97,19 @@ function writeSlots(
     slot.y.value = item.y;
     slot.w.value = item.w;
     slot.h.value = item.h;
+    slot.kind.value = item.kind ? KIND_CODE[item.kind] : 0;
     slot.on.value = 1;
   }
 }
 
-function kindsKey(items: { kind?: HazardKind; id: number }[]): string {
-  let key = "";
-  for (let i = 0; i < items.length; i += 1) {
-    key += items[i].id;
-    key += items[i].kind ?? "b";
-    key += ",";
-  }
-  return key;
-}
-
-const Sprite = memo(function Sprite({
+const HazardSprite = memo(function HazardSprite({
   slot,
-  tone,
+  groundY,
+  playerX,
 }: {
   slot: Slot;
-  tone: "gold" | HazardKind;
+  groundY: number;
+  playerX: number;
 }) {
   const anim = useAnimatedStyle(() => ({
     transform: [{ translateX: slot.x.value }, { translateY: slot.y.value }],
@@ -81,17 +117,56 @@ const Sprite = memo(function Sprite({
     height: slot.h.value,
     opacity: slot.on.value,
   }));
-  const look =
-    tone === "gold"
-      ? styles.gold
-      : tone === "steam"
-        ? styles.steam
-        : tone === "portafilter"
-          ? styles.porta
-          : styles.hazard;
+  const g = useAnimatedStyle(() => ({
+    opacity: slot.on.value * (slot.kind.value === 0 ? 1 : 0),
+  }));
+  const p = useAnimatedStyle(() => ({
+    opacity: slot.on.value * (slot.kind.value === 1 ? 1 : 0),
+  }));
+  const s = useAnimatedStyle(() => ({
+    opacity: slot.on.value * (slot.kind.value === 2 ? 1 : 0),
+  }));
+  const mark = useAnimatedStyle(() => {
+    const near = slot.x.value < playerX + 210 && slot.x.value > playerX - 10;
+    const steam = slot.kind.value === 2;
+    return {
+      transform: [{ translateX: slot.x.value }, { translateY: groundY - 8 }],
+      width: Math.max(18, slot.w.value),
+      opacity: slot.on.value * (near ? 0.85 : 0.28),
+      backgroundColor: steam ? "#D5E1EA" : t.danger,
+    };
+  });
+  const kit = useAnimatedStyle(() => ({
+    borderColor: slot.kind.value === 2 ? "#D5E1EA" : t.glow,
+  }));
   return (
-    <Animated.View pointerEvents="none" style={[look, styles.sprite, anim]}>
-      {tone === "gold" ? <BeanArt tone="honey" /> : <HazardArt kind={tone} />}
+    <>
+      <Animated.View pointerEvents="none" style={[styles.floorMark, mark]} />
+      <Animated.View pointerEvents="none" style={[styles.sprite, styles.kit, anim, kit]}>
+        <Animated.View style={[styles.artFill, g]}>
+          <HazardArt kind="grinder" />
+        </Animated.View>
+        <Animated.View style={[styles.artFill, p]}>
+          <HazardArt kind="portafilter" />
+        </Animated.View>
+        <Animated.View style={[styles.artFill, s]}>
+          <HazardArt kind="steam" />
+        </Animated.View>
+      </Animated.View>
+    </>
+  );
+});
+
+const BeanSprite = memo(function BeanSprite({ slot }: { slot: Slot }) {
+  const anim = useAnimatedStyle(() => ({
+    transform: [{ translateX: slot.x.value }, { translateY: slot.y.value }],
+    width: slot.w.value,
+    height: slot.h.value,
+    opacity: slot.on.value,
+  }));
+  return (
+    <Animated.View pointerEvents="none" style={[styles.sprite, styles.gold, anim]}>
+      <BeanArt tone="honey" />
     </Animated.View>
   );
 });
@@ -115,45 +190,82 @@ export function PlayField({
 
   const runRef = useRef<Run>(createRun(world, playerX));
   const playerY = useRef(makeMutable(world.groundY - PLAYER_H)).current;
+  const squashX = useRef(makeMutable(1)).current;
+  const squashY = useRef(makeMutable(1)).current;
+  const flash = useRef(makeMutable(0)).current;
+  const scroll = useRef(makeMutable(0)).current;
   const hazardSlots = useRef(makeSlots(MAX_HAZARDS)).current;
   const beanSlots = useRef(makeSlots(MAX_BEANS)).current;
   const last = useRef(0);
   const raf = useRef(0);
   const finishing = useRef(false);
+  const retryAt = useRef(0);
+  const floaterId = useRef(1);
+  const floaterTimers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const [score, setScore] = useState(0);
   const [paused, setPaused] = useState(false);
   const [dead, setDead] = useState(false);
-  const [showHint, setShowHint] = useState(true);
-  const [hazardMeta, setHazardMeta] = useState<HazardKind[]>([]);
+  const [deathKind, setDeathKind] = useState<DeathKind | null>(null);
+  const [cue, setCue] = useState<CoachCue>("tap");
+  const [floaters, setFloaters] = useState<Floater[]>([]);
   const scoreRef = useRef(0);
-  const hintRef = useRef(true);
+  const cueRef = useRef<CoachCue>("tap");
 
   const playerStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: playerX }, { translateY: playerY.value }],
+    transform: [
+      { translateX: playerX },
+      { translateY: playerY.value },
+      { scaleX: squashX.value },
+      { scaleY: squashY.value },
+    ],
+  }));
+  const shadowStyle = useAnimatedStyle(() => {
+    const lift = Math.max(0, groundY - PLAYER_H - playerY.value);
+    const s = Math.max(0.4, 1 - lift / 150);
+    return {
+      transform: [
+        { translateX: playerX + 3 },
+        { translateY: groundY - 8 },
+        { scaleX: s },
+      ],
+      opacity: 0.22 + s * 0.28,
+      width: PLAYER_W - 4,
+    };
+  });
+  const flashStyle = useAnimatedStyle(() => ({
+    opacity: flash.value,
   }));
 
   const syncVisual = useCallback(
     (run: Run) => {
       playerY.value = run.playerY;
+      scroll.value = run.distance;
       writeSlots(hazardSlots, run.hazards);
       writeSlots(beanSlots, run.beans);
     },
-    [beanSlots, hazardSlots, playerY]
+    [beanSlots, hazardSlots, playerY, scroll]
   );
 
   const reset = useCallback(() => {
     finishing.current = false;
+    retryAt.current = 0;
     runRef.current = createRun(world, playerX);
+    squashX.value = 1;
+    squashY.value = 1;
+    flash.value = 0;
     syncVisual(runRef.current);
     scoreRef.current = 0;
-    hintRef.current = true;
+    cueRef.current = "tap";
     setScore(0);
     setPaused(false);
     setDead(false);
-    setShowHint(true);
-    setHazardMeta([]);
-  }, [playerX, syncVisual, world]);
+    setDeathKind(null);
+    setCue("tap");
+    setFloaters([]);
+    for (const id of floaterTimers.current) clearTimeout(id);
+    floaterTimers.current = [];
+  }, [flash, playerX, squashX, squashY, syncVisual, world]);
 
   useEffect(() => {
     resizeRun(runRef.current, world, playerX);
@@ -164,14 +276,18 @@ export function PlayField({
   }, [playerX, syncVisual, world]);
 
   const finish = useCallback(
-    async (finalScore: number) => {
+    async (finalScore: number, kind: DeathKind | null) => {
       if (finishing.current) return;
       finishing.current = true;
+      retryAt.current = Date.now() + 380;
       setDead(true);
+      setDeathKind(kind);
+      flash.value = withSequence(withTiming(0.55, { duration: 70 }), withTiming(0, { duration: 280 }));
+      buzz(36);
       const next = await saveBestScore(finalScore);
       onBest(next);
     },
-    [onBest]
+    [flash, onBest]
   );
 
   useEffect(() => {
@@ -182,27 +298,52 @@ export function PlayField({
       const dt = Math.min(0.05, (now - last.current) / 1000);
       last.current = now;
       const beforeDead = run.dead;
-      const beforeIds = kindsKey(run.hazards);
       tick(run, dt);
       syncVisual(run);
+      if (run.justJumped) {
+        squashX.value = 0.88;
+        squashY.value = 1.14;
+        squashX.value = withTiming(1, { duration: 140 });
+        squashY.value = withTiming(1, { duration: 140 });
+        buzz(8);
+      } else if (run.justLanded) {
+        squashX.value = 1.16;
+        squashY.value = 0.8;
+        squashX.value = withTiming(1, { duration: 110 });
+        squashY.value = withTiming(1, { duration: 110 });
+      }
+      if (run.justBean) {
+        const pts = run.justBean;
+        const id = floaterId.current++;
+        setFloaters((prev) => {
+          const next = [...prev, { id, x: playerX, y: run.playerY - 12, pts }];
+          return next.length > 5 ? next.slice(next.length - 5) : next;
+        });
+        const timer = setTimeout(() => {
+          setFloaters((prev) => prev.filter((f) => f.id !== id));
+        }, 620);
+        floaterTimers.current.push(timer);
+        buzz(6);
+      }
       const nextScore = Math.floor(run.score);
       if (nextScore !== scoreRef.current) {
         scoreRef.current = nextScore;
         setScore(nextScore);
       }
-      if (run.jumped && hintRef.current) {
-        hintRef.current = false;
-        setShowHint(false);
+      if (run.cue !== cueRef.current) {
+        cueRef.current = run.cue;
+        setCue(run.cue);
       }
-      if (kindsKey(run.hazards) !== beforeIds) {
-        setHazardMeta(run.hazards.map((h) => h.kind));
-      }
-      if (run.dead && !beforeDead) void finish(nextScore);
+      if (run.dead && !beforeDead) void finish(nextScore, run.deathKind);
       raf.current = requestAnimationFrame(loop);
     };
     raf.current = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf.current);
-  }, [finish, syncVisual]);
+    return () => {
+      cancelAnimationFrame(raf.current);
+      for (const id of floaterTimers.current) clearTimeout(id);
+      floaterTimers.current = [];
+    };
+  }, [finish, playerX, squashX, squashY, syncVisual]);
 
   useEffect(() => {
     const onApp = (state: AppStateStatus) => {
@@ -215,21 +356,36 @@ export function PlayField({
     return () => sub.remove();
   }, []);
 
-  const onJump = () => {
-    jump(runRef.current);
+  const onJumpDown = () => {
+    if (requestJump(runRef.current)) {
+      squashX.value = 0.88;
+      squashY.value = 1.14;
+      squashX.value = withTiming(1, { duration: 140 });
+      squashY.value = withTiming(1, { duration: 140 });
+      buzz(8);
+    }
+  };
+  const onJumpUp = () => {
+    releaseJump(runRef.current);
   };
 
   const togglePause = () => {
     const run = runRef.current;
     if (run.dead) return;
     run.paused = !run.paused;
+    run.holding = false;
     setPaused(run.paused);
     last.current = 0;
   };
 
+  const onRetry = () => {
+    if (Date.now() < retryAt.current) return;
+    reset();
+  };
+
   return (
     <View style={styles.play} testID="escape-play">
-      <CafeStage width={width} height={height} groundY={groundY} />
+      <CafeStage width={width} height={height} groundY={groundY} scroll={scroll} />
       <SafeAreaView style={styles.hud}>
         <View style={styles.scoreChip}>
           <Text style={styles.hudScore} accessibilityRole="text">
@@ -258,10 +414,12 @@ export function PlayField({
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Jump"
-        accessibilityHint="Tap the floor to jump over grinders and collect beans"
-        onPress={onJump}
+        accessibilityHint="Tap to hop grinders and portafilters. Stay low under steam. Collect honey beans."
+        onPressIn={onJumpDown}
+        onPressOut={onJumpUp}
         style={styles.stage}
       >
+        <Animated.View pointerEvents="none" style={[styles.shadow, shadowStyle]} />
         <Animated.View
           pointerEvents="none"
           style={[
@@ -273,17 +431,29 @@ export function PlayField({
           <BeanArt tone="roast" />
         </Animated.View>
         {hazardSlots.map((slot, i) => (
-          <Sprite key={`h${i}`} slot={slot} tone={hazardMeta[i] ?? "grinder"} />
+          <HazardSprite
+            key={`h${i}`}
+            slot={slot}
+            groundY={groundY}
+            playerX={playerX}
+          />
         ))}
         {beanSlots.map((slot, i) => (
-          <Sprite key={`b${i}`} slot={slot} tone="gold" />
+          <BeanSprite key={`b${i}`} slot={slot} />
         ))}
-        {showHint ? (
-          <View style={[styles.hintWrap, { top: groundY + 16 }]}>
-            <Text style={styles.hint}>Tap the linen floor to jump</Text>
+        {floaters.map((f) => (
+          <View key={f.id} pointerEvents="none" style={[styles.floater, { left: f.x, top: f.y }]}>
+            <Text style={styles.floaterText}>+{f.pts}</Text>
+          </View>
+        ))}
+        {cue && !dead && !paused ? (
+          <View style={[styles.hintWrap, { top: groundY + 16 }]} testID="escape-coach">
+            <Text style={styles.hint}>{CUE[cue]}</Text>
           </View>
         ) : null}
       </Pressable>
+
+      <Animated.View pointerEvents="none" style={[styles.flash, flashStyle]} />
 
       {paused && !dead ? (
         <View style={styles.overlay} testID="escape-paused">
@@ -314,14 +484,23 @@ export function PlayField({
 
       {dead ? (
         <View style={styles.overlay} testID="escape-gameover">
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Brew again"
+            onPress={onRetry}
+            style={StyleSheet.absoluteFill}
+          />
           <View style={styles.sheet}>
             <Text style={styles.overlayTitle}>Roasted</Text>
             <Text style={styles.overlayScore}>Score {score}</Text>
             <Text style={styles.tag}>Best {best}</Text>
+            <Text style={styles.overlayBody}>
+              {deathKind ? ROAST[deathKind] : "The line caught the roast."} Tap to brew again.
+            </Text>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Play again"
-              onPress={reset}
+              onPress={onRetry}
               style={styles.primary}
             >
               <Text style={styles.primaryText}>Brew again</Text>
@@ -395,23 +574,61 @@ const styles = StyleSheet.create({
   },
   stage: { flex: 1 },
   sprite: { position: "absolute", left: 0, top: 0, overflow: "hidden" },
+  kit: {
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: t.glow,
+    overflow: "hidden",
+    backgroundColor: t.espressoDeep,
+  },
+  artFill: {
+    ...StyleSheet.absoluteFill,
+  },
   bean: {
     position: "absolute",
     left: 0,
     top: 0,
     borderRadius: 14,
     overflow: "hidden",
+    borderWidth: 2,
+    borderColor: t.kraft,
   },
   gold: {
     borderRadius: 10,
     overflow: "hidden",
+    borderWidth: 2,
+    borderColor: "#FFF1C2",
   },
-  hazard: {
-    borderRadius: 10,
-    overflow: "hidden",
+  shadow: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    height: 8,
+    borderRadius: 999,
+    backgroundColor: "#140E0A",
   },
-  steam: { borderRadius: 8, overflow: "hidden" },
-  porta: { borderRadius: 8, overflow: "hidden" },
+  floorMark: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: t.danger,
+  },
+  floater: {
+    position: "absolute",
+    paddingHorizontal: 6,
+  },
+  floaterText: {
+    color: t.glow,
+    fontFamily: "SourceSans3_700Bold",
+    fontSize: 18,
+    fontWeight: "800",
+  },
+  flash: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: "#C45C4A",
+  },
   hintWrap: {
     position: "absolute",
     left: 24,
@@ -419,12 +636,14 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 12,
-    backgroundColor: "rgba(20,14,10,0.55)",
+    backgroundColor: "rgba(20,14,10,0.62)",
+    borderWidth: 1,
+    borderColor: t.kraft,
   },
   hint: {
     color: t.linen,
     fontFamily: "SourceSans3_600SemiBold",
-    fontSize: 14,
+    fontSize: 15,
     textAlign: "center",
   },
   overlay: {
@@ -471,7 +690,7 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3_600SemiBold",
     fontSize: 16,
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: 4,
   },
   primary: {
     alignSelf: "stretch",

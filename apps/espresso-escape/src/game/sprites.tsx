@@ -13,25 +13,34 @@ export function BeanArt({ tone = "roast" }: { tone?: "roast" | "honey" }) {
     <View style={[sprite.beanFill, { backgroundColor: fill }]}>
       <View style={[sprite.beanSheen, { backgroundColor: sheen }]} />
       <View style={[sprite.beanCrease, { backgroundColor: crease }]} />
+      {tone === "roast" ? <View style={sprite.runnerBand} /> : null}
+      {tone === "roast" ? <View style={sprite.runnerFoot} /> : null}
     </View>
   );
 }
 
-/** Café-floor kits: hopper grinder, steam wand, portafilter. */
+/**
+ * Café-floor kits with high-contrast silhouettes.
+ * Grinders stay low and warm-red. Portafilters read tall. Steam is a cool
+ * hanging cloud — not linen furniture — so “stay low” is obvious.
+ */
 export function HazardArt({ kind }: { kind: HazardKind }) {
   if (kind === "steam") {
     return (
       <View style={sprite.fill}>
+        <View style={sprite.steamPlate} />
         <View style={sprite.wand} />
         <View style={[sprite.puff, sprite.puffTop]} />
         <View style={[sprite.puff, sprite.puffMid]} />
         <View style={[sprite.puff, sprite.puffLow]} />
+        <View style={sprite.steamCore} />
       </View>
     );
   }
   if (kind === "portafilter") {
     return (
       <View style={sprite.fill}>
+        <View style={sprite.portaPlate} />
         <View style={sprite.portaRim} />
         <View style={sprite.portaBasket} />
         <View style={sprite.portaSpoutL} />
@@ -44,6 +53,7 @@ export function HazardArt({ kind }: { kind: HazardKind }) {
   }
   return (
     <View style={sprite.fill}>
+      <View style={sprite.grinderPlate} />
       <View style={sprite.hopper} />
       <View style={sprite.hopperLip} />
       <View style={sprite.collar} />
@@ -64,7 +74,12 @@ export function KitThumb({
   size?: number;
 }) {
   const tall = kind === "portafilter" || kind === "steam";
-  const w = tall ? Math.round(size * 0.52) : kind === "bean" || kind === "player" ? Math.round(size * 0.72) : size;
+  const w =
+    tall
+      ? Math.round(size * 0.52)
+      : kind === "bean" || kind === "player"
+        ? Math.round(size * 0.72)
+        : size;
   const h = size;
   return (
     <View style={[sprite.thumb, { width: w, height: h }]}>
@@ -108,42 +123,81 @@ const sprite = StyleSheet.create({
     borderRadius: 2,
     opacity: 0.55,
   },
+  runnerBand: {
+    position: "absolute",
+    left: "8%",
+    right: "8%",
+    top: "58%",
+    height: "14%",
+    borderRadius: 4,
+    backgroundColor: t.kraft,
+  },
+  runnerFoot: {
+    position: "absolute",
+    left: "22%",
+    right: "22%",
+    bottom: 0,
+    height: "10%",
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    backgroundColor: "#3A2418",
+  },
+  steamPlate: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: "#2A3340",
+    opacity: 0.55,
+  },
   wand: {
     position: "absolute",
     left: "8%",
-    top: "4%",
-    width: "22%",
-    height: "92%",
+    top: "0%",
+    width: "20%",
+    height: "100%",
     borderRadius: 3,
-    backgroundColor: t.linenDim,
+    backgroundColor: t.metal,
   },
   puff: {
     position: "absolute",
     borderRadius: 999,
-    backgroundColor: t.linen,
+    backgroundColor: "#F7F4EE",
   },
   puffTop: {
-    left: "28%",
-    top: "6%",
-    width: "62%",
-    height: "24%",
-    opacity: 0.92,
+    left: "26%",
+    top: "4%",
+    width: "68%",
+    height: "26%",
+    opacity: 0.96,
   },
   puffMid: {
-    left: "22%",
-    top: "34%",
-    width: "74%",
-    height: "28%",
-    backgroundColor: t.linenDim,
-    opacity: 0.88,
+    left: "20%",
+    top: "30%",
+    width: "76%",
+    height: "30%",
+    backgroundColor: "#D5E1EA",
+    opacity: 0.94,
   },
   puffLow: {
-    left: "34%",
-    top: "66%",
-    width: "54%",
+    left: "30%",
+    top: "62%",
+    width: "58%",
+    height: "24%",
+    backgroundColor: "#B7C6D1",
+    opacity: 0.9,
+  },
+  steamCore: {
+    position: "absolute",
+    left: "38%",
+    top: "38%",
+    width: "36%",
     height: "22%",
-    backgroundColor: t.brand,
-    opacity: 0.75,
+    borderRadius: 999,
+    backgroundColor: "#C45C4A",
+    opacity: 0.7,
+  },
+  portaPlate: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: "#1C120C",
+    opacity: 0.35,
   },
   portaRim: {
     position: "absolute",
@@ -206,6 +260,11 @@ const sprite = StyleSheet.create({
     height: "14%",
     borderRadius: 8,
     backgroundColor: t.kraftDeep,
+  },
+  grinderPlate: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: "#3A1010",
+    opacity: 0.4,
   },
   hopper: {
     position: "absolute",

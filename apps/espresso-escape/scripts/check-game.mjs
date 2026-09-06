@@ -3,8 +3,9 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { spawnSync } from "node:child_process";
 
-function aabbHits(a, b, pad = 2) {
+function aabbHits(a, b, pad = 0) {
   return (
     a.x + pad < b.x + b.w - pad &&
     a.x + a.w - pad > b.x + pad &&
@@ -13,20 +14,23 @@ function aabbHits(a, b, pad = 2) {
   );
 }
 
-const PLAYER_H = 36;
-const GRAVITY = 2400;
-const JUMP_V = -780;
-const BASE_SPEED = 220;
-const MAX_SPEED = 460;
+const PLAYER_H = 38;
+const JUMP_V = -880;
+const GRAVITY_UP = 2300;
+const BASE_SPEED = 280;
+const MAX_SPEED = 400;
 const MAX_DT = 1 / 30;
+const INTRO_EMPTY_S = 2.2;
 
-function speedForScore(score) {
-  return Math.min(MAX_SPEED, BASE_SPEED + score * 3.2);
+function speedForRun(time) {
+  const t = Math.min(1, Math.max(0, time / 90));
+  const eased = t * t * (3 - 2 * t);
+  return BASE_SPEED + (MAX_SPEED - BASE_SPEED) * eased;
 }
 
-const player = { x: 40, y: 200, w: 28, h: 36 };
-const miss = { x: 120, y: 200, w: 44, h: 52 };
-const hit = { x: 50, y: 210, w: 44, h: 52 };
+const player = { x: 46, y: 205, w: 18, h: 28 };
+const miss = { x: 120, y: 200, w: 42, h: 48 };
+const hit = { x: 50, y: 210, w: 32, h: 40 };
 if (aabbHits(player, miss)) throw new Error("false positive collision");
 if (!aabbHits(player, hit)) throw new Error("missed collision");
 if (aabbHits(player, { x: 40, y: 280, w: 20, h: 20 })) {
@@ -47,16 +51,21 @@ run.vy = JUMP_V;
 run.jumped = true;
 tickJump(run, 1 / 60);
 if (run.playerY >= groundY - PLAYER_H) throw new Error("jump did not leave ground");
-if (speedForScore(80) <= speedForScore(0)) throw new Error("speed should scale with score");
+if (speedForRun(80) <= speedForRun(0)) throw new Error("speed should scale with time");
+if (speedForRun(0) !== BASE_SPEED) throw new Error("opening speed must stay readable");
+if (INTRO_EMPTY_S < 2) throw new Error("intro must leave a teach beat before the first kit");
 
-const roasted = { x: 70, y: 200, w: 28, h: 36 };
-if (!aabbHits(roasted, { x: 70, y: 200, w: 44, h: 52 })) {
+const jumpH = (JUMP_V * JUMP_V) / (2 * GRAVITY_UP);
+if (jumpH < 88) throw new Error("committed hop must clear a portafilter");
+
+const roasted = { x: 70, y: 200, w: 18, h: 28 };
+if (!aabbHits(roasted, { x: 70, y: 200, w: 32, h: 40 })) {
   throw new Error("overlap should roast the run");
 }
 if (Math.min(0.2, MAX_DT) !== MAX_DT) throw new Error("dt cap should clamp long hitches");
 
 function tickJump(state, dt) {
-  state.vy += GRAVITY * dt;
+  state.vy += GRAVITY_UP * dt;
   state.playerY += state.vy * dt;
 }
 
@@ -85,6 +94,9 @@ if (app.expo?.extra?.hasIap) {
 }
 if (!/Local high score/.test(String(app.expo?.extra?.privacyNote ?? ""))) {
   throw new Error("app.json extra.privacyNote must describe on-device storage only");
+}
+if (app.expo?.ios?.bundleIdentifier !== "com.jrod042.espressoescape") {
+  throw new Error("iOS bundle must stay com.jrod042.espressoescape");
 }
 
 const sources = walk(join(root, "src"))
@@ -127,6 +139,22 @@ if (!/Meet the bar/.test(sources) || !/KitThumb/.test(sources)) {
 }
 if (!/CafeStage/.test(sources)) {
   throw new Error("Play field must use the linen café stage");
+}
+if (!/onPressIn/.test(sources) || !/requestJump/.test(sources)) {
+  throw new Error("jump must fire on touch-down, not release");
+}
+if (!/INTRO_EMPTY_S/.test(sources) || !/COYOTE_S/.test(sources) || !/HEEL_MERCY_S/.test(sources)) {
+  throw new Error("feel systems (intro gap + coyote + heel mercy) must stay wired");
+}
+if (!/testID="escape-coach"/.test(sources)) {
+  throw new Error("in-run coach is required so first-run is not a dead how-to wall");
+}
+
+const play = spawnSync(process.execPath, [join(root, "scripts/playtest.mjs")], {
+  encoding: "utf8",
+});
+if (play.status !== 0) {
+  throw new Error(`playtest failed:\n${play.stdout}\n${play.stderr}`);
 }
 
 console.log("check-game: PASS");

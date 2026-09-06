@@ -25,7 +25,7 @@ type Props = {
 };
 
 const DURATION_MS = 4500;
-const INTERACT_MS = 3033;
+const INTERACT_MS = 1400;
 
 /**
  * Espresso Escape welcome — Hallow-inspired motion (Appllama study).
