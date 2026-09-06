@@ -43,6 +43,7 @@ export const BEAN_H = 24;
 export const FEEL_QA_LOCKED = true;
 /** App Store control fairness — coyote, buffer, insets, telegraph, retry. */
 export const CONTROL_FAIRNESS = true;
+export const APPSTORE_CONTROLS_BRIEF = "2026-09-05-escape-appstore-controls-feel-hits";
 
 /**
  * Committed tap-hop. Fall is heavier than rise so the bean lands with weight.

@@ -218,10 +218,27 @@ if (!/scrapbook|paperEdge|stampRing/.test(sources)) {
 if (!/plantSway/.test(sources) || !/lightShaft/.test(sources)) {
   throw new Error("diorama must keep idle plant sway and soft light shafts");
 }
-if (!/expo-gl|three|react-three|skia/i.test(readFileSync(join(root, "package.json"), "utf8"))) {
-  // current stack: RN views + Reanimated. Kit-eval may add GL later.
-} else {
-  throw new Error("do not add expo-gl / three / Skia until kit-eval reports");
+const pkg = readFileSync(join(root, "package.json"), "utf8");
+if (!/@shopify\/react-native-skia/.test(pkg)) {
+  throw new Error("Skia PRIMARY must stay in package.json");
+}
+if (!/react-native-gesture-handler/.test(pkg)) {
+  throw new Error("gesture-handler must stay beside Skia + Reanimated");
+}
+if (/expo-gl|react-three-fiber|"three":/i.test(pkg)) {
+  throw new Error("do not add expo-gl / R3F — Skia is the kit-eval primary");
+}
+if (!/CafeStageSkia/.test(sources) || !/from "@shopify\/react-native-skia"/.test(sources)) {
+  throw new Error("first Skia canvas path (CafeStageSkia) must stay wired");
+}
+if (!/CafeStageViews/.test(sources) || !/SKIA_FPS_KILL/.test(sources)) {
+  throw new Error("Views fallback + SKIA_FPS_KILL switch must stay wired");
+}
+if (!/APPSTORE_CONTROLS_BRIEF/.test(sources) || !/escape-appstore-controls-feel-hits/.test(sources)) {
+  throw new Error("must cite 2026-09-05-escape-appstore-controls-feel-hits");
+}
+if (!/PRO_KIT_EVAL/.test(sources) || !/escape-pro-kit-eval/.test(sources)) {
+  throw new Error("must cite 2026-09-05-escape-pro-kit-eval");
 }
 const syncSrc = readFileSync(join(root, "scripts/sync-kraft.mjs"), "utf8");
 if (!/ESCAPE_WIRE_KRAFT/.test(syncSrc)) {

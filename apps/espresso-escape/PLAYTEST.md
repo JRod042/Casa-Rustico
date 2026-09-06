@@ -6,7 +6,7 @@ Brand lock: cream `#F7F3EC`, kraft `#A47C59`, dark kraft `#8D6C4F`. Highland caf
 
 **V2_HOLD:** Jorge skipped v1 review. Do not wire Creative first-pack PNGs. Target future denser v2. HOLD ASC Submit until Jorge says it feels pro.
 
-**Render now:** RN Views + Images + Reanimated 2.5D + LinearGradient. Not Skia, not expo-gl / R3F.
+**Render now:** Skia PRIMARY (`CafeStageSkia` Canvas + Atlas) + Reanimated. Views fallback if web / fps kill / Skia throw. Not expo-gl / R3F.
 
 ## Before → after against the pillars
 
@@ -16,7 +16,7 @@ Brand lock: cream `#F7F3EC`, kraft `#A47C59`, dark kraft `#8D6C4F`. Highland caf
 | **LBP craft (technique)** | Flat stage | Scrapbook sheets (cardboard, stitch, paper edge, stamps). Living paper diorama |
 | **Runner hits** | Coyote 100 / buffer 120; near-equal gravity; faint telegraph | Coyote **130ms**, buffer **150ms**, fall **3600 > 2200**, hurtbox **18×24 on 30×38** (~63% tall; paper edges cosmetic), telegraph **0.62s**, retry **320ms**, TAP→steam→bean, RAF 60fps cap |
 | **Living-world awe** | Gradient + slats | 7-plate depth (canopy / far / highland / mid / shelf / mist / ground), steam, dust, plant sway, cloth, cups, soft shafts |
-| **PRO** | View-box + custom AABB | Matter.js sensors + Reanimated 2.5D. Kit-eval may later pick GL / Skia / Rapier — **not this PR** |
+| **PRO** | View-box + custom AABB | **Skia 2.6.2 PRIMARY** + Matter sensors + Reanimated. Views fallback. No R3F |
 
 PR #18 changed spawn fairness and packaging. Owner: that binary still “plays but nothing changed.” This pass is feel + menus + living depth + **hooks** for denser v2 — not a v1 art swap.
 
