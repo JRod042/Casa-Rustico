@@ -4,13 +4,18 @@ import {
   type Hazard,
   type HazardKind,
   type CoachCue,
+  type ScriptBeat,
   type World,
   BUFFER_S,
   COYOTE_S,
   HEEL_MERCY_S,
   JUMP_V,
+  MAGNET_PULL,
+  MAGNET_R,
   MAX_DT,
   PLAYER_H,
+  PLAYER_W,
+  TELEGRAPH_S,
   aabbHits,
   beanHitbox,
   gravityFor,
@@ -20,7 +25,7 @@ import {
   speedForRun,
 } from "./physics";
 
-export type { CoachCue };
+export type { CoachCue, ScriptBeat };
 
 export type DeathKind = HazardKind;
 
@@ -55,14 +60,20 @@ export type Run = {
   justJumped: boolean;
   justLanded: boolean;
   justBean: number;
+  justTelegraph: HazardKind | null;
   heelMercy: number;
+  tutorial: boolean;
+  scriptBeat: ScriptBeat;
+  scriptWait: number;
 };
 
 export function createRun(
   world: World,
   playerX: number,
-  seed = Date.now()
+  seed = Date.now(),
+  opts: { tutorial?: boolean } = {}
 ): Run {
+  const tutorial = !!opts.tutorial;
   return {
     world,
     playerX,
@@ -85,7 +96,7 @@ export function createRun(
     seenPorta: false,
     seenSteam: false,
     cue: "tap",
-    cueFor: 3.2,
+    cueFor: tutorial ? 8 : 3.2,
     rng: mulberry32(seed >>> 0 || 1),
     paused: false,
     dead: false,
@@ -94,7 +105,11 @@ export function createRun(
     justJumped: false,
     justLanded: false,
     justBean: 0,
+    justTelegraph: null,
     heelMercy: 0,
+    tutorial,
+    scriptBeat: tutorial ? "tap" : "done",
+    scriptWait: 0,
   };
 }
 
@@ -144,6 +159,21 @@ function swapPop<T>(list: T[], i: number): void {
   list.pop();
 }
 
+function pullBean(run: Run, b: Bean, step: number): void {
+  const cx = run.playerX + PLAYER_W * 0.5;
+  const cy = run.playerY + PLAYER_H * 0.5;
+  const bx = b.x + b.w * 0.5;
+  const by = b.y + b.h * 0.5;
+  const dx = cx - bx;
+  const dy = cy - by;
+  const d2 = dx * dx + dy * dy;
+  if (d2 >= MAGNET_R * MAGNET_R || d2 < 1) return;
+  const d = Math.sqrt(d2);
+  const pull = Math.min(MAGNET_PULL * step, d);
+  b.x += (dx / d) * pull;
+  b.y += (dy / d) * pull;
+}
+
 /** Advance one frame. Mutates `run` in place — no allocations on the quiet path. */
 export function tick(run: Run, dt: number): void {
   if (run.paused || run.dead) return;
@@ -153,6 +183,7 @@ export function tick(run: Run, dt: number): void {
   run.justJumped = false;
   run.justLanded = false;
   run.justBean = 0;
+  run.justTelegraph = null;
 
   const speed = speedForRun(run.time);
   const playerX = run.playerX;
@@ -196,6 +227,7 @@ export function tick(run: Run, dt: number): void {
   for (let i = 0; i < run.beans.length; ) {
     const b = run.beans[i];
     b.x -= speed * step;
+    if (!b.taken) pullBean(run, b, step);
     if (b.taken || b.x + b.w <= -24) {
       swapPop(run.beans, i);
       continue;
@@ -212,6 +244,11 @@ export function tick(run: Run, dt: number): void {
 
   for (let i = 0; i < run.hazards.length; i += 1) {
     const h = run.hazards[i];
+    const eta = (h.x - playerX - PLAYER_W) / speed;
+    if (!h.warned && eta <= TELEGRAPH_S && eta > 0) {
+      h.warned = true;
+      run.justTelegraph = h.kind;
+    }
     if (aabbHits(me, hazardHitbox(h))) {
       if (run.heelMercy > 0 && h.kind !== "steam") continue;
       run.dead = true;

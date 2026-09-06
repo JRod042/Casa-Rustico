@@ -5,6 +5,7 @@ export type HazardKind = "grinder" | "steam" | "portafilter";
 export type Hazard = Rect & {
   id: number;
   kind: HazardKind;
+  warned: boolean;
 };
 
 export type Bean = Rect & {
@@ -20,42 +21,50 @@ export type World = {
 
 export type Phase = 0 | 1 | 2 | 3;
 
-export type CoachCue = "tap" | "tall" | "steam" | null;
+export type CoachCue = "tap" | "tall" | "steam" | "bean" | null;
+
+export type ScriptBeat = "tap" | "steam" | "bean" | "done";
 
 export const PLAYER_W = 30;
 export const PLAYER_H = 38;
 
-/** Inset the hurtbox so art can overlap a few pixels without a cheap roast. */
+/** Hurtbox ≤ ~70% of the kraft sticker so paper edges are cosmetic. */
 export const PLAYER_INSET_X = 6;
-export const PLAYER_INSET_Y = 5;
+export const PLAYER_INSET_Y = 7;
 
 export const BEAN_W = 18;
 export const BEAN_H = 24;
 
 /**
- * Snappy tap-jump (Geometry Dash / Canabalt / Chrome Dino family).
- * Rise is committed; fall is faster so the hop does not float.
- * Hold only eases the fall for high honey beans — a tap still clears portafilters.
+ * Committed tap-hop. Fall is heavier than rise so the bean lands with weight.
+ * Hold only eases the fall for high honey beans.
  */
 export const JUMP_V = -880;
-export const GRAVITY_UP = 2300;
-export const GRAVITY_DOWN = 2700;
-export const GRAVITY_HANG = 2200;
-export const JUMP_AIR_S = 0.736;
+export const GRAVITY_UP = 2200;
+export const GRAVITY_DOWN = 3600;
+export const GRAVITY_HANG = 2400;
+export const JUMP_AIR_S = 0.644;
 /** Heel-clip grace after a hop so landing on a kit’s tail is not a cheap roast. */
 export const HEEL_MERCY_S = 0.1;
 
-/** Late-tap forgiveness used by every modern platformer-runner. */
-export const COYOTE_S = 0.1;
-export const BUFFER_S = 0.12;
+/** Late-tap forgiveness — inside the 110–150 / 120–180 ms brief. */
+export const COYOTE_S = 0.13;
+export const BUFFER_S = 0.15;
+
+/** Seconds of empty linen before the first kit (also the post-death opener). */
+export const INTRO_EMPTY_S = 2.3;
+
+/** Visible warn window before a kit reaches the runner. */
+export const TELEGRAPH_S = 0.62;
+
+/** Honey beans ease toward the runner when close. */
+export const MAGNET_R = 56;
+export const MAGNET_PULL = 260;
 
 /** Readable opening pace; max stays below the old 460 wall. */
 export const BASE_SPEED = 280;
 export const MAX_SPEED = 400;
 export const SPEED_RAMP_S = 90;
-
-/** Seconds of empty linen before the first kit rolls in. */
-export const INTRO_EMPTY_S = 2.2;
 
 export const MAX_DT = 1 / 30;
 export const MAX_HAZARDS = 6;
@@ -115,6 +124,12 @@ export function playerHitbox(x: number, y: number): Rect {
   };
 }
 
+export function playerHurtboxRatio(): number {
+  const visual = PLAYER_W * PLAYER_H;
+  const hurt = (PLAYER_W - PLAYER_INSET_X * 2) * (PLAYER_H - PLAYER_INSET_Y * 2);
+  return hurt / visual;
+}
+
 export function hazardHitbox(h: Hazard): Rect {
   if (h.kind === "steam") {
     return { x: h.x + 3, y: h.y + 8, w: h.w - 6, h: h.h - 12 };
@@ -133,12 +148,12 @@ export function makeHazard(id: number, world: World, kind: HazardKind): Hazard {
   const ground = world.groundY;
   const x = world.width + 20;
   if (kind === "steam") {
-    return { id, kind, x, y: ground - 128, w: 28, h: 78 };
+    return { id, kind, x, y: ground - 128, w: 28, h: 78, warned: false };
   }
   if (kind === "portafilter") {
-    return { id, kind, x, y: ground - 88, w: 32, h: 88 };
+    return { id, kind, x, y: ground - 88, w: 32, h: 88, warned: false };
   }
-  return { id, kind, x, y: ground - 46, w: 36, h: 46 };
+  return { id, kind, x, y: ground - 46, w: 36, h: 46, warned: false };
 }
 
 export function makeBean(id: number, x: number, y: number): Bean {
