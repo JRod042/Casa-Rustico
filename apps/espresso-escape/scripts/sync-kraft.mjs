@@ -21,30 +21,22 @@ if (!existsSync(box)) {
   process.exit(0);
 }
 
-const REL = [
-  "ui/title-bg.png",
-  "ui/menu-panel.png",
-  "ui/wordmark-espresso-escape.png",
-  "ui/panel-game-over.png",
-  "ui/panel-best-run.png",
-  "sprites/runner-01.png",
-  "sprites/runner-02.png",
-  "sprites/runner-03.png",
-  "sprites/runner-04.png",
-  "sprites/hazard-grinder.png",
-  "sprites/hazard-portafilter.png",
-  "sprites/hazard-steam.png",
-  "sprites/pickup-honey-bean.png",
-  "world/ground-strip.png",
-  "world/scroll-backdrop.png",
-  "world/kraft-cafe-backdrop.png",
+/** Live pack files Metro already require()s — WIRE overwrites these, no loader change. */
+const DROPIN = [
+  ["sprites/runner-01.png", "runner.png"],
+  ["sprites/hazard-grinder.png", "grinder.png"],
+  ["sprites/hazard-portafilter.png", "portafilter.png"],
+  ["sprites/hazard-steam.png", "steam.png"],
+  ["sprites/pickup-honey-bean.png", "bean.png"],
+  ["ui/menu-panel.png", "menu-panel.png"],
+  ["world/kraft-cafe-backdrop.png", "cafe-bg.png"],
 ];
 
 let copied = 0;
-for (const rel of REL) {
+for (const [rel, destName] of DROPIN) {
   const src = join(box, rel);
   if (!existsSync(src)) continue;
-  const dest = join(destRoot, "game", rel);
+  const dest = join(destRoot, destName);
   mkdirSync(dirname(dest), { recursive: true });
   copyFileSync(src, dest);
   copied += 1;

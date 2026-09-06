@@ -110,16 +110,20 @@ const HazardSprite = memo(function HazardSprite({
   groundY: number;
   playerX: number;
 }) {
-  const anim = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: slot.x.value },
-      { translateY: slot.y.value },
-      { scale: slot.warn.value ? 1.08 : 1 },
-    ],
-    width: slot.w.value,
-    height: slot.h.value,
-    opacity: slot.on.value,
-  }));
+  const anim = useAnimatedStyle(() => {
+    const approach = Math.max(0, Math.min(1, 1 - (slot.x.value - playerX) / 280));
+    const near = 0.9 + approach * 0.14;
+    return {
+      transform: [
+        { translateX: slot.x.value },
+        { translateY: slot.y.value },
+        { scale: slot.warn.value ? near * 1.06 : near },
+      ],
+      width: slot.w.value,
+      height: slot.h.value,
+      opacity: slot.on.value * (0.72 + approach * 0.28),
+    };
+  });
   const g = useAnimatedStyle(() => ({
     opacity: slot.on.value * (slot.kind.value === 0 ? 1 : 0),
   }));
@@ -339,10 +343,10 @@ export function PlayField({
         hopTick();
       } else if (landed) {
         if (!reduceMotion) {
-          squashX.value = 1.22;
-          squashY.value = 0.72;
-          squashX.value = withTiming(1, { duration: 180 });
-          squashY.value = withTiming(1, { duration: 180 });
+          squashX.value = 1.26;
+          squashY.value = 0.68;
+          squashX.value = withTiming(1, { duration: 200 });
+          squashY.value = withTiming(1, { duration: 200 });
         }
         landTick();
       }

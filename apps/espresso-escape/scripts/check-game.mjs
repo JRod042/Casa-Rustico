@@ -158,6 +158,12 @@ if (!/matterHitsHazard/.test(sources) || !/matter-js/.test(sources)) {
 if (!/landTick/.test(sources) || !/life.value/.test(sources)) {
   throw new Error("handmade land juice and living café life loop must stay wired");
 }
+if (!/escape-diorama/.test(sources) || !/scroll.value \* 0.035/.test(sources)) {
+  throw new Error("six-plate café diorama parallax must stay wired");
+}
+if (!/KRAFT_DROPIN/.test(sources)) {
+  throw new Error("Creative v2 filename map (hooks only) must stay in kraftMap");
+}
 if (!/ESCAPE_WIRE_KRAFT/.test(readFileSync(join(root, "scripts/sync-kraft.mjs"), "utf8"))) {
   throw new Error("Creative drop-in must stay halted behind ESCAPE_WIRE_KRAFT");
 }
