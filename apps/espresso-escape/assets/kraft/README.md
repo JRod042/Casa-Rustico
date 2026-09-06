@@ -2,8 +2,9 @@
 
 Casa Rústico paper-craft sprites. Cream `#F7F3EC`, kraft `#A47C59`, dark kraft `#8D6C4F`.
 
-**V2_HOLD:** Jorge skipped v1 review. Do **not** copy `/workspace/casa-brand/exports/escape-kraft/` (v1 first pack or later) until Jorge says WIRE on **denser v2**.
-`npm run sync:kraft` stays halted unless `ESCAPE_WIRE_KRAFT=1`, and still refuses a v1-only inventory.
+**V2_HOLD:** Jorge skipped v1 review. Do **not** copy `/workspace/casa-brand/exports/escape-kraft/` until Jorge says WIRE on **denser v2**.
+`INVENTORY.md` is **STALE** (Cacique) — Creative is still finishing 6 parallax plates. Do not treat that file as final.
+`npm run sync:kraft` stays halted unless `ESCAPE_WIRE_KRAFT=1` **and** `ESCAPE_INVENTORY_FRESH=1`.
 
 Target: denser natural / lifelike craft + LBP **layering** (paper planes), Casa café first. No Sackboy IP.
 

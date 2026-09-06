@@ -18,6 +18,11 @@ if (process.env.ESCAPE_WIRE_KRAFT !== "1") {
   process.exit(0);
 }
 
+if (process.env.ESCAPE_INVENTORY_FRESH !== "1") {
+  console.log("sync-kraft: INVENTORY.md is STALE — Creative still finishing 6 parallax plates. No wire.");
+  process.exit(0);
+}
+
 if (!existsSync(box)) {
   console.log("sync-kraft: Creative box missing — hooks stay on the in-repo pack");
   process.exit(0);

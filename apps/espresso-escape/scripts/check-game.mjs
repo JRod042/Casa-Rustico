@@ -167,6 +167,9 @@ if (!/KRAFT_DROPIN/.test(sources)) {
 if (!/V2_HOLD/.test(sources) || !/denser-v2/.test(sources)) {
   throw new Error("denser v2 hold must stay in kraftMap — do not treat v1 as final");
 }
+if (!/INVENTORY_STALE/.test(sources)) {
+  throw new Error("INVENTORY.md must stay marked STALE until Creative finishes 6 plates");
+}
 if (!/CORE_FEEL_BRIEF/.test(sources) || !/escape-lbp-reviews-core-feel/.test(sources)) {
   throw new Error("must cite 2026-09-05-escape-lbp-reviews-core-feel in feel");
 }
@@ -211,8 +214,12 @@ if (!/expo-gl|three|react-three|skia/i.test(readFileSync(join(root, "package.jso
 } else {
   throw new Error("do not add expo-gl / three / Skia until kit-eval reports");
 }
-if (!/ESCAPE_WIRE_KRAFT/.test(readFileSync(join(root, "scripts/sync-kraft.mjs"), "utf8"))) {
+const syncSrc = readFileSync(join(root, "scripts/sync-kraft.mjs"), "utf8");
+if (!/ESCAPE_WIRE_KRAFT/.test(syncSrc)) {
   throw new Error("Creative drop-in must stay halted behind ESCAPE_WIRE_KRAFT");
+}
+if (!/ESCAPE_INVENTORY_FRESH/.test(syncSrc) || !/INVENTORY.md is STALE/.test(syncSrc)) {
+  throw new Error("sync-kraft must refuse stale INVENTORY.md until Creative finishes 6 plates");
 }
 if (!/onPressIn/.test(sources) || !/requestJump/.test(sources)) {
   throw new Error("jump must fire on touch-down, not release");
