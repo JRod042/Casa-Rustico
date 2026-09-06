@@ -155,6 +155,16 @@ if (!/hopTick/.test(sources) || !/expo-haptics/.test(sources)) {
 if (!/#F7F3EC/.test(sources) || !/#A47C59/.test(sources) || !/#8D6C4F/.test(sources)) {
   throw new Error("kraft cream / kraft / dark kraft tokens must stay on the culture brief");
 }
+const retryLock = sources.match(/RETRY_LOCK_MS = (\d+)/);
+if (!retryLock || Number(retryLock[1]) > 500) {
+  throw new Error("death→retry lock must be named RETRY_LOCK_MS and stay ≤500ms");
+}
+if (!/if \(!seen\)/.test(sources) || !/setScreen\("play"\)/.test(sources)) {
+  throw new Error("first-run must enter Play with the in-run coach, not a how-to wall");
+}
+if (!/MAX_DT = 1 \/ 30/.test(sources)) {
+  throw new Error("frame hitch cap must stay at 1/30 so the loop can hold 60fps feel");
+}
 
 const play = spawnSync(process.execPath, [join(root, "scripts/playtest.mjs")], {
   encoding: "utf8",

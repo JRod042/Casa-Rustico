@@ -19,7 +19,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
 import { CafeStage } from "./CafeStage";
-import { beanTick, hopTick, roastTick } from "./feel";
+import { beanTick, hopTick, roastTick, RETRY_LOCK_MS } from "./feel";
 import {
   createRun,
   releaseJump,
@@ -280,7 +280,7 @@ export function PlayField({
     async (finalScore: number, kind: DeathKind | null) => {
       if (finishing.current) return;
       finishing.current = true;
-      retryAt.current = Date.now() + 380;
+      retryAt.current = Date.now() + RETRY_LOCK_MS;
       setDead(true);
       setDeathKind(kind);
       if (!reduceMotion) {

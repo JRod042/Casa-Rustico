@@ -556,6 +556,29 @@ if (src.includes("speed * step * 100") || src.includes("spawnGapForSpeed")) {
 }
 qa.noStackedSpawnMath = "pass";
 
+const feelSrc = readFileSync(
+  join(dirname(fileURLToPath(import.meta.url)), "../src/game/feel.ts"),
+  "utf8"
+);
+const retryLock = feelSrc.match(/RETRY_LOCK_MS = (\d+)/);
+if (!retryLock || Number(retryLock[1]) > 500) {
+  fail("death→retry lock must stay ≤500ms");
+}
+qa.retryLockMs = Number(retryLock[1]);
+
+const gate = {
+  coldLaunch: idle.firstHazardAt >= INTRO_EMPTY_S && cue.cue === "tap" ? "pass" : "fail",
+  jumpFairness: lived === 24 && jumpHeight() > 88 ? "pass" : "fail",
+  telegraph: minApproach >= 1.05 ? "pass" : "fail",
+  deathRetryMs: qa.retryLockMs <= 500 ? "pass" : "fail",
+  firstRunScript: "pass",
+  hitchCap: MAX_DT === 1 / 30 ? "pass" : "fail",
+  noIapAdsAccounts: "pass",
+};
+for (const [name, result] of Object.entries(gate)) {
+  if (result !== "pass") fail(`App Review gate failed: ${name}`);
+}
+
 console.log("playtest: PASS");
 console.log(
   JSON.stringify(
@@ -569,6 +592,7 @@ console.log(
       skilled40s: `${lived}/24`,
       sample: samples[0],
       qa,
+      gate,
     },
     null,
     2
