@@ -283,6 +283,9 @@ if (!/hapticsManager/.test(sources) || !/AHAP_SEAMS/.test(sources)) {
 if (!/AUDIO_SEAMS/.test(sources) || !/whoosh/.test(sources) || !/stamp/.test(sources)) {
   throw new Error("audio hook seams (whoosh/stamp) must stay in audioHooks");
 }
+if (!/AUDIO_FIRST_CLASS/.test(sources) || !/whoosh: "live"/.test(sources) || !/stamp: "live"/.test(sources)) {
+  throw new Error("whoosh/stamp must stay live — Jorge: AUDIO is first-class");
+}
 if (!/steamTick/.test(sources) || !/deathTick/.test(sources) || !/retryTick/.test(sources)) {
   throw new Error("steam / death / retry must stay wired through feel ticks");
 }

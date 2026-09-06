@@ -2,8 +2,8 @@ import type { ImageSourcePropType } from "react-native";
 
 /**
  * In-repo Casa kraft pack (playable now).
- * USE_CRAFT_ART=false — Jorge chose need-changes-before-wire.
- * No Creative PNG require(). Denser v2 box is HALTED (V2_HOLD).
+ * USE_CRAFT_ART=false forever until Cacique WIRE after redraw.
+ * Jorge: need-changes-before-wire. Art pack FAIL. No Creative PNG require().
  */
 export const USE_CRAFT_ART = false;
 export const JORGE_ART_DECISION = "need-changes-before-wire";

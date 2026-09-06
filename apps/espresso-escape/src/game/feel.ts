@@ -40,14 +40,16 @@ function tick(haptic: Parameters<typeof playHaptic>[0], audio: Parameters<typeof
   if (prefs.sfx) playAudio(audio);
 }
 
-/** Light hop — hapticsManager + audio hook. Never throws. */
+/** Light hop — haptic + hop click + whoosh air. Never throws. */
 export function hopTick(): void {
   tick("hop", "hop");
+  if (prefs.sfx) playAudio("whoosh");
 }
 
-/** Cardboard thud — heavier than the cloth hop. */
+/** Cardboard thud — haptic + land + stamp. */
 export function landTick(): void {
   tick("land", "land");
+  if (prefs.sfx) playAudio("stamp");
 }
 
 export function beanTick(): void {
