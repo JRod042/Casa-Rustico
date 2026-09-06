@@ -18,10 +18,10 @@ import { loadBestScore, loadSeenFirstRun, markFirstRunSeen } from "./storage";
 type Screen = "menu" | "how" | "about" | "privacy" | "play";
 
 const HOW: { title: string; body: string; kit: KitKind }[] = [
-  { title: "Jump", body: "Tap the linen floor. One tap, one hop — only from the ground.", kit: "player" },
-  { title: "Dodge", body: "Grinders stay low. Portafilters are taller. Steam hangs mid-air.", kit: "grinder" },
-  { title: "Collect", body: "Honey beans are +5. Surviving the line also adds to your run.", kit: "bean" },
-  { title: "Brew again", body: "One hit ends the run. No lives to buy. Pause anytime.", kit: "portafilter" },
+  { title: "Jump", body: "Tap the moment you want to hop. Hold a beat to float for high beans. Late taps still count if you just left the floor.", kit: "player" },
+  { title: "Dodge", body: "Grinders sit low. Portafilters are tall — hop both. Steam hangs — stay on the linen.", kit: "grinder" },
+  { title: "Collect", body: "Honey beans sit on the safe line. +5 each. The run itself scores as you go.", kit: "bean" },
+  { title: "Brew again", body: "One hit ends the roast. Tap to go again. No lives to buy. Pause anytime.", kit: "portafilter" },
 ];
 
 const BAR: { kit: KitKind; label: string }[] = [
@@ -40,7 +40,10 @@ export function GameApp() {
     Promise.all([loadBestScore(), loadSeenFirstRun()]).then(([n, seen]) => {
       if (!alive) return;
       setBest(n);
-      if (!seen) setScreen("how");
+      if (!seen) {
+        void markFirstRunSeen();
+        setScreen("play");
+      }
       setBooted(true);
     });
     return () => {

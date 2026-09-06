@@ -1,6 +1,6 @@
 {
   "name": "espresso-escape",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "index.ts",
   "private": true,
   "scripts": {
@@ -11,6 +11,7 @@
     "preflight:ios": "bash ./scripts/preflight-ios.sh",
     "bump:ios": "node ./scripts/bump-ios-build.mjs",
     "check:game": "node ./scripts/check-game.mjs",
+    "playtest": "node ./scripts/playtest.mjs",
     "typecheck": "tsc --noEmit",
     "eas:build:ios": "npx --yes eas-cli@16.28.0 build --platform ios --profile production",
     "eas:build:android": "npx --yes eas-cli@16.28.0 build --platform android --profile production",
@@ -26,6 +27,7 @@
     "expo": "~57.0.9",
     "expo-build-properties": "~57.0.1",
     "expo-font": "~57.0.1",
+    "expo-haptics": "~57.0.2",
     "expo-linear-gradient": "~57.0.1",
     "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
