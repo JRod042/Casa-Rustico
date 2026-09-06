@@ -252,6 +252,12 @@ if (!/stepPaper/.test(sources) || !/STEAM_FIRST_MS/.test(sources) || !/FAKE_AO/.
 if (!/honeyTint/.test(sources) || !/leafDot/.test(sources)) {
   throw new Error("leaf-dot sway and honey tint must stay wired");
 }
+if (!/LEAF_DOT_PULSE_PX/.test(sources) || !/leafPulse/.test(sources)) {
+  throw new Error("leaf-dot must keep a dedicated ±1–2px pulse (not plant sway only)");
+}
+if (!/FAKE_AO_BLEND|BlendMode.Multiply/.test(sources) || !/mixBlendMode/.test(sources)) {
+  throw new Error("fake-AO must use true Multiply blend (Skia + Views)");
+}
 const syncSrc = readFileSync(join(root, "scripts/sync-kraft.mjs"), "utf8");
 if (!/ESCAPE_WIRE_KRAFT/.test(syncSrc)) {
   throw new Error("Creative drop-in must stay halted behind ESCAPE_WIRE_KRAFT");

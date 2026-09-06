@@ -24,7 +24,7 @@ import {
   withTiming,
 } from "react-native-reanimated";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
-import { STEAM_FIRST_MS } from "./juice";
+import { FAKE_AO, FAKE_AO_BLEND, LEAF_DOT_PULSE_PX, STEAM_FIRST_MS } from "./juice";
 
 /**
  * First Skia canvas path — kraft 2.5D parallax + 1-frame Atlas hook.
@@ -45,6 +45,7 @@ export function CafeStageSkia({
   const reduce = useReducedMotion();
   const life = useSharedValue(0);
   const ambientGate = useSharedValue(0);
+  const leafPulse = useSharedValue(0);
   const plate = useImage(require("../../assets/kraft/cafe-bg.png"));
   const runner = useImage(require("../../assets/kraft/runner.png"));
 
@@ -52,6 +53,7 @@ export function CafeStageSkia({
     ambientGate.value = reduce ? 1 : withDelay(STEAM_FIRST_MS, withTiming(1, { duration: 360 }));
     if (reduce) {
       life.value = 0.5;
+      leafPulse.value = 0.5;
       return;
     }
     life.value = withRepeat(
@@ -59,7 +61,12 @@ export function CafeStageSkia({
       -1,
       true
     );
-  }, [ambientGate, life, reduce]);
+    leafPulse.value = withRepeat(
+      withTiming(1, { duration: 1600, easing: Easing.inOut(Easing.sin) }),
+      -1,
+      true
+    );
+  }, [ambientGate, leafPulse, life, reduce]);
 
   const canopyT = useDerivedValue(() => [
     { translateX: -((scroll.value * 0.02) % width) },
@@ -98,6 +105,14 @@ export function CafeStageSkia({
     { translateX: width * 0.08 - ((scroll.value * 0.18) % 36) },
     { translateY: groundY * 0.3 - 3 * life.value },
     { rotate: -2.2 + life.value * 3.2 },
+  ]);
+  const leafDotA = useDerivedValue(() => [
+    { translateY: -LEAF_DOT_PULSE_PX + leafPulse.value * LEAF_DOT_PULSE_PX * 2 },
+    { translateX: -1 + leafPulse.value * 2 },
+  ]);
+  const leafDotB = useDerivedValue(() => [
+    { translateY: LEAF_DOT_PULSE_PX - leafPulse.value * LEAF_DOT_PULSE_PX * 2 },
+    { translateX: 1 - leafPulse.value * 2 },
   ]);
   const clothSway = useDerivedValue(() => [
     { translateX: width * 0.7 - ((scroll.value * 0.26) % 22) },
@@ -199,11 +214,15 @@ export function CafeStageSkia({
           opacity={lightOp}
         />
 
-        <Circle cx={width * 0.64} cy={groundY * 0.24} r={40} color={t.espresso} opacity={0.12} />
+        {FAKE_AO ? (
+          <Group blendMode={FAKE_AO_BLEND}>
+            <Circle cx={width * 0.64} cy={groundY * 0.24} r={40} color={t.espresso} opacity={0.28} />
+            <Circle cx={width * 0.16} cy={groundY * 0.16} r={31} color={t.espresso} opacity={0.24} />
+            <Circle cx={width * 0.42} cy={groundY * 0.3} r={23} color={t.espresso} opacity={0.24} />
+          </Group>
+        ) : null}
         <Circle cx={width * 0.64} cy={groundY * 0.24} r={36} color={t.cream} opacity={steamA} />
-        <Circle cx={width * 0.16} cy={groundY * 0.16} r={31} color={t.espresso} opacity={0.1} />
         <Circle cx={width * 0.16} cy={groundY * 0.16} r={28} color={t.cream} opacity={steamB} />
-        <Circle cx={width * 0.42} cy={groundY * 0.3} r={23} color={t.espresso} opacity={0.1} />
         <Circle cx={width * 0.42} cy={groundY * 0.3} r={20} color={t.cream} opacity={steamA} />
 
         <Group transform={mistT} opacity={0.15}>
@@ -226,19 +245,41 @@ export function CafeStageSkia({
         </Group>
 
         <Group transform={plantSway} opacity={laterLife}>
-          <RoundedRect x={2} y={24} width={28} height={8} r={4} color={t.espresso} opacity={0.28} />
+          {FAKE_AO ? (
+            <Group blendMode={FAKE_AO_BLEND}>
+              <RoundedRect x={2} y={24} width={28} height={8} r={4} color={t.espresso} opacity={0.42} />
+            </Group>
+          ) : (
+            <RoundedRect x={2} y={24} width={28} height={8} r={4} color={t.espresso} opacity={0.28} />
+          )}
           <RoundedRect x={0} y={6} width={18} height={22} r={10} color={t.kraft} opacity={0.72} />
           <RoundedRect x={16} y={0} width={14} height={28} r={8} color={t.kraftDeep} opacity={0.7} />
-          <Circle cx={8} cy={8} r={2.2} color={t.kraftDeep} />
-          <Circle cx={22} cy={10} r={1.8} color={t.kraft} />
+          <Group transform={leafDotA}>
+            <Circle cx={8} cy={8} r={2.2} color={t.kraftDeep} />
+          </Group>
+          <Group transform={leafDotB}>
+            <Circle cx={22} cy={10} r={1.8} color={t.kraft} />
+          </Group>
           <Circle cx={14} cy={4} r={1.6} color={t.kraftDeep} />
         </Group>
         <Group transform={clothSway} opacity={laterLife}>
-          <RoundedRect x={4} y={30} width={22} height={7} r={3} color={t.espresso} opacity={0.22} />
+          {FAKE_AO ? (
+            <Group blendMode={FAKE_AO_BLEND}>
+              <RoundedRect x={4} y={30} width={22} height={7} r={3} color={t.espresso} opacity={0.38} />
+            </Group>
+          ) : (
+            <RoundedRect x={4} y={30} width={22} height={7} r={3} color={t.espresso} opacity={0.22} />
+          )}
           <RoundedRect x={0} y={0} width={28} height={36} r={4} color={t.cream} />
         </Group>
         <Group transform={propFar} opacity={laterLife}>
-          <RoundedRect x={2} y={24} width={36} height={8} r={4} color={t.espresso} opacity={0.26} />
+          {FAKE_AO ? (
+            <Group blendMode={FAKE_AO_BLEND}>
+              <RoundedRect x={2} y={24} width={36} height={8} r={4} color={t.espresso} opacity={0.4} />
+            </Group>
+          ) : (
+            <RoundedRect x={2} y={24} width={36} height={8} r={4} color={t.espresso} opacity={0.26} />
+          )}
           <RoundedRect x={0} y={0} width={22} height={28} r={6} color={t.kraft} />
           <RoundedRect x={26} y={14} width={12} height={14} r={3} color={t.cream} />
         </Group>

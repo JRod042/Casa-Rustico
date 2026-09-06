@@ -7,7 +7,12 @@ import { withSequence, withTiming, type SharedValue } from "react-native-reanima
  */
 export const GEMINI_COMPARE_BRIEF = "2026-09-05-escape-gemini-compare-optimize";
 export const STEAM_FIRST_MS = 3000;
+/** Contact / cavity shade — true Multiply, not espresso opacity alone. */
 export const FAKE_AO = true;
+/** Skia `BlendMode.Multiply` string (Group wants the literal, not the enum). */
+export const FAKE_AO_BLEND = "multiply" as const;
+/** Dedicated leaf-dot pulse amplitude (px), not plant-sway ride. */
+export const LEAF_DOT_PULSE_PX = 2;
 
 export function stepPaper(
   target: SharedValue<number>,

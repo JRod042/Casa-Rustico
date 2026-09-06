@@ -45,7 +45,7 @@ Feel (2–3 deaths + 1 long run):
 - [ ] Kits / floor marks warm ~0.6s before contact (**kraft**, not neon).
 - [ ] Roast → one tap Brew again in under half a second. Next opener is easy (≥2s).
 - [ ] Hop feels like cloth; landing is a cardboard thud; beans pop like fabric.
-- [ ] Café has depth and idle life (planes, steam, dust, plants, cloth, cups).
+- [ ] Café has depth and idle life (planes, steam, dust, plants, cloth, cups). Leaf-dots pulse ±1–2px on their own; contact shade multiplies (not a flat espresso wash).
 - [ ] Hop / bean / roast / land fire haptics + SFX **after** the physics tick (`hapticsManager` + `audioHooks`; whoosh/stamp/steam not shipped).
 
 Menus:

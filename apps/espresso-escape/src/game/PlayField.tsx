@@ -647,6 +647,7 @@ const styles = StyleSheet.create({
     height: 10,
     borderRadius: 999,
     backgroundColor: t.espresso,
+    mixBlendMode: "multiply",
   },
   floorMark: {
     position: "absolute",

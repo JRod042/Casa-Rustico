@@ -36,6 +36,8 @@ Cited: `2026-09-05-escape-best-in-class-master-plan`, `2026-09-05-escape-appdev-
 
 No new wav packs. No AHAP files. Device fps still OPEN.
 
+Feel smoke: dedicated leaf-dot ±2px pulse; contact/cavity fake-AO uses **Multiply** (Skia `BlendMode.Multiply`, Views `mixBlendMode`).
+
 ## Art
 
 **V2_HOLD.** `USE_CRAFT_ART=false` until Jorge WIRE. No Creative PNG wire. `INVENTORY.md` is STALE.

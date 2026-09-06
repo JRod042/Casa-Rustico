@@ -13,7 +13,7 @@ import Animated, {
 import { LinearGradient } from "expo-linear-gradient";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
 import { kraftSource } from "./kraftAssets";
-import { STEAM_FIRST_MS } from "./juice";
+import { FAKE_AO, LEAF_DOT_PULSE_PX, STEAM_FIRST_MS } from "./juice";
 
 const SLAT = 56;
 const DUST = [
@@ -50,11 +50,13 @@ export function CafeStageViews({
   const reduce = useReducedMotion();
   const life = useSharedValue(0);
   const ambientGate = useSharedValue(0);
+  const leafPulse = useSharedValue(0);
 
   useEffect(() => {
     ambientGate.value = reduce ? 1 : withDelay(STEAM_FIRST_MS, withTiming(1, { duration: 360 }));
     if (reduce) {
       life.value = 0.5;
+      leafPulse.value = 0.5;
       return;
     }
     life.value = withRepeat(
@@ -62,7 +64,12 @@ export function CafeStageViews({
       -1,
       true
     );
-  }, [ambientGate, life, reduce]);
+    leafPulse.value = withRepeat(
+      withTiming(1, { duration: 1600, easing: Easing.inOut(Easing.sin) }),
+      -1,
+      true
+    );
+  }, [ambientGate, leafPulse, life, reduce]);
 
   const canopy = useAnimatedStyle(() => ({
     transform: [{ translateX: -(((scroll.value * 0.02) % width)) }],
@@ -122,6 +129,18 @@ export function CafeStageViews({
       { translateX: -((scroll.value * 0.18) % 36) },
       { rotate: `${-2.2 + life.value * 3.2}deg` },
       { translateY: -3 * life.value },
+    ],
+  }));
+  const leafDotPulse = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: -LEAF_DOT_PULSE_PX + leafPulse.value * LEAF_DOT_PULSE_PX * 2 },
+      { translateX: -1 + leafPulse.value * 2 },
+    ],
+  }));
+  const leafDotPulseB = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: LEAF_DOT_PULSE_PX - leafPulse.value * LEAF_DOT_PULSE_PX * 2 },
+      { translateX: 1 - leafPulse.value * 2 },
     ],
   }));
   const clothSway = useAnimatedStyle(() => ({
@@ -199,6 +218,13 @@ export function CafeStageViews({
         style={[styles.windowGlow, { top: groundY * 0.12, left: width * 0.62, width: width * 0.22 }, windowShimmer]}
       />
 
+      {FAKE_AO ? (
+        <>
+          <View style={[styles.cavityAo, { top: groundY * 0.2, left: width * 0.64, width: 80, height: 60 }]} />
+          <View style={[styles.cavityAo, { top: groundY * 0.14, left: width * 0.16, width: 58, height: 44 }]} />
+          <View style={[styles.cavityAo, { top: groundY * 0.28, left: width * 0.42, width: 42, height: 32 }]} />
+        </>
+      ) : null}
       <Animated.View style={[styles.steam, { top: groundY * 0.2, left: width * 0.64, width: 78, height: 58 }, steamA]} />
       <Animated.View style={[styles.steam, { top: groundY * 0.14, left: width * 0.16, width: 56, height: 42 }, steamB]} />
       <Animated.View style={[styles.steam, { top: groundY * 0.28, left: width * 0.42, width: 40, height: 30 }, steamC]} />
@@ -227,8 +253,8 @@ export function CafeStageViews({
         <View style={styles.bush} />
         <View style={[styles.bush, styles.bushTall]} />
         <View style={styles.leaf} />
-        <View style={styles.leafDot} />
-        <View style={[styles.leafDot, styles.leafDotB]} />
+        <Animated.View style={[styles.leafDot, leafDotPulse]} />
+        <Animated.View style={[styles.leafDot, styles.leafDotB, leafDotPulseB]} />
       </Animated.View>
       <Animated.View style={[styles.cloth, { top: groundY * 0.18, left: width * 0.72 }, clothSway, laterLife]} />
 
@@ -369,7 +395,15 @@ const styles = StyleSheet.create({
     height: 7,
     borderRadius: 4,
     backgroundColor: t.espresso,
+    opacity: 0.42,
+    mixBlendMode: "multiply",
+  },
+  cavityAo: {
+    position: "absolute",
+    borderRadius: 999,
+    backgroundColor: t.espresso,
     opacity: 0.28,
+    mixBlendMode: "multiply",
   },
   cloth: {
     position: "absolute",
