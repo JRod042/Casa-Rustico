@@ -12,7 +12,7 @@ export const escapeWelcomeTheme = {
   kraft: "#A47C59",
   kraftDeep: "#8D6C4F",
   danger: "#8B2E2E",
-  glow: "#E8B86D",
+  glow: "#A47C59",
   panel: "#F7F3EC",
   line: "#8D6C4F",
   linen: "#F7F3EC",

@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     left: 32,
     right: 32,
     bottom: 196,
-    color: t.glow,
+    color: t.linenDim,
     fontFamily: "SourceSans3_600SemiBold",
     fontSize: 16,
     textAlign: "center",
