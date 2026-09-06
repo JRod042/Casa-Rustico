@@ -301,6 +301,12 @@ if (
 ) {
   throw new Error("audio/haptics must use the contract matrix (hop/land/death_stamp/honey_bean/near_miss/menu_ui)");
 }
+if (!/P0_KEYS/.test(sources) || !/death: "stamp"/.test(sources) || !/retry: "whoosh"/.test(sources)) {
+  throw new Error("P0 keys hop|land|bean|whoosh|stamp|steam and death→stamp / retry→whoosh must stay");
+}
+if (!/sync-audio-p0/.test(readFileSync(join(root, "package.json"), "utf8"))) {
+  throw new Error("sync:audio must stay in package.json");
+}
 if (!/steamTick/.test(sources) || !/deathTick/.test(sources) || !/retryTick/.test(sources)) {
   throw new Error("steam / death / retry must stay wired through feel ticks");
 }

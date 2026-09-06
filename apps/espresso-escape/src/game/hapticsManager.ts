@@ -1,6 +1,6 @@
 import { Vibration } from "react-native";
 import * as Haptics from "expo-haptics";
-import { AUDIO_HAPTICS_CONTRACT, type FeelEventId } from "./feelEvents";
+import { AUDIO_HAPTICS_CONTRACT, P0_FOR_EVENT, type FeelEventId, type P0Key } from "./feelEvents";
 
 /**
  * Core Haptics — contract matrix, same-tick first transient.
@@ -65,13 +65,14 @@ export const HAPTIC_PROFILES: Record<
   },
 };
 
-export const AHAP_SEAMS: Record<HapticProfile, string | null> = {
-  hop: null,
-  land: null,
-  death_stamp: null,
-  honey_bean: null,
-  near_miss: null,
-  menu_ui: null,
+/** P0 AHAP paths — do not require() until sync:audio copies the box. */
+export const AHAP_SEAMS: Record<P0Key, string> = {
+  hop: "assets/ahap/hop.ahap",
+  land: "assets/ahap/land.ahap",
+  bean: "assets/ahap/bean.ahap",
+  whoosh: "assets/ahap/whoosh.ahap",
+  stamp: "assets/ahap/stamp.ahap",
+  steam: "assets/ahap/steam.ahap",
 };
 
 function audioServicesBuzz(ms: number): void {
@@ -82,7 +83,10 @@ function audioServicesBuzz(ms: number): void {
   }
 }
 
-export async function playAhap(_profile: HapticProfile): Promise<boolean> {
+export async function playAhap(profile: HapticProfile): Promise<boolean> {
+  const key = P0_FOR_EVENT[profile];
+  if (!AHAP_SEAMS[key]) return false;
+  // Bundle is copied by sync:audio. Native CHHapticEngine play lands with the files.
   return false;
 }
 
@@ -116,12 +120,6 @@ function expoProfile(profile: HapticProfile): void {
 
 /** First transient fires on this call — not after a resolved AHAP promise. */
 export function playHaptic(profile: HapticProfile): void {
-  if (AHAP_SEAMS[profile]) {
-    void playAhap(profile).then((played) => {
-      if (played) return;
-      expoProfile(profile);
-    });
-    return;
-  }
   expoProfile(profile);
+  void playAhap(profile);
 }

@@ -13,6 +13,7 @@
     "check:game": "node ./scripts/check-game.mjs",
     "playtest": "node ./scripts/playtest.mjs",
     "sync:kraft": "node ./scripts/sync-kraft.mjs",
+    "sync:audio": "node ./scripts/sync-audio-p0.mjs",
     "typecheck": "tsc --noEmit",
     "eas:build:ios": "npx --yes eas-cli@16.28.0 build --platform ios --profile production",
     "eas:build:android": "npx --yes eas-cli@16.28.0 build --platform android --profile production",
