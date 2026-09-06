@@ -311,6 +311,7 @@ function Menu({
       <View style={styles.heroStack}>
         <View style={styles.heroBlot} />
         <View style={styles.heroMark}>
+          <View style={styles.heroStitch} />
           <SteamMark size={88} />
         </View>
       </View>
@@ -322,7 +323,7 @@ function Menu({
         <KitThumb kind="bean" size={36} />
         <KitThumb kind="grinder" size={36} />
       </View>
-      <PaperChip>Best run {best}</PaperChip>
+      <PaperChip ink>Best run {best}</PaperChip>
       <StickerButton
         primary
         label="Play"
@@ -393,6 +394,15 @@ const styles = StyleSheet.create({
     transform: [{ rotate: "-1.4deg" }],
     borderStyle: "dashed",
   },
+  heroStitch: {
+    ...StyleSheet.absoluteFill,
+    margin: 7,
+    borderWidth: 1,
+    borderColor: t.kraft,
+    borderStyle: "dashed",
+    borderRadius: 12,
+    opacity: 0.5,
+  },
   brand: {
     color: t.kraftDeep,
     letterSpacing: 4,
@@ -433,8 +443,9 @@ const styles = StyleSheet.create({
   copyCard: {
     alignSelf: "stretch",
     backgroundColor: t.cream,
-    borderRadius: 12,
+    borderRadius: 10,
     borderWidth: 2,
+    borderStyle: "dashed",
     borderColor: t.kraftDeep,
     paddingHorizontal: 18,
     paddingVertical: 16,
@@ -480,8 +491,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     backgroundColor: t.cream,
-    borderRadius: 12,
+    borderRadius: 10,
     borderWidth: 2,
+    borderStyle: "dashed",
     borderColor: t.kraftDeep,
     paddingHorizontal: 10,
     paddingVertical: 12,
@@ -501,8 +513,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
     backgroundColor: t.cream,
-    borderRadius: 12,
-    borderWidth: 1.5,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderStyle: "dashed",
     borderColor: t.kraftDeep,
     paddingHorizontal: 12,
     paddingVertical: 12,
@@ -540,8 +553,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: t.cream,
-    borderRadius: 10,
+    borderRadius: 8,
     borderWidth: 2,
+    borderStyle: "dashed",
     borderColor: t.kraftDeep,
     paddingHorizontal: 16,
     paddingVertical: 14,

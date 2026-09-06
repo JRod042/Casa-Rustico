@@ -19,7 +19,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
 import { CafeStage } from "./CafeStage";
-import { PaperSheet, StickerButton } from "./MenuChrome";
+import { PaperChip, PaperSheet, StickerButton } from "./MenuChrome";
 import { beanTick, hopTick, landTick, roastTick, warnTick, RETRY_LOCK_MS } from "./feel";
 import { stepPaper } from "./juice";
 import {
@@ -540,6 +540,7 @@ export function PlayField({
             style={StyleSheet.absoluteFill}
           />
           <PaperSheet>
+            <PaperChip ink>{newBest ? "Best Run" : "Roasted"}</PaperChip>
             <Text style={styles.overlayTitle}>{newBest ? "Best Run" : "Roasted"}</Text>
             <Text style={styles.overlayScore}>Score {score}</Text>
             <Text style={styles.tag}>Best {best}</Text>

@@ -28,7 +28,9 @@ export function PaperSheet({
           resizeMode="stretch"
         />
         <View style={chrome.paperEdge} />
+        <View style={chrome.paperEdgeBottom} />
         <View style={chrome.stitch} />
+        <View style={chrome.stitchInner} />
         <View style={chrome.sheetInner}>{children}</View>
       </View>
     </View>
@@ -61,11 +63,18 @@ export function StickerButton({
   );
 }
 
-export function PaperChip({ children }: { children: ReactNode }) {
+export function PaperChip({
+  children,
+  ink = false,
+}: {
+  children: ReactNode;
+  ink?: boolean;
+}) {
   return (
-    <View style={chrome.chip}>
-      <View style={chrome.stampRing} />
-      <Text style={chrome.chipText}>{children}</Text>
+    <View style={[chrome.chip, ink && chrome.chipInk]}>
+      <View style={[chrome.stampRing, ink && chrome.stampRingInk]} />
+      <View style={chrome.stampRingInner} />
+      <Text style={[chrome.chipText, ink && chrome.chipInkText]}>{children}</Text>
     </View>
   );
 }
@@ -98,25 +107,35 @@ const chrome = StyleSheet.create({
   },
   sheetWrap: {
     alignSelf: "stretch",
-    borderRadius: 16,
+    borderRadius: 14,
     overflow: "hidden",
     borderWidth: 2,
-    borderColor: t.kraft,
+    borderStyle: "dashed",
+    borderColor: t.kraftDeep,
     backgroundColor: t.cream,
     transform: [{ rotate: "-0.5deg" }],
   },
   sheetArt: {
     ...StyleSheet.absoluteFill,
-    opacity: 0.5,
+    opacity: 0.42,
   },
   paperEdge: {
     position: "absolute",
     left: 0,
     right: 0,
     top: 0,
-    height: 7,
+    height: 8,
     backgroundColor: t.kraft,
-    opacity: 0.22,
+    opacity: 0.28,
+  },
+  paperEdgeBottom: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 5,
+    backgroundColor: t.kraft,
+    opacity: 0.18,
   },
   stitch: {
     ...StyleSheet.absoluteFill,
@@ -124,8 +143,17 @@ const chrome = StyleSheet.create({
     borderWidth: 1,
     borderColor: t.kraftDeep,
     borderStyle: "dashed",
-    borderRadius: 12,
-    opacity: 0.5,
+    borderRadius: 10,
+    opacity: 0.55,
+  },
+  stitchInner: {
+    ...StyleSheet.absoluteFill,
+    margin: 11,
+    borderWidth: 1,
+    borderColor: t.kraft,
+    borderStyle: "dashed",
+    borderRadius: 8,
+    opacity: 0.35,
   },
   sheetInner: {
     paddingHorizontal: 22,
@@ -173,13 +201,19 @@ const chrome = StyleSheet.create({
     fontWeight: "700",
   },
   chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingHorizontal: 18,
+    paddingVertical: 9,
+    borderRadius: 6,
     backgroundColor: t.cream,
     borderWidth: 2,
     borderColor: t.kraftDeep,
+    overflow: "hidden",
     transform: [{ rotate: "0.8deg" }],
+  },
+  chipInk: {
+    backgroundColor: t.kraft,
+    borderColor: t.kraftDeep,
+    transform: [{ rotate: "-1.1deg" }],
   },
   stampRing: {
     ...StyleSheet.absoluteFill,
@@ -187,11 +221,30 @@ const chrome = StyleSheet.create({
     borderWidth: 1,
     borderColor: t.kraft,
     borderStyle: "dashed",
-    borderRadius: 6,
+    borderRadius: 4,
+  },
+  stampRingInk: {
+    borderColor: "rgba(247,243,236,0.45)",
+  },
+  stampRingInner: {
+    ...StyleSheet.absoluteFill,
+    margin: 6,
+    borderWidth: 1,
+    borderColor: t.kraftDeep,
+    borderStyle: "dashed",
+    borderRadius: 3,
+    opacity: 0.35,
   },
   chipText: {
     color: t.ink,
-    fontFamily: "SourceSans3_400Regular",
+    fontFamily: "SourceSans3_600SemiBold",
     fontSize: 16,
+    letterSpacing: 0.4,
+  },
+  chipInkText: {
+    color: t.stickerInk,
+    fontFamily: "SourceSans3_700Bold",
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
   },
 });
