@@ -1,4 +1,4 @@
-# Espresso Escape — stack (1.0.6 / 15)
+# Espresso Escape — stack (1.0.6 / 16)
 
 Casa Rústico café runner. Mid-iPhone first. App owns EAS→ASC after tip SHA (do not HOLD Submit).
 

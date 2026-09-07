@@ -317,14 +317,14 @@ const appJson = JSON.parse(readFileSync(join(root, "app.json"), "utf8"));
 if (appJson.expo?.version !== "1.0.6") {
   throw new Error("marketing version must stay 1.0.6 (not 1.0.5)");
 }
-if (String(appJson.expo?.ios?.buildNumber) !== "15") {
-  throw new Error("ios.buildNumber must be 15 so TF is newer than the failed 14");
+if (String(appJson.expo?.ios?.buildNumber) !== "16") {
+  throw new Error("ios.buildNumber must be 16 so TF is newer than the failed 14/15");
 }
 if (Number(appJson.expo?.android?.versionCode) !== 12) {
   throw new Error("android.versionCode must be 12 (newer than the 1.0.5 line)");
 }
-if (!/IOS_BUILD = "15"/.test(sources) || !/BUILD_LABEL/.test(sources)) {
-  throw new Error("About must show BUILD_LABEL 1.0.6 · 15");
+if (!/IOS_BUILD = "16"/.test(sources) || !/BUILD_LABEL/.test(sources)) {
+  throw new Error("About must show BUILD_LABEL 1.0.6 · 16");
 }
 const eas = readFileSync(join(root, "eas.json"), "utf8");
 if (!/6809059605/.test(eas) || /6758108565/.test(eas)) {
