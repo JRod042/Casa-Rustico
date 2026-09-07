@@ -1,8 +1,8 @@
 import type { FeelEventId } from "./feelEvents";
 
 /**
- * Same-tick café SFX. Casa sound owns P0 contract wavs.
- * In-repo files are placeholders until that drop — no new packs.
+ * Same-tick café SFX via expo-audio (SDK 57). expo-av/EXAV is gone.
+ * Casa sound owns P0 contract wavs — keep the same keys under assets/sfx/.
  */
 export type Tone = FeelEventId | "bean" | "steam" | "death" | "retry" | "roast" | "warn" | "whoosh" | "stamp";
 
@@ -40,23 +40,19 @@ export function bootSfx(): void {
   booted = true;
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const av = require("expo-av") as {
-      Audio: {
-        setAudioModeAsync: (m: object) => Promise<void>;
-        Sound: {
-          createAsync: (
-            src: number,
-            opts: object
-          ) => Promise<{ sound: { replayAsync: () => Promise<void> } }>;
-        };
-      };
+    const audio = require("expo-audio") as {
+      createAudioPlayer: (
+        src: number
+      ) => { play: () => void; seekTo: (s: number) => Promise<void> | void; volume: number };
+      setAudioModeAsync: (m: object) => Promise<void>;
     };
-    void av.Audio.setAudioModeAsync({
-      playsInSilentModeIOS: false,
-      staysActiveInBackground: false,
-      shouldDuckAndroid: true,
-    }).catch(() => undefined);
-    /** Placeholders. Casa sound P0 replaces these files, same keys. */
+    void audio
+      .setAudioModeAsync({
+        playsInSilentMode: false,
+        shouldPlayInBackground: false,
+        interruptionMode: "duckOthers",
+      })
+      .catch(() => undefined);
     const files: Record<Tone, number> = {
       hop: require("../../assets/sfx/hop.wav"),
       land: require("../../assets/sfx/land.wav"),
@@ -74,14 +70,21 @@ export function bootSfx(): void {
       stamp: require("../../assets/sfx/stamp.wav"),
     };
     (Object.keys(files) as Tone[]).forEach((name) => {
-      void av.Audio.Sound.createAsync(files[name], { shouldPlay: false, volume: SFX_GAIN[name] })
-        .then(({ sound }) => {
-          bank[name] = { play: () => sound.replayAsync().then(() => undefined) };
-          if (pending.delete(name) && !muted) {
-            void bank[name]?.play().catch(() => undefined);
-          }
-        })
-        .catch(() => undefined);
+      try {
+        const player = audio.createAudioPlayer(files[name]);
+        player.volume = SFX_GAIN[name];
+        bank[name] = {
+          play: async () => {
+            await Promise.resolve(player.seekTo(0));
+            player.play();
+          },
+        };
+        if (pending.delete(name) && !muted) {
+          void bank[name]?.play().catch(() => undefined);
+        }
+      } catch {
+        // Soft-fail one clip — haptics still fire.
+      }
     });
   } catch {
     // Native module not present (web / unit). Haptics still fire.

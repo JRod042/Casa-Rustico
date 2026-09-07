@@ -20,9 +20,7 @@
     "eas:build:all": "npx --yes eas-cli@16.28.0 build --platform all --profile production",
     "eas:build:internal": "npx --yes eas-cli@16.28.0 build --platform ios --profile internal",
     "eas:submit:ios": "npx --yes eas-cli@16.28.0 submit --platform ios --profile production --latest",
-    "eas-build-pre-install": "node ./scripts/restore-assets.js",
-    "eas-build-post-install": "node ./scripts/restore-exav-headers.js",
-    "postinstall": "node ./scripts/restore-exav-headers.js"
+    "eas-build-pre-install": "node ./scripts/restore-assets.js"
   },
   "dependencies": {
     "@expo-google-fonts/fraunces": "^0.4.1",
@@ -30,12 +28,11 @@
     "@react-native-async-storage/async-storage": "2.2.0",
     "@shopify/react-native-skia": "2.6.6",
     "expo": "~57.0.9",
-    "expo-av": "~16.0.8",
+    "expo-audio": "~57.0.4",
     "expo-build-properties": "~57.0.1",
     "expo-font": "~57.0.1",
     "expo-haptics": "~57.0.2",
     "expo-linear-gradient": "~57.0.1",
-    "expo-modules-core": "~57.0.16",
     "expo-status-bar": "~57.0.1",
     "matter-js": "^0.20.0",
     "react": "19.2.3",

@@ -1,4 +1,4 @@
-# Espresso Escape — stack (1.0.6 / 18)
+# Espresso Escape — stack (1.0.6 / 19)
 
 Casa Rústico café runner. Mid-iPhone first. App owns EAS→ASC after tip SHA (do not HOLD Submit).
 
@@ -32,7 +32,7 @@ Cited: `2026-09-05-escape-best-in-class-master-plan`, `2026-09-05-escape-appdev-
 | Layer | On branch now |
 |---|---|
 | Haptics | Contract IDs. `SAME_TICK`: first transient on the call (tap hop consumes `justJumped`). hop/land `.ahap` on disk |
-| Audio | P0 keys hop\|land\|bean\|whoosh\|stamp\|steam. death→stamp, retry→whoosh. `npm run sync:audio` copies the casa-brand box when mounted. |
+| Audio | `expo-audio` (SDK 57). P0 keys hop\|land\|bean\|whoosh\|stamp\|steam. death→stamp, retry→whoosh. No `expo-av`. |
 
 P0 wavs still stubs (<4KB). hop/land `.ahap` are on disk. Device fps still OPEN.
 
@@ -44,7 +44,7 @@ Feel smoke: dedicated leaf-dot ±2px pulse; contact/cavity fake-AO uses **Multip
 
 ## EAS TestFlight — App owns after tip SHA
 
-Ready: version **1.0.6**, iOS **18**, Android **12**, profile `production`, ASC `6809059605`.
+Ready: version **1.0.6**, iOS **19**, Android **12**, profile `production`, ASC `6809059605`.
 
 From `apps/espresso-escape` (App owns build + submit):
 

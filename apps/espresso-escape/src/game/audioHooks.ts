@@ -3,7 +3,7 @@ import { playSfx, type Tone } from "./sfx";
 
 /**
  * Casa sound P0 — hop|land|bean|whoosh|stamp|steam.
- * death→stamp, retry→whoosh. Real wavs via expo-av when sync:audio copies the box.
+ * death→stamp, retry→whoosh. Real wavs via expo-audio (SDK 57).
  */
 export const AUDIO_FIRST_CLASS = true;
 export { AUDIO_HAPTICS_CONTRACT };
