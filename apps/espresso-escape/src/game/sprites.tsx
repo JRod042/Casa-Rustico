@@ -1,17 +1,13 @@
 import { Image, StyleSheet, View } from "react-native";
-import { escapeWelcomeTheme as t } from "../welcome/theme";
 import { kraftSource } from "./kraftAssets";
 import type { HazardKind } from "./physics";
 
 export type KitKind = HazardKind | "bean" | "player";
 
-/**
- * Kraft sticker sprites. Creative PNGs win; paper-cut Views stay as
- * a readable silhouette if a drop is late.
- */
+/** Craft cutouts. Cream sticker fills read as white boxes on device. */
 export function BeanArt({ tone = "roast" }: { tone?: "roast" | "honey" }) {
   return (
-    <View style={[sprite.fill, sprite.sticker]}>
+    <View style={[sprite.fill, sprite.cutout]}>
       <Image
         source={tone === "honey" ? kraftSource("bean") : kraftSource("runner")}
         style={sprite.img}
@@ -31,8 +27,7 @@ export function HazardArt({ kind }: { kind: HazardKind }) {
         ? kraftSource("portafilter")
         : kraftSource("grinder");
   return (
-    <View style={[sprite.fill, sprite.sticker]}>
-      {kind === "steam" ? <View pointerEvents="none" style={sprite.steamRim} /> : null}
+    <View style={[sprite.fill, sprite.cutout]}>
       <Image
         source={src}
         style={sprite.img}
@@ -43,7 +38,6 @@ export function HazardArt({ kind }: { kind: HazardKind }) {
   );
 }
 
-/** Fixed-size kit for how-to, welcome, and HUD legends. */
 export function KitThumb({
   kind,
   size = 44,
@@ -60,7 +54,7 @@ export function KitThumb({
         : size;
   const h = size;
   return (
-    <View style={[sprite.thumb, sprite.sticker, { width: w, height: h }]}>
+    <View style={[sprite.thumb, { width: w, height: h }]}>
       {kind === "bean" ? (
         <BeanArt tone="honey" />
       ) : kind === "player" ? (
@@ -74,16 +68,13 @@ export function KitThumb({
 
 const sprite = StyleSheet.create({
   fill: { flex: 1, overflow: "hidden" },
-  sticker: {
-    backgroundColor: t.cream,
-    borderRadius: 8,
+  cutout: {
+    backgroundColor: "transparent",
     overflow: "hidden",
   },
   thumb: {
     overflow: "hidden",
     alignSelf: "center",
-    borderWidth: 1,
-    borderColor: t.kraftDeep,
   },
   img: {
     width: "100%",
@@ -92,12 +83,5 @@ const sprite = StyleSheet.create({
   honeyTint: {
     ...StyleSheet.absoluteFill,
     backgroundColor: "rgba(164,124,89,0.2)",
-  },
-  steamRim: {
-    ...StyleSheet.absoluteFill,
-    margin: -2,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: "rgba(247,243,236,0.45)",
   },
 });
