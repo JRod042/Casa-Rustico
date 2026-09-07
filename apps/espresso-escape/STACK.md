@@ -1,4 +1,4 @@
-# Espresso Escape — stack (1.0.6 / 14)
+# Espresso Escape — stack (1.0.6 / 15)
 
 Casa Rústico café runner. Mid-iPhone first. App owns EAS→ASC after tip SHA (do not HOLD Submit).
 
@@ -44,7 +44,7 @@ Feel smoke: dedicated leaf-dot ±2px pulse; contact/cavity fake-AO uses **Multip
 
 ## EAS TestFlight — App owns after tip SHA
 
-Ready: version **1.0.6**, iOS **14**, Android **12**, profile `production`, ASC `6809059605`.
+Ready: version **1.0.6**, iOS **15**, Android **12**, profile `production`, ASC `6809059605`.
 
 From `apps/espresso-escape` (App owns build + submit):
 

@@ -1,0 +1,12 @@
+# Unused lean-pack copies. Metro export on 55098f5 only bundled kraft + sfx
+# (51 assets). 110MB of world plates still uploaded to EAS and likely killed
+# the worker. Keep git copies; keep atlas files the require() map names.
+assets/game/characters/
+assets/game/hazards/
+assets/game/pickups/
+assets/game/world/**
+!assets/game/world/parallax-03.png
+assets/game/ui/hud/
+assets/game/ui/chrome/
+assets/game/ui/backgrounds/
+assets/game/ui/wordmark/
