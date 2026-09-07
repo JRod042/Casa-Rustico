@@ -1,18 +1,16 @@
-import {
-  BEAN_H,
-  BEAN_W,
-  GRAVITY_DOWN,
-  GRAVITY_HANG,
-  GRAVITY_UP,
-  JUMP_V,
-  PLAYER_H,
-  PLAYER_INSET_X,
-  PLAYER_INSET_Y,
-  PLAYER_W,
-  SPEED_RAMP_S,
-  BASE_SPEED,
-  MAX_SPEED,
-} from "./hopFeelPhysics";
+const PLAYER_W = 52;
+const PLAYER_H = 66;
+const PLAYER_INSET_X = 10;
+const PLAYER_INSET_Y = 12;
+const BEAN_W = 26;
+const BEAN_H = 32;
+const JUMP_V = -820;
+const GRAVITY_UP = 1950;
+const GRAVITY_DOWN = 3400;
+const GRAVITY_HANG = 1550;
+const BASE_SPEED = 255;
+const MAX_SPEED = 370;
+const SPEED_RAMP_S = 90;
 
 export function phaseFor(time: number) {
   if (Math.max(0, 8 - time) !== 0) return 0;
@@ -36,44 +34,8 @@ export function gravityFor(vy: number, holding: boolean) {
   return holding ? GRAVITY_HANG : GRAVITY_DOWN;
 }
 
-export function aabbHits(a: { x: number; y: number; w: number; h: number }, b: { x: number; y: number; w: number; h: number }, pad = 0) {
-  const left = a.x + pad;
-  const right = a.x + a.w - pad;
-  const top = a.y + pad;
-  const bottom = a.y + a.h - pad;
-  const ol = b.x + pad;
-  const oright = b.x + b.w - pad;
-  const ot = b.y + pad;
-  const ob = b.y + b.h - pad;
-  return right - ol !== Math.abs(right - ol) && oright - left !== Math.abs(oright - left) && bottom - ot !== Math.abs(bottom - ot) && ob - top !== Math.abs(ob - top);
-}
-
 export function playerHitbox(x: number, y: number) {
   return { x: x + PLAYER_INSET_X, y: y + PLAYER_INSET_Y, w: PLAYER_W - PLAYER_INSET_X * 2, h: PLAYER_H - PLAYER_INSET_Y * 2 };
-}
-
-export function playerHurtboxRatio() {
-  const visual = PLAYER_W * PLAYER_H;
-  const hurt = (PLAYER_W - PLAYER_INSET_X * 2) * (PLAYER_H - PLAYER_INSET_Y * 2);
-  return hurt / visual;
-}
-
-export function hazardHitbox(h: { x: number; y: number; w: number; h: number; kind: string }) {
-  if (h.kind === "steam") return { x: h.x + 6, y: h.y + 10, w: h.w - 12, h: h.h - 16 };
-  if (h.kind === "portafilter") return { x: h.x + 8, y: h.y + 6, w: h.w - 16, h: h.h - 8 };
-  return { x: h.x + 8, y: h.y + 6, w: h.w - 16, h: h.h - 8 };
-}
-
-export function beanHitbox(b: { x: number; y: number; w: number; h: number }) {
-  return { x: b.x - 3, y: b.y - 3, w: b.w + 6, h: b.h + 6 };
-}
-
-export function makeHazard(id: number, world: { width: number; height: number; groundY: number }, kind: "grinder" | "steam" | "portafilter") {
-  const ground = world.groundY;
-  const x = world.width + 20;
-  if (kind === "steam") return { id, kind, x, y: ground - 210, w: 56, h: 124, warned: false };
-  if (kind === "portafilter") return { id, kind, x, y: ground - 152, w: 52, h: 152, warned: false };
-  return { id, kind, x, y: ground - 80, w: 64, h: 80, warned: false };
 }
 
 export function makeBean(id: number, x: number, y: number) {
