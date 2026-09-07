@@ -34,13 +34,16 @@ import {
 import {
   type CoachCue,
   type HazardKind,
+  type SceneryKind,
   KIND_CODE,
   MAX_BEANS,
+  MAX_BUBBLES,
   MAX_HAZARDS,
+  MAX_SCENERY,
   PLAYER_H,
   PLAYER_W,
 } from "./physics";
-import { BeanArt, HazardArt } from "./sprites";
+import { BeanArt, BubbleArt, HazardArt, SceneryArt } from "./sprites";
 import { saveBestScore } from "./storage";
 
 type Slot = {
@@ -60,6 +63,13 @@ const CUE: Record<Exclude<CoachCue, null>, string> = {
   tall: "Tall kit — hop both",
   steam: "Steam — stay low",
   bean: "Grab the honey bean",
+};
+
+const SCENERY_CODE: Record<SceneryKind, number> = {
+  coffeeTree: 0,
+  palm: 1,
+  banana: 2,
+  coconuts: 3,
 };
 
 const ROAST: Record<DeathKind, string> = {
@@ -159,8 +169,8 @@ const HazardSprite = memo(function HazardSprite({
     };
   });
   const kit = useAnimatedStyle(() => ({
-    borderColor: slot.warn.value ? t.kraftDeep : slot.kind.value === 2 ? t.linenDim : t.kraft,
-    borderWidth: slot.warn.value ? 3 : 2,
+    borderColor: "transparent",
+    borderWidth: 0,
   }));
   return (
     <>
@@ -201,8 +211,69 @@ const BeanSprite = memo(function BeanSprite({ slot }: { slot: Slot }) {
     opacity: slot.on.value,
   }));
   return (
-    <Animated.View pointerEvents="none" style={[styles.sprite, styles.gold, anim]}>
+    <Animated.View pointerEvents="none" style={[styles.sprite, styles.cutout, anim]}>
       <BeanArt tone="honey" />
+    </Animated.View>
+  );
+});
+
+const BubbleSprite = memo(function BubbleSprite({ slot }: { slot: Slot }) {
+  const anim = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: slot.x.value },
+      { translateY: slot.y.value + Math.sin(slot.x.value / 22) * 5 },
+      { scale: slot.on.value ? 1 + 0.08 * Math.sin(slot.x.value / 14) : 1 },
+    ],
+    width: slot.w.value,
+    height: slot.h.value,
+    opacity: slot.on.value,
+  }));
+  const score = useAnimatedStyle(() => ({
+    opacity: slot.on.value * (slot.kind.value === 0 ? 1 : 0),
+  }));
+  const prize = useAnimatedStyle(() => ({
+    opacity: slot.on.value * (slot.kind.value === 1 ? 1 : 0),
+  }));
+  return (
+    <Animated.View pointerEvents="none" style={[styles.sprite, styles.cutout, anim]}>
+      <Animated.View style={[styles.artFill, score]}>
+        <BubbleArt />
+      </Animated.View>
+      <Animated.View style={[styles.artFill, prize]}>
+        <BubbleArt prize />
+      </Animated.View>
+    </Animated.View>
+  );
+});
+
+const ScenerySprite = memo(function ScenerySprite({ slot }: { slot: Slot }) {
+  const anim = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: slot.x.value },
+      { translateY: slot.y.value },
+    ],
+    width: slot.w.value,
+    height: slot.h.value,
+    opacity: slot.on.value * 0.94,
+  }));
+  const tree = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 0 ? 1 : 0) }));
+  const palm = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 1 ? 1 : 0) }));
+  const banana = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 2 ? 1 : 0) }));
+  const nuts = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 3 ? 1 : 0) }));
+  return (
+    <Animated.View pointerEvents="none" style={[styles.sprite, styles.cutout, anim]}>
+      <Animated.View style={[styles.artFill, tree]}>
+        <SceneryArt kind="coffeeTree" />
+      </Animated.View>
+      <Animated.View style={[styles.artFill, palm]}>
+        <SceneryArt kind="palm" />
+      </Animated.View>
+      <Animated.View style={[styles.artFill, banana]}>
+        <SceneryArt kind="banana" />
+      </Animated.View>
+      <Animated.View style={[styles.artFill, nuts]}>
+        <SceneryArt kind="coconuts" />
+      </Animated.View>
     </Animated.View>
   );
 });
@@ -232,10 +303,13 @@ export function PlayField({
   const squashX = useRef(makeMutable(1)).current;
   const squashY = useRef(makeMutable(1)).current;
   const bob = useRef(makeMutable(1)).current;
+  const lean = useRef(makeMutable(0)).current;
   const flash = useRef(makeMutable(0)).current;
   const scroll = useRef(makeMutable(0)).current;
   const hazardSlots = useRef(makeSlots(MAX_HAZARDS)).current;
   const beanSlots = useRef(makeSlots(MAX_BEANS)).current;
+  const bubbleSlots = useRef(makeSlots(MAX_BUBBLES)).current;
+  const scenerySlots = useRef(makeSlots(MAX_SCENERY)).current;
   const last = useRef(0);
   const raf = useRef(0);
   const finishing = useRef(false);
@@ -250,6 +324,8 @@ export function PlayField({
   const [deathKind, setDeathKind] = useState<DeathKind | null>(null);
   const [cue, setCue] = useState<CoachCue>("tap");
   const [hopping, setHopping] = useState(false);
+  const [poseFrame, setPoseFrame] = useState(0);
+  const [mult, setMult] = useState(1);
   const [floaters, setFloaters] = useState<Floater[]>([]);
   const scoreRef = useRef(0);
   const cueRef = useRef<CoachCue>("tap");
@@ -259,6 +335,7 @@ export function PlayField({
     transform: [
       { translateX: playerX },
       { translateY: playerY.value },
+      { rotate: `${lean.value}rad` },
       { scaleX: squashX.value },
       { scaleY: squashY.value * bob.value },
     ],
@@ -284,14 +361,29 @@ export function PlayField({
     (run: Run) => {
       playerY.value = run.playerY;
       scroll.value = run.distance;
+      lean.value = run.lean;
       bob.value =
         run.airborne || reduceMotion
           ? 1
           : 1 + (Math.sin(run.distance / 16) > 0 ? 0.04 : 0);
       writeSlots(hazardSlots, run.hazards);
       writeSlots(beanSlots, run.beans);
+      writeSlots(
+        bubbleSlots,
+        run.bubbles.map((b) => ({ ...b, kind: b.kind === "prize" ? "portafilter" : "grinder" }))
+      );
+      writeSlots(
+        scenerySlots,
+        run.scenery.map((s) => ({
+          x: s.x,
+          y: s.y,
+          w: s.w,
+          h: s.h,
+          kind: (["grinder", "portafilter", "steam", "knockbox"] as HazardKind[])[SCENERY_CODE[s.kind]] ?? "grinder",
+        }))
+      );
     },
-    [beanSlots, hazardSlots, playerY, scroll, bob, reduceMotion]
+    [beanSlots, bubbleSlots, hazardSlots, scenerySlots, playerY, scroll, bob, lean, reduceMotion]
   );
 
   const reset = useCallback(() => {
@@ -360,13 +452,34 @@ export function PlayField({
       const pendingHop = run.justJumped;
       const pendingLand = run.justLanded;
       const pendingBean = run.justBean;
+      const pendingBubble = run.justBubble;
       const pendingWarn = run.justTelegraph;
       tick(run, dt);
       syncVisual(run);
       const hopped = run.justJumped || pendingHop;
       const landed = run.justLanded || pendingLand;
       const beans = run.justBean || pendingBean;
+      const bubbles = run.justBubble || pendingBubble;
       const warned = run.justTelegraph || pendingWarn;
+      const pose =
+        run.hopping && run.airborne
+          ? run.vy < -140
+            ? 1
+            : run.vy < 70
+              ? 2
+              : 3
+          : run.plantT > 0
+            ? 3
+            : run.vy < -80
+              ? 0
+              : run.vy < 0
+                ? 1
+                : run.vy < 90
+                  ? 2
+                  : 3;
+      setPoseFrame(pose);
+      if (run.mult !== 1) setMult(run.mult);
+      else setMult(1);
       if (hopped) {
         hopTick();
         if (!reduceMotion) {
@@ -400,6 +513,23 @@ export function PlayField({
         if (!reduceMotion) {
           stepPaper(squashX, 1.14, 1.06);
           stepPaper(squashY, 0.94, 0.98);
+        }
+      }
+      if (bubbles) {
+        const pts = bubbles;
+        const id = floaterId.current++;
+        setFloaters((prev) => {
+          const next = [...prev, { id, x: playerX, y: run.playerY - 18, pts }];
+          return next.length > 5 ? next.slice(next.length - 5) : next;
+        });
+        const timer = setTimeout(() => {
+          setFloaters((prev) => prev.filter((f) => f.id !== id));
+        }, 620);
+        floaterTimers.current.push(timer);
+        beanTick();
+        if (!reduceMotion) {
+          stepPaper(squashX, 0.9, 0.96);
+          stepPaper(squashY, 1.1, 1.04);
         }
       }
       if (warned && !run.dead) {
@@ -488,7 +618,10 @@ export function PlayField({
           </Text>
         </View>
         <View style={styles.bestChip}>
-          <Text style={styles.hudBest}>Best {best}</Text>
+          <Text style={styles.hudBest}>
+            Best {best}
+            {mult > 1 ? ` · ${mult}×` : ""}
+          </Text>
         </View>
         {dead ? (
           <View style={styles.hudBtn}>
@@ -509,7 +642,7 @@ export function PlayField({
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Jump"
-        accessibilityHint="Tap to hop grinders and portafilters. Stay low under steam. Collect honey beans."
+        accessibilityHint="Tap to hop grinders and portafilters. Stay low under steam. Pop crema bubbles. Collect honey beans."
         onPressIn={onJumpDown}
         onPressOut={onJumpUp}
         style={styles.stage}
@@ -523,8 +656,11 @@ export function PlayField({
             playerStyle,
           ]}
         >
-          <BeanArt tone="roast" pose={hopping ? "hop" : "run"} />
+          <BeanArt tone="roast" pose={hopping ? "hop" : "run"} frame={poseFrame} />
         </Animated.View>
+        {scenerySlots.map((slot, i) => (
+          <ScenerySprite key={`s${i}`} slot={slot} />
+        ))}
         {hazardSlots.map((slot, i) => (
           <HazardSprite
             key={`h${i}`}
@@ -535,6 +671,9 @@ export function PlayField({
         ))}
         {beanSlots.map((slot, i) => (
           <BeanSprite key={`b${i}`} slot={slot} />
+        ))}
+        {bubbleSlots.map((slot, i) => (
+          <BubbleSprite key={`u${i}`} slot={slot} />
         ))}
         {floaters.map((f) => (
           <View key={f.id} pointerEvents="none" style={[styles.floater, { left: f.x, top: f.y }]}>
@@ -656,11 +795,14 @@ const styles = StyleSheet.create({
   stage: { flex: 1 },
   sprite: { position: "absolute", left: 0, top: 0, overflow: "hidden" },
   kit: {
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: t.kraft,
+    borderRadius: 0,
+    borderWidth: 0,
     overflow: "hidden",
-    backgroundColor: t.cream,
+    backgroundColor: "transparent",
+  },
+  cutout: {
+    overflow: "hidden",
+    backgroundColor: "transparent",
   },
   artFill: {
     ...StyleSheet.absoluteFill,
@@ -669,18 +811,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     top: 0,
-    borderRadius: 12,
     overflow: "hidden",
-    borderWidth: 2,
-    borderColor: t.kraftDeep,
-    backgroundColor: t.cream,
+    backgroundColor: "transparent",
   },
   gold: {
-    borderRadius: 10,
     overflow: "hidden",
-    borderWidth: 2,
-    borderColor: t.kraft,
-    backgroundColor: t.cream,
+    backgroundColor: "transparent",
   },
   shadow: {
     position: "absolute",

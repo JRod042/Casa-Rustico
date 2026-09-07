@@ -47,6 +47,9 @@ export function CafeStageSkia({
   const sky = useImage(require("../../assets/game/world/sky.jpg"));
   const far = useImage(require("../../assets/game/world/far.jpg"));
   const mid = useImage(require("../../assets/game/world/mid.jpg"));
+  const cork = useImage(require("../../assets/game/world/cork.jpg"));
+  const cardboard = useImage(require("../../assets/game/world/cardboard.jpg"));
+  const shelf = useImage(require("../../assets/game/world/shelf.jpg"));
   const ground = useImage(require("../../assets/game/world/ground-strip.png"));
   const hang = useImage(require("../../assets/game/world/hang.png"));
 
@@ -77,6 +80,12 @@ export function CafeStageSkia({
   ]);
   const highlandT = useDerivedValue(() => [
     { translateX: -((scroll.value * 0.08) % width) },
+  ]);
+  const corkT = useDerivedValue(() => [
+    { translateX: -((scroll.value * 0.12) % width) },
+  ]);
+  const cardT = useDerivedValue(() => [
+    { translateX: -((scroll.value * 0.14) % width) },
   ]);
   const midT = useDerivedValue(() => [
     { translateX: -((scroll.value * 0.16) % width) },
@@ -164,6 +173,30 @@ export function CafeStageSkia({
             <>
               <Image image={mid} x={0} y={groundY * 0.26} width={width} height={groundY * 0.74} fit="cover" />
               <Image image={mid} x={width} y={groundY * 0.26} width={width} height={groundY * 0.74} fit="cover" />
+            </>
+          ) : null}
+        </Group>
+        <Group transform={corkT} opacity={0.42}>
+          {cork ? (
+            <>
+              <Image image={cork} x={0} y={groundY * 0.22} width={width} height={groundY * 0.3} fit="cover" />
+              <Image image={cork} x={width} y={groundY * 0.22} width={width} height={groundY * 0.3} fit="cover" />
+            </>
+          ) : null}
+        </Group>
+        <Group transform={cardT} opacity={0.28}>
+          {cardboard ? (
+            <>
+              <Image image={cardboard} x={0} y={groundY * 0.34} width={width} height={groundY * 0.4} fit="cover" />
+              <Image image={cardboard} x={width} y={groundY * 0.34} width={width} height={groundY * 0.4} fit="cover" />
+            </>
+          ) : null}
+        </Group>
+        <Group transform={shelfT} opacity={0.88}>
+          {shelf ? (
+            <>
+              <Image image={shelf} x={0} y={groundY - Math.round(groundY * 0.26)} width={width} height={28} fit="cover" />
+              <Image image={shelf} x={width} y={groundY - Math.round(groundY * 0.26)} width={width} height={28} fit="cover" />
             </>
           ) : null}
         </Group>

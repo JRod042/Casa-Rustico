@@ -1,8 +1,8 @@
 import { Image, StyleSheet, View } from "react-native";
 import { GAME_ATLAS } from "./gameAtlas";
-import type { HazardKind } from "./physics";
+import type { HazardKind, SceneryKind } from "./physics";
 
-export type KitKind = HazardKind | "bean" | "player";
+export type KitKind = HazardKind | "bean" | "player" | "bubble";
 
 function artForHazard(kind: HazardKind) {
   if (kind === "steam") return GAME_ATLAS.hazardSteam;
@@ -13,20 +13,25 @@ function artForHazard(kind: HazardKind) {
   return GAME_ATLAS.hazardGrinder;
 }
 
+const RUN = [GAME_ATLAS.runner01, GAME_ATLAS.runner02, GAME_ATLAS.runner03, GAME_ATLAS.runner04];
+const HOP = [GAME_ATLAS.runnerHop01, GAME_ATLAS.runnerHop02, GAME_ATLAS.runnerHop03, GAME_ATLAS.runnerHop04];
+
 /** Charm cutouts — no cream card, no fringe mat. */
 export function BeanArt({
   tone = "roast",
   pose = "run",
+  frame = 0,
 }: {
   tone?: "roast" | "honey";
   pose?: "run" | "hop";
+  frame?: number;
 }) {
   const src =
     tone === "honey"
       ? GAME_ATLAS.honeyBean
       : pose === "hop"
-        ? GAME_ATLAS.runnerHop
-        : GAME_ATLAS.runner01;
+        ? HOP[frame] ?? GAME_ATLAS.runnerHop
+        : RUN[frame] ?? GAME_ATLAS.runner01;
   return (
     <View style={sprite.fill}>
       <Image
@@ -52,6 +57,35 @@ export function HazardArt({ kind }: { kind: HazardKind }) {
   );
 }
 
+export function BubbleArt({ prize = false }: { prize?: boolean }) {
+  return (
+    <View style={sprite.fill}>
+      <Image
+        source={prize ? GAME_ATLAS.prizeBubble : GAME_ATLAS.bubble}
+        style={sprite.img}
+        resizeMode="contain"
+        accessibilityIgnoresInvertColors
+      />
+    </View>
+  );
+}
+
+export function SceneryArt({ kind }: { kind: SceneryKind }) {
+  const src =
+    kind === "palm"
+      ? GAME_ATLAS.palm
+      : kind === "banana"
+        ? GAME_ATLAS.banana
+        : kind === "coconuts"
+          ? GAME_ATLAS.coconuts
+          : GAME_ATLAS.coffeeTree;
+  return (
+    <View style={sprite.fill}>
+      <Image source={src} style={sprite.img} resizeMode="contain" accessibilityIgnoresInvertColors />
+    </View>
+  );
+}
+
 /** Fixed-size kit for how-to, welcome, and HUD legends. */
 export function KitThumb({
   kind,
@@ -64,7 +98,7 @@ export function KitThumb({
   const w =
     tall
       ? Math.round(size * 0.72)
-      : kind === "bean" || kind === "player"
+      : kind === "bean" || kind === "player" || kind === "bubble"
         ? Math.round(size * 0.86)
         : size;
   const h = size;
@@ -74,6 +108,8 @@ export function KitThumb({
         <BeanArt tone="honey" />
       ) : kind === "player" ? (
         <BeanArt tone="roast" />
+      ) : kind === "bubble" ? (
+        <BubbleArt />
       ) : (
         <HazardArt kind={kind} />
       )}

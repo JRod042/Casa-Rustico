@@ -29,9 +29,10 @@ import {
 type Screen = "menu" | "how" | "about" | "privacy" | "settings" | "play";
 
 const HOW: { title: string; body: string; kit: KitKind }[] = [
-  { title: "Jump", body: "Tap when you want the hop. Cloth rise, cardboard land — not a floaty toy. Hold a beat only for high honey. Late taps still count if you just left the floor.", kit: "player" },
+  { title: "Jump", body: "Tap when you want the hop. The bean skips like a stuffed toy — plant, then hop. Hold a beat only for high honey. Late taps still count if you just left the floor.", kit: "player" },
   { title: "Dodge", body: "Read the kits. Soft danger: grinders sit low, portafilters are tall, steam is a warm cardboard cloud. Stay on the linen.", kit: "grinder" },
-  { title: "Collect", body: "Honey beans sit on the safe line. +5 each. The run itself scores as you go.", kit: "bean" },
+  { title: "Pop", body: "Crema bubbles trail the hop. Pop them. Five in a row starts a multiplier. Prize bubbles score extra.", kit: "bubble" },
+  { title: "Collect", body: "Honey beans sit on the safe line. Coffee trees, palms, and hanging coconuts dress the box. Brush a coconut for a rustle.", kit: "bean" },
   { title: "Brew again", body: "One soft roast ends the line. Tap to go again — the café invites another hop. Pause anytime and look around.", kit: "portafilter" },
 ];
 

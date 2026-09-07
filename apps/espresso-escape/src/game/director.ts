@@ -1,18 +1,34 @@
 import {
+  type Addon,
+  type AddonKind,
+  type Bubble,
+  type BubbleKind,
+  type FloorMat,
+  type FloorSeg,
   type Hazard,
   type HazardKind,
+  type Scenery,
+  type SceneryKind,
   type ScriptBeat,
   type World,
   GAP_S,
   INTRO_EMPTY_S,
   JUMP_AIR_S,
+  MAX_ADDONS,
   MAX_BEANS,
+  MAX_BUBBLES,
+  MAX_FLOOR,
   MAX_HAZARDS,
+  MAX_SCENERY,
+  makeAddon,
   makeBean,
+  makeBubble,
+  makeFloor,
   makeHazard,
+  makeScenery,
   phaseFor,
+  type CoachCue,
 } from "./physics";
-import type { CoachCue } from "./physics";
 
 type Course = {
   world: World;
@@ -22,9 +38,14 @@ type Course = {
   nextId: number;
   hazards: Hazard[];
   beans: { id: number; taken: boolean; x: number; y: number; w: number; h: number }[];
+  bubbles: Bubble[];
+  scenery: Scenery[];
+  addons: Addon[];
+  floor: FloorSeg[];
   hazardsSpawned: number;
   lastKind: HazardKind | null;
   untilHazard: number;
+  untilScenery: number;
   seenPorta: boolean;
   seenSteam: boolean;
   cue: CoachCue;
@@ -37,13 +58,15 @@ type Course = {
   scriptWait: number;
 };
 
-/**
- * Course director — Cookie Run jelly-path + Chrome Dino spacing +
- * Subway/Temple “teach one verb, then mix.”
- *
- * First-run micro-script is TAP → steam (stay low) → honey bean, then the
- * normal grinders-first phrase. Time-based gaps. Beans sit on the safe line.
- */
+export function dressStage(run: Course): void {
+  const ground = run.world.groundY;
+  const kinds: SceneryKind[] = ["palm", "coffeeTree", "coconuts", "banana"];
+  kinds.forEach((kind, i) => {
+    const x = 36 + i * 128 + run.rng() * 24;
+    run.scenery.push(makeScenery(run.nextId++, kind, x, ground, run.rng()));
+  });
+}
+
 export function direct(run: Course, dt: number): void {
   if (run.cueFor > 0) {
     run.cueFor -= dt;
@@ -53,6 +76,12 @@ export function direct(run: Course, dt: number): void {
   if (run.tutorial && run.scriptBeat !== "done") {
     directTutorial(run, dt);
     return;
+  }
+
+  run.untilScenery -= dt;
+  if (run.untilScenery <= 0 && run.scenery.length < MAX_SCENERY) {
+    sprinkleScenery(run);
+    run.untilScenery = 1.45 + run.rng() * 1.6;
   }
 
   if (run.time < INTRO_EMPTY_S) return;
@@ -67,6 +96,9 @@ export function direct(run: Course, dt: number): void {
     run.untilHazard = gapAfter(run, kind);
     cueForKind(run, kind);
     sprinkleBeans(run, hazard);
+    sprinkleBubbles(run, hazard);
+    sprinkleAddons(run, hazard);
+    layFloor(run, hazard);
   }
 }
 
@@ -166,20 +198,73 @@ function sprinkleBeans(run: Course, hazard: Hazard): void {
   const ground = run.world.groundY;
   const spots: { x: number; y: number }[] = [];
   if (hazard.kind === "grinder") {
-    spots.push(
-      { x: hazard.x + 6, y: ground - 96 },
-      { x: hazard.x + 30, y: ground - 122 }
-    );
+    spots.push({ x: hazard.x + 8, y: ground - 128 });
   } else if (hazard.kind === "portafilter") {
-    spots.push({ x: hazard.x + 8, y: ground - 138 });
-  } else {
-    spots.push({ x: hazard.x - 36, y: ground - 56 });
-  }
-  if (run.rng() < 0.55 && hazard.kind !== "steam") {
-    spots.push({ x: hazard.x + 72, y: ground - 72 });
+    spots.push({ x: hazard.x + 10, y: ground - 188 });
+  } else if (hazard.kind !== "steam") {
+    spots.push({ x: hazard.x - 44, y: ground - 72 });
   }
   for (const spot of spots) {
     if (run.beans.length >= MAX_BEANS) break;
     run.beans.push(makeBean(run.nextId++, spot.x, spot.y));
   }
+}
+
+function sprinkleBubbles(run: Course, hazard: Hazard): void {
+  const ground = run.world.groundY;
+  const spots: { x: number; y: number; kind: BubbleKind }[] = [];
+  if (hazard.kind === "steam") {
+    for (let i = 0; i < 4; i += 1) {
+      spots.push({ x: hazard.x - 8 + i * 30, y: ground - 48 - i * 4, kind: "score" });
+    }
+  } else {
+    const n = hazard.kind === "portafilter" ? 7 : 6;
+    const peak = hazard.kind === "portafilter" ? 210 : hazard.kind === "grinder" ? 138 : 118;
+    const startX = hazard.x - 28;
+    const span = hazard.w + 108;
+    const prizeAt = Math.floor(n / 2);
+    for (let i = 0; i < n; i += 1) {
+      const t = i / (n - 1);
+      const arc = 4 * t * (1 - t);
+      const kind: BubbleKind = i === prizeAt && run.rng() < 0.28 ? "prize" : "score";
+      spots.push({
+        x: startX + t * span,
+        y: ground - 58 - arc * peak,
+        kind,
+      });
+    }
+  }
+  for (const spot of spots) {
+    if (run.bubbles.length >= MAX_BUBBLES) break;
+    run.bubbles.push(makeBubble(run.nextId++, spot.kind, spot.x, spot.y, run.rng() * Math.PI * 2));
+  }
+}
+
+function sprinkleAddons(run: Course, hazard: Hazard): void {
+  if (run.addons.length >= MAX_ADDONS) return;
+  const roll = run.rng();
+  if (roll > 0.42) return;
+  const kind: AddonKind = roll < 0.22 ? "sponge" : "prize";
+  const ground = run.world.groundY;
+  const y = kind === "sponge" ? ground - 78 : ground - 132;
+  const x = hazard.x + hazard.w + 28 + run.rng() * 36;
+  run.addons.push(makeAddon(run.nextId++, kind, x, y));
+}
+
+function sprinkleScenery(run: Course): void {
+  if (run.scenery.length >= MAX_SCENERY) return;
+  const roll = run.rng();
+  const kind: SceneryKind =
+    roll < 0.34 ? "coffeeTree" : roll < 0.56 ? "palm" : roll < 0.78 ? "banana" : "coconuts";
+  const x = run.world.width + 16 + run.rng() * 90;
+  run.scenery.push(makeScenery(run.nextId++, kind, x, run.world.groundY, run.rng()));
+}
+
+function layFloor(run: Course, hazard: Hazard): void {
+  if (run.floor.length >= MAX_FLOOR) return;
+  if (run.rng() > 0.55) return;
+  const mat: FloorMat = run.rng() < 0.55 ? "sponge" : "cardboard";
+  const w = 160 + run.rng() * 180;
+  const x = hazard.x - 24;
+  run.floor.push(makeFloor(x, w, mat));
 }
