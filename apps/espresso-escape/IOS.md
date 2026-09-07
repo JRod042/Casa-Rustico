@@ -6,7 +6,7 @@ Android package: **`com.jrod042.espressoescape`**
 Expo: **`@jrod42/espresso-escape`** (`016d7c24-a7df-4e0d-8e59-00a9d8db352c`)  
 Apple Team: **`FY5H9V76QL`**  
 GitHub base directory: **`apps/espresso-escape`**  
-Store binary: **version 1.0.5 / iOS build 12 / Android versionCode 10** (feel/flow pass — next ASC upload)
+Store binary: **version 1.0.6 / iOS build 19 / Android versionCode 12**. TF installable. **NEXT = ASC Submit for Review on 6809059605** (not another EAS).
 
 Jorge’s iOS identity is **`com.jrod042.espressoescape`**. Submit to ASC **`6809059605`**. Do **not** restore `com.vibecode.espressoescape-20z7xb` or point EAS submit at the old vibecode ASC **`6758108565`**.
 
@@ -50,7 +50,7 @@ An App Store Connect API key alone is **not enough**.
 
 | Guideline | What changed |
 |---|---|
-| 2.1.0 completeness | Playable runner with a real session loop: tap-to-hop, coyote/buffer, fair kit spacing, in-run coach (not a dead how-to wall), honey-bean path, score / best, pause, tap-to-retry roast, About, in-app Privacy. Linen floor + kraft counter stage with scrolling slats. Store description in `app.json` matches the mini-game. Fonts time out so a CDN stall cannot leave a blank screen. Pause is not a dead control after a roast. |
+| 2.1.0 completeness | Playable runner: kraft PNG café stickers, TAP→steam→bean first-run script, coyote 130ms / buffer 150ms, magnet + 0.62s telegraph, cream sticker menus (title, pause, Best Run, settings), tap-to-retry ≤320ms. About + Privacy. No ads / IAP / accounts. Store description in `app.json` matches the mini-game. |
 | 3.1.1 IAP / payments | No StoreKit / RevenueCat / IAP / Safari checkout. No shop buttons or `Linking.openURL`. About + Privacy state the game does not sell coffee or take payments. Do not add IAP. |
 | Dual platform | iOS and Android both use `com.jrod042.espressoescape`. `eas build --platform all`. |
 
@@ -80,15 +80,18 @@ Do **not** invent payments. Physical bags stay in Casa Rustico Go (Shopify perma
 | `internal` / `preview` | internal | Device testers via Expo (needs Ad Hoc devices) |
 | `development` | internal + dev client | Native debug |
 
+Do **not** queue another EAS unless build 19 is lost. Remaining work is ASC Submit for Review.
+
 ```bash
 cd apps/espresso-escape
 npm ci
 npm run preflight:ios
 npm run check:game
-# TestFlight path (after credentials exist):
-npx eas-cli build --platform ios --profile production
-# or both stores:
-npx eas-cli build --platform all --profile production
+# AFTER wire/build instruction only:
+npx --yes eas-cli@16.28.0 build --platform ios --profile production --non-interactive
+# Binary already on TF for 1.0.6 / 19. GitHub APPLE_API_KEY_* secrets are empty.
+# Submit for Review in ASC UI on 6809059605 (create 1.0.6, attach build 19)
+# or add those secrets and re-run workflow "ASC Submit for Review".
 ```
 
 GitHub → Expo: base directory **`apps/espresso-escape`**, profile **`production`**.

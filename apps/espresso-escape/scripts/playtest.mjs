@@ -9,21 +9,24 @@ import { fileURLToPath } from "node:url";
 const PLAYER_W = 30;
 const PLAYER_H = 38;
 const PLAYER_INSET_X = 6;
-const PLAYER_INSET_Y = 5;
+const PLAYER_INSET_Y = 7;
 const BEAN_W = 18;
 const BEAN_H = 24;
 const JUMP_V = -880;
-const GRAVITY_UP = 2300;
-const GRAVITY_DOWN = 2700;
-const GRAVITY_HANG = 2200;
-const JUMP_AIR_S = 0.736;
+const GRAVITY_UP = 2200;
+const GRAVITY_DOWN = 3600;
+const GRAVITY_HANG = 2400;
+const JUMP_AIR_S = 0.644;
 const HEEL_MERCY_S = 0.1;
-const COYOTE_S = 0.1;
-const BUFFER_S = 0.12;
+const COYOTE_S = 0.13;
+const BUFFER_S = 0.15;
+const TELEGRAPH_S = 0.62;
+const MAGNET_R = 56;
+const MAGNET_PULL = 260;
 const BASE_SPEED = 280;
 const MAX_SPEED = 400;
 const SPEED_RAMP_S = 90;
-const INTRO_EMPTY_S = 2.2;
+const INTRO_EMPTY_S = 2.3;
 const MAX_DT = 1 / 30;
 const MAX_HAZARDS = 6;
 const MAX_BEANS = 8;
@@ -76,9 +79,9 @@ function beanHitbox(b) {
 function makeHazard(id, world, kind) {
   const ground = world.groundY;
   const x = world.width + 20;
-  if (kind === "steam") return { id, kind, x, y: ground - 128, w: 28, h: 78 };
-  if (kind === "portafilter") return { id, kind, x, y: ground - 88, w: 32, h: 88 };
-  return { id, kind, x, y: ground - 46, w: 36, h: 46 };
+  if (kind === "steam") return { id, kind, x, y: ground - 128, w: 28, h: 78, warned: false };
+  if (kind === "portafilter") return { id, kind, x, y: ground - 88, w: 32, h: 88, warned: false };
+  return { id, kind, x, y: ground - 46, w: 36, h: 46, warned: false };
 }
 function makeBean(id, x, y) {
   return { id, taken: false, x, y, w: BEAN_W, h: BEAN_H };
@@ -145,10 +148,52 @@ function sprinkleBeans(run, hazard) {
     run.beans.push(makeBean(run.nextId++, spot.x, spot.y));
   }
 }
+function directTutorial(run, dt) {
+  if (run.scriptBeat === "tap") {
+    run.cue = "tap";
+    if (!run.jumped) return;
+    run.scriptWait += dt;
+    if (!run.airborne && run.scriptWait > 0.28) {
+      run.scriptBeat = "steam";
+      run.scriptWait = 0;
+      const steam = makeHazard(run.nextId++, run.world, "steam");
+      run.hazards.push(steam);
+      run.hazardsSpawned += 1;
+      run.lastKind = "steam";
+      run.seenSteam = true;
+      run.cue = "steam";
+      run.cueFor = 3.4;
+    }
+    return;
+  }
+  if (run.scriptBeat === "steam") {
+    const cloud = run.hazards.find((h) => h.kind === "steam");
+    if (!cloud || cloud.x + cloud.w < run.playerX - 10) {
+      run.scriptBeat = "bean";
+      run.beans.push(makeBean(run.nextId++, run.world.width + 12, run.world.groundY - 56));
+      run.cue = "bean";
+      run.cueFor = 3;
+    }
+    return;
+  }
+  if (run.scriptBeat === "bean") {
+    if (run.beansTaken > 0 || run.beans.length === 0) {
+      run.scriptBeat = "done";
+      run.tutorial = false;
+      run.cue = null;
+      run.cueFor = 0;
+      run.untilHazard = 1.35;
+    }
+  }
+}
 function direct(run, dt) {
   if (run.cueFor > 0) {
     run.cueFor -= dt;
     if (run.cueFor <= 0) run.cue = run.jumped ? null : "tap";
+  }
+  if (run.tutorial && run.scriptBeat !== "done") {
+    directTutorial(run, dt);
+    return;
   }
   if (run.time < INTRO_EMPTY_S) return;
   run.untilHazard -= dt;
@@ -164,7 +209,8 @@ function direct(run, dt) {
   }
 }
 
-function createRun(world, playerX, seed) {
+function createRun(world, playerX, seed, opts = {}) {
+  const tutorial = !!opts.tutorial;
   return {
     world,
     playerX,
@@ -187,7 +233,7 @@ function createRun(world, playerX, seed) {
     seenPorta: false,
     seenSteam: false,
     cue: "tap",
-    cueFor: 3.2,
+    cueFor: tutorial ? 8 : 3.2,
     rng: mulberry32(seed >>> 0 || 1),
     paused: false,
     dead: false,
@@ -196,7 +242,11 @@ function createRun(world, playerX, seed) {
     justJumped: false,
     justLanded: false,
     justBean: 0,
+    justTelegraph: null,
     heelMercy: 0,
+    tutorial,
+    scriptBeat: tutorial ? "tap" : "done",
+    scriptWait: 0,
   };
 }
 
@@ -239,6 +289,7 @@ function tick(run, dt) {
   run.justJumped = false;
   run.justLanded = false;
   run.justBean = 0;
+  run.justTelegraph = null;
   const speed = speedForRun(run.time);
   const playerX = run.playerX;
   const floor = run.world.groundY - PLAYER_H;
@@ -276,6 +327,21 @@ function tick(run, dt) {
   for (let i = 0; i < run.beans.length; ) {
     const b = run.beans[i];
     b.x -= speed * step;
+    if (!b.taken) {
+      const cx = playerX + PLAYER_W * 0.5;
+      const cy = run.playerY + PLAYER_H * 0.5;
+      const bx = b.x + b.w * 0.5;
+      const by = b.y + b.h * 0.5;
+      const dx = cx - bx;
+      const dy = cy - by;
+      const d2 = dx * dx + dy * dy;
+      if (d2 < MAGNET_R * MAGNET_R && d2 > 1) {
+        const d = Math.sqrt(d2);
+        const pull = Math.min(MAGNET_PULL * step, d);
+        b.x += (dx / d) * pull;
+        b.y += (dy / d) * pull;
+      }
+    }
     if (b.taken || b.x + b.w <= -24) {
       swapPop(run.beans, i);
       continue;
@@ -291,6 +357,11 @@ function tick(run, dt) {
   }
   for (let i = 0; i < run.hazards.length; i += 1) {
     const h = run.hazards[i];
+    const eta = (h.x - playerX - PLAYER_W) / speed;
+    if (!h.warned && eta <= TELEGRAPH_S && eta > 0) {
+      h.warned = true;
+      run.justTelegraph = h.kind;
+    }
     if (aabbHits(me, hazardHitbox(h))) {
       if (run.heelMercy > 0 && h.kind !== "steam") continue;
       run.dead = true;
@@ -471,6 +542,8 @@ for (const [name, value] of [
   ["HEEL_MERCY_S", HEEL_MERCY_S],
   ["COYOTE_S", COYOTE_S],
   ["BUFFER_S", BUFFER_S],
+  ["TELEGRAPH_S", TELEGRAPH_S],
+  ["MAGNET_R", MAGNET_R],
 ]) {
   const m = src.match(new RegExp(`export const ${name} = ([^;]+);`));
   if (!m || Number(m[1]) !== value) fail(`playtest ${name}=${value} drifted from physics.ts (${m?.[1]})`);
@@ -551,6 +624,49 @@ const cue = createRun(WORLD, PLAYER_X, 1);
 if (cue.cue !== "tap") fail("cold start must coach the hop");
 qa.coldStartCue = "pass";
 
+if (COYOTE_S < 0.11 || COYOTE_S > 0.15) fail(`coyote ${COYOTE_S} outside 110–150ms`);
+if (BUFFER_S < 0.12 || BUFFER_S > 0.18) fail(`buffer ${BUFFER_S} outside 120–180ms`);
+if (GRAVITY_DOWN <= GRAVITY_UP) fail("fall gravity must exceed rise");
+if (TELEGRAPH_S < 0.55 || TELEGRAPH_S > 0.7) fail(`telegraph ${TELEGRAPH_S} outside 0.55–0.7s`);
+const hurt =
+  ((PLAYER_W - PLAYER_INSET_X * 2) * (PLAYER_H - PLAYER_INSET_Y * 2)) / (PLAYER_W * PLAYER_H);
+if (hurt > 0.7) fail(`hurtbox ratio ${hurt} exceeds ~70% visual`);
+qa.feelRanges = "pass";
+
+const magnet = createRun(WORLD, PLAYER_X, 4);
+const lure = makeBean(1, PLAYER_X + 40, WORLD.groundY - PLAYER_H);
+magnet.beans.push(lure);
+const lureX = lure.x;
+tick(magnet, DT);
+if (lure.x >= lureX) fail("magnet should pull a nearby honey bean");
+qa.magnet = "pass";
+
+const wire = createRun(WORLD, PLAYER_X, 4);
+const approaching = makeHazard(2, WORLD, "grinder");
+approaching.x = PLAYER_X + PLAYER_W + BASE_SPEED * 0.5;
+wire.hazards.push(approaching);
+tick(wire, DT);
+if (!approaching.warned || wire.justTelegraph !== "grinder") {
+  fail("hazard inside telegraph window must warn same tick");
+}
+qa.telegraph = "pass";
+
+const brew = createRun(WORLD, PLAYER_X, 2, { tutorial: true });
+if (brew.scriptBeat !== "tap") fail("first-run script must start on TAP");
+requestJump(brew);
+for (let i = 0; i < 80 && brew.scriptBeat === "tap"; i += 1) tick(brew, DT);
+if (brew.scriptBeat !== "steam") fail(`expected steam beat after hop, got ${brew.scriptBeat}`);
+if (!brew.hazards.some((h) => h.kind === "steam")) fail("TAP beat must spawn steam");
+while (brew.scriptBeat === "steam" && brew.time < 12) {
+  brew.playerY = WORLD.groundY - PLAYER_H;
+  brew.vy = 0;
+  brew.airborne = false;
+  tick(brew, DT);
+}
+if (brew.scriptBeat !== "bean") fail(`expected bean beat after steam, got ${brew.scriptBeat}`);
+if (brew.beans.length < 1 && brew.beansTaken < 1) fail("steam beat must leave a honey bean");
+qa.firstRunScript = "pass";
+
 if (src.includes("speed * step * 100") || src.includes("spawnGapForSpeed")) {
   fail("old stacked-spawn math leaked back in");
 }
@@ -571,7 +687,7 @@ const gate = {
   jumpFairness: lived === 24 && jumpHeight() > 88 ? "pass" : "fail",
   telegraph: minApproach >= 1.05 ? "pass" : "fail",
   deathRetryMs: qa.retryLockMs <= 500 ? "pass" : "fail",
-  firstRunScript: "pass",
+  firstRunScript: qa.firstRunScript === "pass" ? "pass" : "fail",
   hitchCap: MAX_DT === 1 / 30 ? "pass" : "fail",
   noIapAdsAccounts: "pass",
 };

@@ -1,6 +1,7 @@
 import {
   type Hazard,
   type HazardKind,
+  type ScriptBeat,
   type World,
   GAP_S,
   INTRO_EMPTY_S,
@@ -15,6 +16,7 @@ import type { CoachCue } from "./physics";
 
 type Course = {
   world: World;
+  playerX: number;
   time: number;
   rng: () => number;
   nextId: number;
@@ -28,20 +30,29 @@ type Course = {
   cue: CoachCue;
   cueFor: number;
   jumped: boolean;
+  airborne: boolean;
+  beansTaken: number;
+  tutorial: boolean;
+  scriptBeat: ScriptBeat;
+  scriptWait: number;
 };
 
 /**
  * Course director — Cookie Run jelly-path + Chrome Dino spacing +
  * Subway/Temple “teach one verb, then mix.”
  *
- * Time-based gaps (not the old speed*100 unit bug). Every jump-required
- * kit leaves a landable beat. Steam never appears until the player has
- * seen grinders and a portafilter. Beans sit on the safe line.
+ * First-run micro-script is TAP → steam (stay low) → honey bean, then the
+ * normal grinders-first phrase. Time-based gaps. Beans sit on the safe line.
  */
 export function direct(run: Course, dt: number): void {
   if (run.cueFor > 0) {
     run.cueFor -= dt;
     if (run.cueFor <= 0) run.cue = run.jumped ? null : "tap";
+  }
+
+  if (run.tutorial && run.scriptBeat !== "done") {
+    directTutorial(run, dt);
+    return;
   }
 
   if (run.time < INTRO_EMPTY_S) return;
@@ -56,6 +67,47 @@ export function direct(run: Course, dt: number): void {
     run.untilHazard = gapAfter(run, kind);
     cueForKind(run, kind);
     sprinkleBeans(run, hazard);
+  }
+}
+
+function directTutorial(run: Course, dt: number): void {
+  if (run.scriptBeat === "tap") {
+    run.cue = "tap";
+    if (!run.jumped) return;
+    run.scriptWait += dt;
+    if (!run.airborne && run.scriptWait > 0.28) {
+      run.scriptBeat = "steam";
+      run.scriptWait = 0;
+      const steam = makeHazard(run.nextId++, run.world, "steam");
+      run.hazards.push(steam);
+      run.hazardsSpawned += 1;
+      run.lastKind = "steam";
+      run.seenSteam = true;
+      run.cue = "steam";
+      run.cueFor = 3.4;
+    }
+    return;
+  }
+
+  if (run.scriptBeat === "steam") {
+    const cloud = run.hazards.find((h) => h.kind === "steam");
+    if (!cloud || cloud.x + cloud.w < run.playerX - 10) {
+      run.scriptBeat = "bean";
+      run.beans.push(makeBean(run.nextId++, run.world.width + 12, run.world.groundY - 56));
+      run.cue = "bean";
+      run.cueFor = 3;
+    }
+    return;
+  }
+
+  if (run.scriptBeat === "bean") {
+    if (run.beansTaken > 0 || run.beans.length === 0) {
+      run.scriptBeat = "done";
+      run.tutorial = false;
+      run.cue = null;
+      run.cueFor = 0;
+      run.untilHazard = 1.35;
+    }
   }
 }
 

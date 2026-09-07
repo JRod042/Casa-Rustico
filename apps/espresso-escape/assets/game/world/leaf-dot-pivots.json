@@ -1,0 +1,184 @@
+{
+  "palette_note": "coffee-tree leaf-dots only",
+  "ban": [
+    "vines",
+    "jungle",
+    "Sackboy",
+    "neon"
+  ],
+  "plates": [
+    {
+      "plate": "parallax-02-ridge",
+      "pivots": [
+        {
+          "id": "ld02_a",
+          "x": 0.0536,
+          "y": 0.5278,
+          "radius_px": 3,
+          "sway_px": 3
+        },
+        {
+          "id": "ld02_b",
+          "x": 0.5536,
+          "y": 0.5278,
+          "radius_px": 3,
+          "sway_px": 3
+        },
+        {
+          "id": "ld02_c",
+          "x": 0.9107,
+          "y": 0.5278,
+          "radius_px": 3,
+          "sway_px": 3
+        }
+      ]
+    },
+    {
+      "plate": "plate-02-ridge",
+      "pivots": [
+        {
+          "id": "pl02_a",
+          "x": 0.0536,
+          "y": 0.5278,
+          "radius_px": 3,
+          "sway_px": 3
+        },
+        {
+          "id": "pl02_b",
+          "x": 0.5536,
+          "y": 0.5278,
+          "radius_px": 3,
+          "sway_px": 3
+        },
+        {
+          "id": "pl02_c",
+          "x": 0.9107,
+          "y": 0.5278,
+          "radius_px": 3,
+          "sway_px": 3
+        }
+      ],
+      "mirror_of": "parallax-02-ridge"
+    },
+    {
+      "plate": "parallax-03-cafe-strip",
+      "pivots": [
+        {
+          "id": "ld03_a",
+          "x": 0.3036,
+          "y": 0.4722,
+          "radius_px": 2,
+          "sway_px": 2
+        },
+        {
+          "id": "ld03_b",
+          "x": 0.6607,
+          "y": 0.4722,
+          "radius_px": 2,
+          "sway_px": 2
+        },
+        {
+          "id": "ld03_c",
+          "x": 0.9107,
+          "y": 0.4722,
+          "radius_px": 2,
+          "sway_px": 2
+        }
+      ]
+    },
+    {
+      "plate": "plate-03-cafe-strip",
+      "pivots": [
+        {
+          "id": "pl03_a",
+          "x": 0.3036,
+          "y": 0.4722,
+          "radius_px": 2,
+          "sway_px": 2
+        },
+        {
+          "id": "pl03_b",
+          "x": 0.6607,
+          "y": 0.4722,
+          "radius_px": 2,
+          "sway_px": 2
+        },
+        {
+          "id": "pl03_c",
+          "x": 0.9107,
+          "y": 0.4722,
+          "radius_px": 2,
+          "sway_px": 2
+        }
+      ],
+      "mirror_of": "parallax-03-cafe-strip"
+    },
+    {
+      "plate": "parallax-04-props",
+      "pivots": [
+        {
+          "id": "ld04_a",
+          "x": 0.2321,
+          "y": 0.3056,
+          "radius_px": 3,
+          "sway_px": 3
+        },
+        {
+          "id": "ld04_b",
+          "x": 0.375,
+          "y": 0.3056,
+          "radius_px": 3,
+          "sway_px": 3
+        },
+        {
+          "id": "ld04_c",
+          "x": 0.625,
+          "y": 0.3056,
+          "radius_px": 3,
+          "sway_px": 3
+        },
+        {
+          "id": "ld04_d",
+          "x": 0.7679,
+          "y": 0.3056,
+          "radius_px": 3,
+          "sway_px": 3
+        }
+      ]
+    },
+    {
+      "plate": "plate-04-props",
+      "pivots": [
+        {
+          "id": "pl04_a",
+          "x": 0.2321,
+          "y": 0.3056,
+          "radius_px": 3,
+          "sway_px": 3
+        },
+        {
+          "id": "pl04_b",
+          "x": 0.375,
+          "y": 0.3056,
+          "radius_px": 3,
+          "sway_px": 3
+        },
+        {
+          "id": "pl04_c",
+          "x": 0.625,
+          "y": 0.3056,
+          "radius_px": 3,
+          "sway_px": 3
+        },
+        {
+          "id": "pl04_d",
+          "x": 0.7679,
+          "y": 0.3056,
+          "radius_px": 3,
+          "sway_px": 3
+        }
+      ],
+      "mirror_of": "parallax-04-props"
+    }
+  ]
+}

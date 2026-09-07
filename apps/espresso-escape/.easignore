@@ -1,0 +1,10 @@
+# Metro ios export does not require these. 110MB world plates in the
+# EAS tarball (148MB) is the leading 98d46fc4 kill. No gitignore negation.
+assets/game/characters
+assets/game/hazards
+assets/game/pickups
+assets/game/world
+assets/game/ui/hud
+assets/game/ui/chrome
+assets/game/ui/backgrounds
+assets/game/ui/wordmark

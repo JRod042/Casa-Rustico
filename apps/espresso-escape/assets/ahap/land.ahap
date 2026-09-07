@@ -1,0 +1,43 @@
+{
+  "Version": 1.0,
+  "Metadata": {
+    "Project": "Espresso Escape Runner",
+    "Created": "Casa sound path-latest kaizen",
+    "Description": "land",
+    "Gate": "plush soft"
+  },
+  "Pattern": [
+    {
+      "Event": {
+        "Timestamp": 0.0,
+        "EventType": "HapticTransient",
+        "EventParameters": [
+          {
+            "ParameterID": "HapticIntensity",
+            "ParameterValue": 0.33
+          },
+          {
+            "ParameterID": "HapticSharpness",
+            "ParameterValue": 0.28
+          }
+        ]
+      }
+    },
+    {
+      "Event": {
+        "Timestamp": 0.05,
+        "EventType": "HapticTransient",
+        "EventParameters": [
+          {
+            "ParameterID": "HapticIntensity",
+            "ParameterValue": 0.22
+          },
+          {
+            "ParameterID": "HapticSharpness",
+            "ParameterValue": 0.2
+          }
+        ]
+      }
+    }
+  ]
+}
