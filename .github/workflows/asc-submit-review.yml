@@ -1,0 +1,33 @@
+name: ASC Submit for Review
+
+on:
+  push:
+    branches:
+      - cursor/escape-kraft-feel-menus-a233
+    paths:
+      - "ops/ESCAPE-HANDOFF-LATEST.md"
+      - "apps/espresso-escape/scripts/asc-submit-review.py"
+      - ".github/workflows/asc-submit-review.yml"
+  workflow_dispatch:
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JWT deps
+        run: pip install "PyJWT[crypto]==2.10.1"
+
+      - name: Create 1.0.6, attach build 19, Submit for Review
+        env:
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+          APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
+        run: python3 apps/espresso-escape/scripts/asc-submit-review.py
