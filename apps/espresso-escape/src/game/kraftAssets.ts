@@ -2,12 +2,13 @@ import type { ImageSourcePropType } from "react-native";
 
 /**
  * In-repo Casa kraft pack (playable now).
- * USE_CRAFT_ART=false. WIRE PULLED — overnight craft pack rejected.
- * Do not require() Creative PNGs. Do not invent WIRE.
+ * USE_CRAFT_ART=true after Cacique GO. Charm atlas lives in assets/game/**
+ * (see gameAtlas.ts). Live require() stays on kraft until those PNGs land.
+ * Do not invent pixels.
  */
-export const USE_CRAFT_ART = false;
-export const WIRE_PULLED = true;
-export const JORGE_ART_DECISION = "wire-pulled";
+export const USE_CRAFT_ART = true;
+export const WIRE_PULLED = false;
+export const JORGE_ART_DECISION = "cacique-go";
 
 export const KRAFT_PACK = {
   runner: require("../../assets/kraft/runner.png"),

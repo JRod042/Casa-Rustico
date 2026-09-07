@@ -4,7 +4,7 @@ Device: iPhone. No Simulator in the build VM. Casa rebuilds the IPA after merge.
 
 Brand lock: cream `#F7F3EC`, kraft `#A47C59`, dark kraft `#8D6C4F`. Highland café runner. Handmade paper / cardboard / sackcloth technique only — not a third-party toy reskin. No Sackboy IP.
 
-**WIRE PULLED.** Overnight craft pack rejected. Do not wire Creative PNGs. `USE_CRAFT_ART=false`. HOLD ASC Submit.
+**Cacique GO.** `USE_CRAFT_ART=true`. Charm `assets/game/**` atlas wired; PNGs still missing — do not invent pixels. App owns EAS→ASC after tip SHA (do not HOLD Submit).
 
 **Render now:** Skia PRIMARY (`CafeStageSkia` Canvas + Atlas) + Reanimated. Views fallback if web / fps kill / Skia throw. Not expo-gl / R3F.
 
@@ -24,7 +24,7 @@ Cited playbook: `2026-09-05-escape-unified-revision-playbook` (ops file not alwa
 
 **Feel QA lock:** fairness floors KEEP — coyote 130 / buffer 150 / hurtbox 18×24 / telegraph 0.62 / retry 320. Juice is stop-motion `stepPaper` after the physics tick. Steam-first 3s, then leaf-dots + fake-AO. Not a floaty toy jump.
 
-Ranked: handmade warmth → wonder/inspection → tactile materials → soft danger → playful weight → charm → creativity-as-invitation → cozy craft → diorama depth → soft-chaos joy. Casa kraft only. No Sackboy IP. No Creative PNG wire.
+Ranked: handmade warmth → wonder/inspection → tactile materials → soft danger → playful weight → charm → creativity-as-invitation → cozy craft → diorama depth → soft-chaos joy. Casa kraft only. No Sackboy IP. Prefer charm runner-* over tiny-eye.
 
 ## 10-minute checklist
 

@@ -336,11 +336,26 @@ if (!/MASTER_PLAN/.test(sources) || !/escape-best-in-class-master-plan/.test(sou
 if (!/APPDEV_CHECKLIST/.test(sources) || !/escape-appdev-element-checklist/.test(sources)) {
   throw new Error("must cite 2026-09-05-escape-appdev-element-checklist");
 }
-if (!/USE_CRAFT_ART = false/.test(sources)) {
-  throw new Error("USE_CRAFT_ART must stay false until Jorge WIRE");
+if (!/USE_CRAFT_ART = true/.test(sources)) {
+  throw new Error("USE_CRAFT_ART must stay true after Cacique GO");
 }
-if (!/WIRE_PULLED/.test(sources) || !/USE_CRAFT_ART = false/.test(sources)) {
-  throw new Error("WIRE PULLED — USE_CRAFT_ART must stay false; do not invent WIRE");
+if (/USE_CRAFT_ART = false/.test(sources)) {
+  throw new Error("USE_CRAFT_ART must not stay false after Cacique GO");
+}
+if (!/assets\/game\/sprites\/runner-01/.test(sources) || !/pickup-honey-bean/.test(sources)) {
+  throw new Error("assets/game require() atlas must include charm runner-01 and honey-bean");
+}
+if (!/runner-hop/.test(sources) || !/runner-land/.test(sources) || !/runner-death/.test(sources)) {
+  throw new Error("assets/game require() atlas must prefer runner-01..04 plus hop/land/death frames");
+}
+if (!/hazard-cup-stack/.test(sources) || !/hazard-knockbox/.test(sources) || !/hazard-tamper/.test(sources)) {
+  throw new Error("assets/game require() atlas must use real hazard names (not hazard-04/05/06)");
+}
+if (/hazard-04\.png/.test(sources) || /hazard-05\.png/.test(sources) || /hazard-06\.png/.test(sources)) {
+  throw new Error("do not keep hazard-04/05/06 placeholders");
+}
+if (!/parallax-03/.test(sources)) {
+  throw new Error("assets/game require() atlas must include parallax-03");
 }
 if (!/#F7F3EC/.test(sources) || !/#A47C59/.test(sources) || !/#8D6C4F/.test(sources)) {
   throw new Error("kraft cream / kraft / dark kraft tokens must stay on the culture brief");

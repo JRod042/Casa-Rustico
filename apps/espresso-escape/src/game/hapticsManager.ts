@@ -5,7 +5,7 @@ import { AUDIO_HAPTICS_CONTRACT, P0_FOR_EVENT, type FeelEventId, type P0Key } fr
 /**
  * Core Haptics — contract matrix, same-tick first transient.
  * hop / land / death_stamp / honey_bean / near_miss / menu_ui.
- * AHAP files stay null — intensity/sharpness is the ready seam.
+ * hop.ahap is on disk (path-latest). Other P0 AHAPs follow. Expo fallback stays same-tick.
  */
 export const MASTER_PLAN = "2026-09-05-escape-best-in-class-master-plan";
 export const APPDEV_CHECKLIST = "2026-09-05-escape-appdev-element-checklist";

@@ -1,0 +1,49 @@
+import type { ImageSourcePropType } from "react-native";
+
+/**
+ * assets/game/** require() atlas — Cacique GO.
+ * Charm runner-01..04 + hop/land/death. Not tiny-eye. Not hazard-04/05/06.
+ * Tissue VFX require() waits for actual vfx/*.png names.
+ * Live play still uses kraft stand-ins until PNGs land. Do not invent pixels.
+ */
+export const USE_CRAFT_ART = true;
+export const CHARM_RUNNER_PREFERRED = true;
+
+export const GAME_ATLAS_PATHS = {
+  runner01: "assets/game/sprites/runner-01.png",
+  runner02: "assets/game/sprites/runner-02.png",
+  runner03: "assets/game/sprites/runner-03.png",
+  runner04: "assets/game/sprites/runner-04.png",
+  runnerHop: "assets/game/sprites/runner-hop.png",
+  runnerLand: "assets/game/sprites/runner-land.png",
+  runnerDeath: "assets/game/sprites/runner-death.png",
+  hazardCupStack: "assets/game/sprites/hazard-cup-stack.png",
+  hazardGrinder: "assets/game/sprites/hazard-grinder.png",
+  hazardKnockbox: "assets/game/sprites/hazard-knockbox.png",
+  hazardPortafilter: "assets/game/sprites/hazard-portafilter.png",
+  hazardSteam: "assets/game/sprites/hazard-steam.png",
+  hazardTamper: "assets/game/sprites/hazard-tamper.png",
+  honeyBean: "assets/game/sprites/pickup-honey-bean.png",
+  parallax03: "assets/game/world/parallax-03.png",
+} as const;
+
+/**
+ * Static Metro require() atlas. Not imported by the play loop until PNGs exist.
+ */
+export const GAME_ATLAS: Record<keyof typeof GAME_ATLAS_PATHS, ImageSourcePropType> = {
+  runner01: require("../../assets/game/sprites/runner-01.png"),
+  runner02: require("../../assets/game/sprites/runner-02.png"),
+  runner03: require("../../assets/game/sprites/runner-03.png"),
+  runner04: require("../../assets/game/sprites/runner-04.png"),
+  runnerHop: require("../../assets/game/sprites/runner-hop.png"),
+  runnerLand: require("../../assets/game/sprites/runner-land.png"),
+  runnerDeath: require("../../assets/game/sprites/runner-death.png"),
+  hazardCupStack: require("../../assets/game/sprites/hazard-cup-stack.png"),
+  hazardGrinder: require("../../assets/game/sprites/hazard-grinder.png"),
+  hazardKnockbox: require("../../assets/game/sprites/hazard-knockbox.png"),
+  hazardPortafilter: require("../../assets/game/sprites/hazard-portafilter.png"),
+  hazardSteam: require("../../assets/game/sprites/hazard-steam.png"),
+  hazardTamper: require("../../assets/game/sprites/hazard-tamper.png"),
+  honeyBean: require("../../assets/game/sprites/pickup-honey-bean.png"),
+  parallax03: require("../../assets/game/world/parallax-03.png"),
+};

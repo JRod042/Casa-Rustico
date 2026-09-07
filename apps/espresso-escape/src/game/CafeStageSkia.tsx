@@ -28,7 +28,7 @@ import { FAKE_AO, FAKE_AO_BLEND, LEAF_DOT_PULSE_PX, STEAM_FIRST_MS } from "./jui
 
 /**
  * First Skia canvas path — kraft 2.5D parallax + 1-frame Atlas hook.
- * V2_HOLD: still the in-repo cafe-bg / runner stand-in, not Creative binaries.
+ * USE_CRAFT_ART=true. Live plates still kraft stand-ins until assets/game PNGs land.
  */
 export function CafeStageSkia({
   width,

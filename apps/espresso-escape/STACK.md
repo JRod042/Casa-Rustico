@@ -1,6 +1,6 @@
 # Espresso Escape — stack (1.0.6 / 14)
 
-Casa Rústico café runner. Mid-iPhone first. HOLD ASC Submit until Jorge says it feels pro.
+Casa Rústico café runner. Mid-iPhone first. App owns EAS→ASC after tip SHA (do not HOLD Submit).
 
 **ASC:** `6809059605` only. Never `6758108565`. Never Shop 49. Bundle `com.jrod042.espressoescape`.
 
@@ -31,30 +31,25 @@ Cited: `2026-09-05-escape-best-in-class-master-plan`, `2026-09-05-escape-appdev-
 
 | Layer | On branch now |
 |---|---|
-| Haptics | Contract IDs. `SAME_TICK`: first transient on the call (tap hop consumes `justJumped`). AHAP still null |
+| Haptics | Contract IDs. `SAME_TICK`: first transient on the call (tap hop consumes `justJumped`). hop/land `.ahap` on disk |
 | Audio | P0 keys hop\|land\|bean\|whoosh\|stamp\|steam. death→stamp, retry→whoosh. `npm run sync:audio` copies the casa-brand box when mounted. |
 
-Steam / death / retry use tiny placeholder wavs. No AHAP files. Device fps still OPEN.
+P0 wavs still stubs (<4KB). hop/land `.ahap` are on disk. Device fps still OPEN.
 
 Feel smoke: dedicated leaf-dot ±2px pulse; contact/cavity fake-AO uses **Multiply** (Skia `blendMode="multiply"`, Views `mixBlendMode`).
 
 ## Art
 
-**WIRE PULLED.** Overnight craft pack rejected. `USE_CRAFT_ART=false`. Do not require() Creative PNGs. Do not invent WIRE. `INVENTORY.md` is STALE.
+**Cacique GO.** `USE_CRAFT_ART=true`. Charm `assets/game/**` require() atlas is wired (runner-*, hazards×6, honey-bean, tissue VFX, parallax-03). PNGs not on disk yet — do not invent pixels. Live loop still uses in-repo kraft stand-ins. `INVENTORY.md` is STALE. App owns EAS→ASC after tip SHA.
 
-## EAS TestFlight — HOLD (do not fire tonight)
+## EAS TestFlight — App owns after tip SHA
 
 Ready: version **1.0.6**, iOS **14**, Android **12**, profile `production`, ASC `6809059605`.
 
-AFTER Cacique says **build** or **WIRE** — from `apps/espresso-escape`:
+From `apps/espresso-escape` (App owns build + submit):
 
 ```bash
 npx --yes eas-cli@16.28.0 build --platform ios --profile production --non-interactive
-```
-
-HOLD Submit:
-
-```bash
 npx --yes eas-cli@16.28.0 submit --platform ios --profile production --latest
 ```
 

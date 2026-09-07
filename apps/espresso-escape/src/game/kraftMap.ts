@@ -9,10 +9,10 @@
  * the live `require()` files in this table (one commit, no loader rewrite).
  */
 export const V2_HOLD = true;
-/** Creative/Jorge 2026-09-06: WIRE PULLED — overnight craft pack rejected. */
-export const WIRE_PULLED = true;
-export const JORGE_ART_DECISION = "wire-pulled";
-export const USE_CRAFT_ART = false;
+/** Cacique GO — craft gate open. PNGs still missing; do not invent pixels. */
+export const WIRE_PULLED = false;
+export const JORGE_ART_DECISION = "cacique-go";
+export const USE_CRAFT_ART = true;
 export const KRAFT_PACK_TARGET = "denser-v2";
 /** Cacique: INVENTORY.md is STALE. Creative still finishing 6 parallax plates. */
 export const INVENTORY_STALE = true;
@@ -24,7 +24,7 @@ export const CREATIVE_BOX = "/workspace/casa-brand/exports/escape-kraft/game";
 
 /**
  * WIRE-ready keys — plates 01–06, runner, hazards, UI.
- * Cacique WIRE paste overwrites `to` files. USE_CRAFT_ART stays false until then.
+ * Cacique GO: USE_CRAFT_ART is true. Drop PNGs onto assets/game/** (charm runner-*).
  */
 export const WIRE_KEYS = {
   plate01: "world/plate-01-far-highland.png",
