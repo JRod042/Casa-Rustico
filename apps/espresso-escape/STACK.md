@@ -44,7 +44,7 @@ Feel smoke: dedicated leaf-dot ±2px pulse; contact/cavity fake-AO uses **Multip
 
 ## EAS TestFlight — App owns after tip SHA
 
-Ready: version **1.0.6**, iOS **15**, Android **12**, profile `production`, ASC `6809059605`.
+Ready: version **1.0.6**, iOS **16**, Android **12**, profile `production`, ASC `6809059605`.
 
 From `apps/espresso-escape` (App owns build + submit):
 
