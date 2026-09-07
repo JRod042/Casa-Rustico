@@ -1,6 +1,12 @@
 name: iOS TestFlight
 
 on:
+  push:
+    branches:
+      - cursor/escape-kraft-feel-menus-a233
+    paths:
+      - "apps/espresso-escape/assets/game/**"
+      - "apps/espresso-escape/assets/sfx/**"
   workflow_dispatch:
     inputs:
       app:
@@ -30,17 +36,44 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: apps/${{ inputs.app }}
+        working-directory: apps/${{ github.event_name == 'workflow_dispatch' && inputs.app || 'espresso-escape' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Gate real Escape 1.0.6 craft + P0 sfx
+        if: github.event_name == 'push'
+        working-directory: ${{ github.workspace }}
+        run: |
+          set -euo pipefail
+          pngs=$(find apps/espresso-escape/assets/game -name '*.png' | wc -l)
+          runner=0
+          if [ -f apps/espresso-escape/assets/game/sprites/runner-01.png ]; then
+            runner=$(stat -c%s apps/espresso-escape/assets/game/sprites/runner-01.png)
+          fi
+          echo "craft PNGs=$pngs runner-01=$runner"
+          fail=0
+          for key in hop land bean whoosh stamp steam; do
+            sz=0
+            f="apps/espresso-escape/assets/sfx/${key}.wav"
+            if [ -f "$f" ]; then sz=$(stat -c%s "$f"); fi
+            echo "sfx ${key}.wav=$sz"
+            if [ "$sz" -lt 4096 ]; then
+              echo "STUB sfx ${key}.wav"
+              fail=1
+            fi
+          done
+          if [ "$pngs" -lt 100 ] || [ "$runner" -lt 4096 ] || [ "$fail" -eq 1 ]; then
+            echo "NEED real craft+p0 bytes — skip EAS on this SHA"
+            exit 1
+          fi
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: apps/${{ inputs.app }}/package-lock.json
+          cache-dependency-path: apps/${{ github.event_name == 'workflow_dispatch' && inputs.app || 'espresso-escape' }}/package-lock.json
 
       - name: Setup Expo / EAS
         uses: expo/expo-github-action@v8
@@ -74,14 +107,17 @@ jobs:
           EXPO_ASC_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           EXPO_ASC_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
         run: |
-          if [ "${{ inputs.submit }}" = "true" ]; then
-            eas build --platform ios --profile ${{ inputs.profile }} --non-interactive --auto-submit --no-wait
+          profile="${{ github.event_name == 'workflow_dispatch' && inputs.profile || 'production' }}"
+          submit="${{ github.event_name == 'workflow_dispatch' && inputs.submit || true }}"
+          if [ "$submit" = "true" ]; then
+            eas build --platform ios --profile "$profile" --non-interactive --auto-submit --no-wait
           else
-            eas build --platform ios --profile ${{ inputs.profile }} --non-interactive --no-wait
+            eas build --platform ios --profile "$profile" --non-interactive --no-wait
           fi
 
       - name: Reminder
         run: |
-          echo "Build queued on EAS for ${{ inputs.app }}."
-          echo "Watch: https://expo.dev/accounts/jrod42/projects/${{ inputs.app }}/builds"
+          app="${{ github.event_name == 'workflow_dispatch' && inputs.app || 'espresso-escape' }}"
+          echo "Build queued on EAS for $app (1.0.6 / ASC 6809059605)."
+          echo "Watch: https://expo.dev/accounts/jrod42/projects/$app/builds"
           echo "After auto-submit, open App Store Connect → TestFlight."
