@@ -15,12 +15,15 @@ import {
   BUFFER_S,
   COYOTE_S,
   HEEL_MERCY_S,
+  JUMP_CUT,
   JUMP_V,
   MAGNET_PULL,
   MAGNET_R,
   MAX_DT,
+  MAX_FALL,
   PLAYER_H,
   PLAYER_W,
+  SKIP_V,
   TELEGRAPH_S,
   gravityFor,
   mulberry32,
@@ -59,6 +62,9 @@ export type Run = {
   dead: boolean;
   deathKind: DeathKind | null;
   jumped: boolean;
+  hopping: boolean;
+  skipping: boolean;
+  landFromHop: boolean;
   justJumped: boolean;
   justLanded: boolean;
   justBean: number;
@@ -105,6 +111,9 @@ export function createRun(
     dead: false,
     deathKind: null,
     jumped: false,
+    hopping: false,
+    skipping: false,
+    landFromHop: false,
     justJumped: false,
     justLanded: false,
     justBean: 0,
@@ -128,10 +137,12 @@ function tryJump(run: Run): boolean {
   if (run.paused || run.dead) return false;
   const floor = run.world.groundY - PLAYER_H;
   const grounded = run.playerY >= floor - 1;
-  if (!grounded && run.coyote <= 0) return false;
+  if (!grounded && run.coyote <= 0 && !run.skipping) return false;
   run.vy = JUMP_V;
   run.playerY = Math.min(run.playerY, floor - 0.5);
   run.jumped = true;
+  run.hopping = true;
+  run.skipping = false;
   run.justJumped = true;
   run.airborne = true;
   run.coyote = 0;
@@ -154,6 +165,7 @@ export function requestJump(run: Run): boolean {
 
 export function releaseJump(run: Run): void {
   run.holding = false;
+  if (run.hopping && run.airborne && run.vy < -90) run.vy *= JUMP_CUT;
 }
 
 function swapPop<T>(list: T[], i: number): void {
@@ -186,6 +198,7 @@ export function tick(run: Run, dt: number): void {
 
   run.justJumped = false;
   run.justLanded = false;
+  run.landFromHop = false;
   run.justBean = 0;
   run.justTelegraph = null;
 
@@ -194,21 +207,32 @@ export function tick(run: Run, dt: number): void {
   const floor = run.world.groundY - PLAYER_H;
 
   run.heelMercy = Math.max(0, run.heelMercy - step);
-  run.vy += gravityFor(run.vy, run.holding) * step;
+  run.vy += gravityFor(run.vy, run.holding, run.skipping && !run.hopping) * step;
+  if (run.vy > MAX_FALL) run.vy = MAX_FALL;
   run.playerY += run.vy * step;
   if (run.playerY >= floor) {
     if (run.airborne) {
       run.justLanded = true;
-      if (run.jumped) run.heelMercy = HEEL_MERCY_S;
+      run.landFromHop = run.hopping;
+      if (run.hopping) run.heelMercy = HEEL_MERCY_S;
     }
     run.playerY = floor;
-    run.vy = 0;
-    run.airborne = false;
+    run.hopping = false;
     run.coyote = COYOTE_S;
-    if (run.buffer > 0) tryJump(run);
+    if (run.buffer > 0) {
+      run.vy = 0;
+      run.airborne = false;
+      run.skipping = false;
+      tryJump(run);
+    } else {
+      run.vy = SKIP_V;
+      run.playerY = floor - 0.4;
+      run.airborne = true;
+      run.skipping = true;
+    }
   } else {
     run.airborne = true;
-    run.coyote = Math.max(0, run.coyote - step);
+    if (!run.skipping) run.coyote = Math.max(0, run.coyote - step);
     run.buffer = Math.max(0, run.buffer - step);
   }
 

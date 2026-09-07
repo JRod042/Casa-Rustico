@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import {
-  Atlas,
   Canvas,
   Circle,
   Fill,
@@ -9,7 +8,6 @@ import {
   Image,
   LinearGradient,
   RoundedRect,
-  Skia,
   useImage,
   vec,
 } from "@shopify/react-native-skia";
@@ -46,8 +44,11 @@ export function CafeStageSkia({
   const life = useSharedValue(0);
   const ambientGate = useSharedValue(0);
   const leafPulse = useSharedValue(0);
-  const plate = useImage(require("../../assets/kraft/cafe-bg.png"));
-  const runner = useImage(require("../../assets/kraft/runner.png"));
+  const sky = useImage(require("../../assets/game/world/sky.jpg"));
+  const far = useImage(require("../../assets/game/world/far.jpg"));
+  const mid = useImage(require("../../assets/game/world/mid.jpg"));
+  const ground = useImage(require("../../assets/game/world/ground-strip.png"));
+  const hang = useImage(require("../../assets/game/world/hang.png"));
 
   useEffect(() => {
     ambientGate.value = reduce ? 1 : withDelay(STEAM_FIRST_MS, withTiming(1, { duration: 360 }));
@@ -130,8 +131,6 @@ export function CafeStageSkia({
   ]);
   const dustOp = useDerivedValue(() => ambientGate.value * (0.16 + life.value * 0.22));
   const laterLife = useDerivedValue(() => ambientGate.value);
-  const atlasSprites = [Skia.XYWHRect(0, 0, 48, 56)];
-  const atlasForms = [Skia.RSXform(0.7, 0, 0, 0)];
 
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill} testID="escape-diorama">
@@ -144,35 +143,35 @@ export function CafeStageSkia({
           />
         </Fill>
 
-        <Group transform={canopyT} opacity={0.28}>
-          {plate ? (
+        <Group transform={canopyT}>
+          {sky ? (
             <>
-              <Image image={plate} x={0} y={0} width={width} height={groundY * 0.55} fit="cover" />
-              <Image image={plate} x={width} y={0} width={width} height={groundY * 0.55} fit="cover" />
+              <Image image={sky} x={0} y={0} width={width} height={groundY * 0.62} fit="cover" />
+              <Image image={sky} x={width} y={0} width={width} height={groundY * 0.62} fit="cover" />
             </>
           ) : null}
         </Group>
-        <Group transform={farT} opacity={0.42}>
-          {plate ? (
+        <Group transform={farT}>
+          {far ? (
             <>
-              <Image image={plate} x={0} y={0} width={width} height={groundY} fit="cover" />
-              <Image image={plate} x={width} y={0} width={width} height={groundY} fit="cover" />
+              <Image image={far} x={0} y={groundY * 0.1} width={width} height={groundY * 0.52} fit="cover" />
+              <Image image={far} x={width} y={groundY * 0.1} width={width} height={groundY * 0.52} fit="cover" />
             </>
           ) : null}
         </Group>
-        <Group transform={highlandT} opacity={0.5}>
-          {plate ? (
+        <Group transform={highlandT} opacity={0.92}>
+          {mid ? (
             <>
-              <Image image={plate} x={0} y={groundY * 0.06} width={width} height={groundY * 0.78} fit="cover" />
-              <Image image={plate} x={width} y={groundY * 0.06} width={width} height={groundY * 0.78} fit="cover" />
+              <Image image={mid} x={0} y={groundY * 0.26} width={width} height={groundY * 0.74} fit="cover" />
+              <Image image={mid} x={width} y={groundY * 0.26} width={width} height={groundY * 0.74} fit="cover" />
             </>
           ) : null}
         </Group>
-        <Group transform={midT} opacity={0.62}>
-          {plate ? (
+        <Group transform={midT} opacity={0.55}>
+          {hang ? (
             <>
-              <Image image={plate} x={0} y={groundY * 0.14} width={width} height={groundY * 0.7} fit="cover" />
-              <Image image={plate} x={width} y={groundY * 0.14} width={width} height={groundY * 0.7} fit="cover" />
+              <Image image={hang} x={0} y={8} width={width} height={groundY * 0.42} fit="contain" />
+              <Image image={hang} x={width} y={8} width={width} height={groundY * 0.42} fit="contain" />
             </>
           ) : null}
         </Group>
@@ -228,11 +227,11 @@ export function CafeStageSkia({
         <Group transform={mistT} opacity={0.15}>
           <RoundedRect x={-40} y={groundY * 0.1} width={width + 240} height={52} r={26} color={t.cream} />
         </Group>
-        <Group transform={shelfT} opacity={0.28}>
-          {plate ? (
+        <Group transform={shelfT}>
+          {ground ? (
             <>
-              <Image image={plate} x={0} y={groundY * 0.48} width={width} height={groundY * 0.28} fit="cover" />
-              <Image image={plate} x={width} y={groundY * 0.48} width={width} height={groundY * 0.28} fit="cover" />
+              <Image image={ground} x={0} y={groundY - 18} width={width} height={floorH + 18} fit="cover" />
+              <Image image={ground} x={width} y={groundY - 18} width={width} height={floorH + 18} fit="cover" />
             </>
           ) : null}
         </Group>
@@ -284,9 +283,7 @@ export function CafeStageSkia({
           <RoundedRect x={26} y={14} width={12} height={14} r={3} color={t.cream} />
         </Group>
 
-        <Group transform={atlasT} opacity={laterLife}>
-          <Atlas image={runner} sprites={atlasSprites} transforms={atlasForms} />
-        </Group>
+        <Group transform={atlasT} opacity={laterLife} />
 
         <RoundedRect x={0} y={groundY - 14} width={width} height={14} r={0} color={t.kraftDeep} />
         <RoundedRect x={0} y={groundY - 4} width={width} height={5} r={0} color={t.kraft} />

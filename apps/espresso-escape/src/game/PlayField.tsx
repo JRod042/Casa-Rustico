@@ -66,6 +66,9 @@ const ROAST: Record<DeathKind, string> = {
   grinder: "The grinder nicked the roast — a soft bump, not a cheap wall. Hop the low kits.",
   portafilter: "A tall portafilter filled the line. Hop both. The paper has weight.",
   steam: "Warm steam, not a spike. Stay on the linen under the cloud.",
+  knockbox: "The knockbox clipped a heel. Hop the low kits.",
+  tamper: "A tamper took the line. Hop the mid kits.",
+  cup: "The cup stack held the roast. Hop the stack.",
 };
 
 function makeSlots(n: number): Slot[] {
@@ -134,6 +137,15 @@ const HazardSprite = memo(function HazardSprite({
   const s = useAnimatedStyle(() => ({
     opacity: slot.on.value * (slot.kind.value === 2 ? 1 : 0),
   }));
+  const k = useAnimatedStyle(() => ({
+    opacity: slot.on.value * (slot.kind.value === 3 ? 1 : 0),
+  }));
+  const tm = useAnimatedStyle(() => ({
+    opacity: slot.on.value * (slot.kind.value === 4 ? 1 : 0),
+  }));
+  const c = useAnimatedStyle(() => ({
+    opacity: slot.on.value * (slot.kind.value === 5 ? 1 : 0),
+  }));
   const mark = useAnimatedStyle(() => {
     const near = slot.x.value < playerX + 210 && slot.x.value > playerX - 10;
     const steam = slot.kind.value === 2;
@@ -162,6 +174,15 @@ const HazardSprite = memo(function HazardSprite({
         </Animated.View>
         <Animated.View style={[styles.artFill, s]}>
           <HazardArt kind="steam" />
+        </Animated.View>
+        <Animated.View style={[styles.artFill, k]}>
+          <HazardArt kind="knockbox" />
+        </Animated.View>
+        <Animated.View style={[styles.artFill, tm]}>
+          <HazardArt kind="tamper" />
+        </Animated.View>
+        <Animated.View style={[styles.artFill, c]}>
+          <HazardArt kind="cup" />
         </Animated.View>
       </Animated.View>
     </>
@@ -228,9 +249,11 @@ export function PlayField({
   const [dead, setDead] = useState(false);
   const [deathKind, setDeathKind] = useState<DeathKind | null>(null);
   const [cue, setCue] = useState<CoachCue>("tap");
+  const [hopping, setHopping] = useState(false);
   const [floaters, setFloaters] = useState<Floater[]>([]);
   const scoreRef = useRef(0);
   const cueRef = useRef<CoachCue>("tap");
+  const hopRef = useRef(false);
 
   const playerStyle = useAnimatedStyle(() => ({
     transform: [
@@ -351,10 +374,15 @@ export function PlayField({
           stepPaper(squashY, 1.08, 1.04);
         }
       } else if (landed) {
-        landTick();
-        if (!reduceMotion) {
-          stepPaper(squashX, 1.32, 1.16);
-          stepPaper(squashY, 0.62, 0.84);
+        if (run.landFromHop) {
+          landTick();
+          if (!reduceMotion) {
+            stepPaper(squashX, 1.32, 1.16);
+            stepPaper(squashY, 0.62, 0.84);
+          }
+        } else if (!reduceMotion) {
+          stepPaper(squashX, 1.08, 1.02);
+          stepPaper(squashY, 0.94, 0.98);
         }
       }
       if (beans) {
@@ -389,6 +417,10 @@ export function PlayField({
       if (run.cue !== cueRef.current) {
         cueRef.current = run.cue;
         setCue(run.cue);
+      }
+      if (run.hopping !== hopRef.current) {
+        hopRef.current = run.hopping;
+        setHopping(run.hopping);
       }
       if (run.dead && !beforeDead) {
         roastTick();
@@ -491,7 +523,7 @@ export function PlayField({
             playerStyle,
           ]}
         >
-          <BeanArt tone="roast" />
+          <BeanArt tone="roast" pose={hopping ? "hop" : "run"} />
         </Animated.View>
         {hazardSlots.map((slot, i) => (
           <HazardSprite

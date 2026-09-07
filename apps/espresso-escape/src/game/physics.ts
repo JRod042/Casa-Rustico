@@ -1,6 +1,6 @@
 export type Rect = { x: number; y: number; w: number; h: number };
 
-export type HazardKind = "grinder" | "steam" | "portafilter";
+export type HazardKind = "grinder" | "steam" | "portafilter" | "knockbox" | "tamper" | "cup";
 
 export type Hazard = Rect & {
   id: number;
@@ -53,6 +53,10 @@ export const JUMP_V = -880;
 export const GRAVITY_UP = 2200;
 export const GRAVITY_DOWN = 3600;
 export const GRAVITY_HANG = 2400;
+export const GRAVITY_SKIP = 1850;
+export const JUMP_CUT = 0.48;
+export const SKIP_V = -210;
+export const MAX_FALL = 980;
 export const JUMP_AIR_S = 0.644;
 /** Heel-clip grace after a hop so landing on a kit’s tail is not a cheap roast. */
 export const HEEL_MERCY_S = 0.1;
@@ -92,6 +96,9 @@ export const KIND_CODE: Record<HazardKind, number> = {
   grinder: 0,
   portafilter: 1,
   steam: 2,
+  knockbox: 3,
+  tamper: 4,
+  cup: 5,
 };
 
 export function phaseFor(time: number): Phase {
@@ -111,7 +118,8 @@ export function jumpHeight(): number {
   return (JUMP_V * JUMP_V) / (2 * GRAVITY_UP);
 }
 
-export function gravityFor(vy: number, holding: boolean): number {
+export function gravityFor(vy: number, holding: boolean, skipping = false): number {
+  if (skipping && !holding) return GRAVITY_SKIP;
   if (vy < 0) return GRAVITY_UP;
   return holding ? GRAVITY_HANG : GRAVITY_DOWN;
 }
@@ -162,6 +170,15 @@ export function makeHazard(id: number, world: World, kind: HazardKind): Hazard {
   }
   if (kind === "portafilter") {
     return { id, kind, x, y: ground - 88, w: 32, h: 88, warned: false };
+  }
+  if (kind === "tamper") {
+    return { id, kind, x, y: ground - 62, w: 26, h: 62, warned: false };
+  }
+  if (kind === "cup") {
+    return { id, kind, x, y: ground - 58, w: 34, h: 58, warned: false };
+  }
+  if (kind === "knockbox") {
+    return { id, kind, x, y: ground - 40, w: 40, h: 40, warned: false };
   }
   return { id, kind, x, y: ground - 46, w: 36, h: 46, warned: false };
 }

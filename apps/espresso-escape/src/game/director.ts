@@ -124,13 +124,18 @@ function chooseKind(run: Course): HazardKind {
   }
 
   if (phase === 2) {
-    if (roll < 0.42) return "grinder";
-    if (roll < 0.74) return "portafilter";
+    if (roll < 0.28) return "grinder";
+    if (roll < 0.48) return "portafilter";
+    if (roll < 0.64) return "knockbox";
+    if (roll < 0.8) return "tamper";
     return "steam";
   }
 
-  if (roll < 0.34) return "grinder";
-  if (roll < 0.64) return "portafilter";
+  if (roll < 0.22) return "grinder";
+  if (roll < 0.4) return "portafilter";
+  if (roll < 0.55) return "knockbox";
+  if (roll < 0.68) return "tamper";
+  if (roll < 0.82) return "cup";
   return "steam";
 }
 

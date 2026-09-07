@@ -1,40 +1,49 @@
 import { Image, StyleSheet, View } from "react-native";
-import { escapeWelcomeTheme as t } from "../welcome/theme";
-import { kraftSource } from "./kraftAssets";
+import { GAME_ATLAS } from "./gameAtlas";
 import type { HazardKind } from "./physics";
 
 export type KitKind = HazardKind | "bean" | "player";
 
-/**
- * Kraft sticker sprites. Creative PNGs win; paper-cut Views stay as
- * a readable silhouette if a drop is late.
- */
-export function BeanArt({ tone = "roast" }: { tone?: "roast" | "honey" }) {
+function artForHazard(kind: HazardKind) {
+  if (kind === "steam") return GAME_ATLAS.hazardSteam;
+  if (kind === "portafilter") return GAME_ATLAS.hazardPortafilter;
+  if (kind === "knockbox") return GAME_ATLAS.hazardKnockbox;
+  if (kind === "tamper") return GAME_ATLAS.hazardTamper;
+  if (kind === "cup") return GAME_ATLAS.hazardCupStack;
+  return GAME_ATLAS.hazardGrinder;
+}
+
+/** Charm cutouts — no cream card, no fringe mat. */
+export function BeanArt({
+  tone = "roast",
+  pose = "run",
+}: {
+  tone?: "roast" | "honey";
+  pose?: "run" | "hop";
+}) {
+  const src =
+    tone === "honey"
+      ? GAME_ATLAS.honeyBean
+      : pose === "hop"
+        ? GAME_ATLAS.runnerHop
+        : GAME_ATLAS.runner01;
   return (
-    <View style={[sprite.fill, sprite.sticker]}>
+    <View style={sprite.fill}>
       <Image
-        source={tone === "honey" ? kraftSource("bean") : kraftSource("runner")}
+        source={src}
         style={sprite.img}
         resizeMode="contain"
         accessibilityIgnoresInvertColors
       />
-      {tone === "honey" ? <View pointerEvents="none" style={sprite.honeyTint} /> : null}
     </View>
   );
 }
 
 export function HazardArt({ kind }: { kind: HazardKind }) {
-  const src =
-    kind === "steam"
-      ? kraftSource("steam")
-      : kind === "portafilter"
-        ? kraftSource("portafilter")
-        : kraftSource("grinder");
   return (
-    <View style={[sprite.fill, sprite.sticker]}>
-      {kind === "steam" ? <View pointerEvents="none" style={sprite.steamRim} /> : null}
+    <View style={sprite.fill}>
       <Image
-        source={src}
+        source={artForHazard(kind)}
         style={sprite.img}
         resizeMode="contain"
         accessibilityIgnoresInvertColors
@@ -60,7 +69,7 @@ export function KitThumb({
         : size;
   const h = size;
   return (
-    <View style={[sprite.thumb, sprite.sticker, { width: w, height: h }]}>
+    <View style={[sprite.thumb, { width: w, height: h }]}>
       {kind === "bean" ? (
         <BeanArt tone="honey" />
       ) : kind === "player" ? (
@@ -73,31 +82,14 @@ export function KitThumb({
 }
 
 const sprite = StyleSheet.create({
-  fill: { flex: 1, overflow: "hidden" },
-  sticker: {
-    backgroundColor: t.cream,
-    borderRadius: 8,
-    overflow: "hidden",
-  },
+  fill: { flex: 1, overflow: "hidden", backgroundColor: "transparent" },
   thumb: {
     overflow: "hidden",
     alignSelf: "center",
-    borderWidth: 1,
-    borderColor: t.kraftDeep,
+    backgroundColor: "transparent",
   },
   img: {
     width: "100%",
     height: "100%",
-  },
-  honeyTint: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: "rgba(164,124,89,0.2)",
-  },
-  steamRim: {
-    ...StyleSheet.absoluteFill,
-    margin: -2,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: "rgba(247,243,236,0.45)",
   },
 });
