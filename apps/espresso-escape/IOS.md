@@ -89,9 +89,9 @@ npm run preflight:ios
 npm run check:game
 # AFTER wire/build instruction only:
 npx --yes eas-cli@16.28.0 build --platform ios --profile production --non-interactive
-# Binary already on TF for 1.0.6 / 19. Submit for Review via:
-#   python3 apps/espresso-escape/scripts/asc-submit-review.py
-# (needs APPLE_API_KEY_ID / APPLE_API_ISSUER_ID / APPLE_API_KEY_P8)
+# Binary already on TF for 1.0.6 / 19. GitHub APPLE_API_KEY_* secrets are empty.
+# Submit for Review in ASC UI on 6809059605 (create 1.0.6, attach build 19)
+# or add those secrets and re-run workflow "ASC Submit for Review".
 ```
 
 GitHub → Expo: base directory **`apps/espresso-escape`**, profile **`production`**.

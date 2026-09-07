@@ -36,7 +36,11 @@ Do **not** queue another EAS production build unless 19 is lost. Do **not** bump
 
 GitHub Action **ASC Submit for Review** (`.github/workflows/asc-submit-review.yml`) runs `apps/espresso-escape/scripts/asc-submit-review.py` with `APPLE_API_KEY_P8` / `APPLE_API_KEY_ID` / `APPLE_API_ISSUER_ID`. It does **not** queue EAS.
 
-If the API key is EAS-Submit-only, App Manager / Admin may still need to tap Submit in the ASC UI.
+**Blocked 2026-09-07:** run `34159964051` failed in 9s — those three GitHub secrets are **empty**. EAS used an Expo-stored key (`5MW8RX25WR`) for the IPA upload; this VM and Actions cannot mint an ASC JWT without the p8.
+
+**Human / next agent (pick one):**
+1. App Store Connect → **6809059605** → create version **1.0.6** → select **build 19** → **Submit for Review**.
+2. Add repo secrets `APPLE_API_KEY_ID` + `APPLE_API_ISSUER_ID` + `APPLE_API_KEY_P8` (App Manager) and re-run **ASC Submit for Review**.
 
 ## Feel / brand locks (do not regress)
 
