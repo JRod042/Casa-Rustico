@@ -1,4 +1,4 @@
-# Espresso Escape — stack (1.0.6 / 16)
+# Espresso Escape — stack (1.0.6 / 17)
 
 Casa Rústico café runner. Mid-iPhone first. App owns EAS→ASC after tip SHA (do not HOLD Submit).
 
@@ -10,7 +10,7 @@ Kit-eval briefs: `2026-09-05-escape-pro-kit-eval`, `2026-09-05-escape-pro-stack-
 
 | Layer | On branch now |
 |---|---|
-| **PRIMARY** | `@shopify/react-native-skia` **2.6.2** (Expo 57 pin) `Canvas` + `Image` parallax + 1-frame `Atlas` |
+| **PRIMARY** | `@shopify/react-native-skia` **2.6.6** (header-path fix for EAS static frameworks) `Canvas` + `Image` parallax + 1-frame `Atlas` |
 | Motion | `react-native-reanimated` 4.5 shared values (`useDerivedValue` into Skia `Group`) |
 | Gestures | `react-native-gesture-handler` ~2.32 (`GestureHandlerRootView`) |
 | Fallback | `CafeStageViews` — RN Views + Images + LinearGradient if web, `SKIA_FPS_KILL`, or Skia throws |
@@ -44,7 +44,7 @@ Feel smoke: dedicated leaf-dot ±2px pulse; contact/cavity fake-AO uses **Multip
 
 ## EAS TestFlight — App owns after tip SHA
 
-Ready: version **1.0.6**, iOS **16**, Android **12**, profile `production`, ASC `6809059605`.
+Ready: version **1.0.6**, iOS **17**, Android **12**, profile `production`, ASC `6809059605`.
 
 From `apps/espresso-escape` (App owns build + submit):
 
