@@ -20,7 +20,9 @@
     "eas:build:all": "npx --yes eas-cli@16.28.0 build --platform all --profile production",
     "eas:build:internal": "npx --yes eas-cli@16.28.0 build --platform ios --profile internal",
     "eas:submit:ios": "npx --yes eas-cli@16.28.0 submit --platform ios --profile production --latest",
-    "eas-build-pre-install": "node ./scripts/restore-assets.js"
+    "eas-build-pre-install": "node ./scripts/restore-assets.js",
+    "eas-build-post-install": "node ./scripts/restore-exav-headers.js",
+    "postinstall": "node ./scripts/restore-exav-headers.js"
   },
   "dependencies": {
     "@expo-google-fonts/fraunces": "^0.4.1",
@@ -33,6 +35,7 @@
     "expo-font": "~57.0.1",
     "expo-haptics": "~57.0.2",
     "expo-linear-gradient": "~57.0.1",
+    "expo-modules-core": "~57.0.16",
     "expo-status-bar": "~57.0.1",
     "matter-js": "^0.20.0",
     "react": "19.2.3",

@@ -16,7 +16,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.jrod042.espressoescape",
-      "buildNumber": "17",
+      "buildNumber": "18",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleDisplayName": "Espresso Escape"
@@ -45,7 +45,8 @@
           }
         }
       ],
-      "expo-font"
+      "expo-font",
+      "./plugins/with-exav-headers"
     ],
     "extra": {
       "brand": "Casa Rustico",
