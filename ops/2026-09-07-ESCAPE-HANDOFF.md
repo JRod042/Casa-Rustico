@@ -20,6 +20,10 @@
 
 **Native audio path (locked):** `expo-av` **removed**. SFX via `expo-audio` `~57.0.4` (`createAudioPlayer` / `setAudioModeAsync`) in `src/game/sfx.ts`. EXEventEmitter header shim + direct `expo-modules-core` pin **gone**. Same `assets/sfx/` Tone keys.
 
+## Jorge 1.0.7 follow-up (same evening)
+
+Jorge pushed `f1b35f5` — charm cutouts, skip gait, craft diorama, **1.0.7 / 20**. EAS `25e7b845` (36.5 MB) queued with the old blanket `assets/game/world` ignore, so Metro will miss `sky/far/mid/hang/ground-strip`. Fix SHA after this section ships those plates and bumps **iOS 21**. Still **no expo-av**. ASC **6809059605**.
+
 ## NEXT (this is the remaining work)
 
 ASC **Submit for Review** is **not** EAS `--auto-submit`. Auto-submit only uploaded the IPA to TestFlight.

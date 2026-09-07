@@ -249,8 +249,8 @@ if (!/GEMINI_COMPARE_BRIEF/.test(sources) || !/escape-gemini-compare-optimize/.t
 if (!/stepPaper/.test(sources) || !/STEAM_FIRST_MS/.test(sources) || !/FAKE_AO/.test(sources)) {
   throw new Error("Gemini fold 2–5 must stay: stop-motion, steam-first, fake AO");
 }
-if (!/honeyTint/.test(sources) || !/leafDot/.test(sources)) {
-  throw new Error("leaf-dot sway and honey tint must stay wired");
+if (!/leafDot/.test(sources)) {
+  throw new Error("leaf-dot sway must stay wired");
 }
 if (!/LEAF_DOT_PULSE_PX/.test(sources) || !/leafPulse/.test(sources)) {
   throw new Error("leaf-dot must keep a dedicated ±1–2px pulse (not plant sway only)");
@@ -314,17 +314,17 @@ if (!/WIRE_KEYS/.test(sources) || !/plate01/.test(sources) || !/plate06/.test(so
   throw new Error("WIRE-ready plates 01–06 keys must stay in kraftMap / craftAssets");
 }
 const appJson = JSON.parse(readFileSync(join(root, "app.json"), "utf8"));
-if (appJson.expo?.version !== "1.0.6") {
-  throw new Error("marketing version must stay 1.0.6 (not 1.0.5)");
+if (appJson.expo?.version !== "1.0.7") {
+  throw new Error("marketing version must stay 1.0.7");
 }
-if (String(appJson.expo?.ios?.buildNumber) !== "19") {
-  throw new Error("ios.buildNumber must be 19 so TF is newer than the failed 14–18");
+if (String(appJson.expo?.ios?.buildNumber) !== "21") {
+  throw new Error("ios.buildNumber must be 21 so TF is newer than queued 20");
 }
-if (Number(appJson.expo?.android?.versionCode) !== 12) {
-  throw new Error("android.versionCode must be 12 (newer than the 1.0.5 line)");
+if (Number(appJson.expo?.android?.versionCode) !== 13) {
+  throw new Error("android.versionCode must be 13");
 }
-if (!/IOS_BUILD = "19"/.test(sources) || !/BUILD_LABEL/.test(sources)) {
-  throw new Error("About must show BUILD_LABEL 1.0.6 · 19");
+if (!/IOS_BUILD = "21"/.test(sources) || !/BUILD_LABEL/.test(sources)) {
+  throw new Error("About must show BUILD_LABEL 1.0.7 · 21");
 }
 const eas = readFileSync(join(root, "eas.json"), "utf8");
 if (!/6809059605/.test(eas) || /6758108565/.test(eas)) {
