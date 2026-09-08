@@ -2,22 +2,22 @@ import type { ImageSourcePropType } from "react-native";
 
 /**
  * assets/game/** require() atlas — Cacique GO.
- * Charm runner-01..04 + hop/land/death. Not tiny-eye. Not hazard-04/05/06.
+ * Hessian coffee-bean puppet cutout (Jorge PR brief). Not cream box. Not humanoid Sackboy.
  * Preview craft pack: crema bubbles, highland plants, cork/cardboard/shelf.
  */
 export const USE_CRAFT_ART = true;
 export const CHARM_RUNNER_PREFERRED = true;
 
 export const GAME_ATLAS_PATHS = {
-  runner01: "assets/game/sprites/runner-01.png",
-  runner02: "assets/game/sprites/runner-02.png",
-  runner03: "assets/game/sprites/runner-03.png",
-  runner04: "assets/game/sprites/runner-04.png",
-  runnerHop: "assets/game/sprites/runner-hop.png",
-  runnerHop01: "assets/game/sprites/runner-hop-01.png",
-  runnerHop02: "assets/game/sprites/runner-hop-02.png",
-  runnerHop03: "assets/game/sprites/runner-hop-03.png",
-  runnerHop04: "assets/game/sprites/runner-hop-04.png",
+  runner01: "assets/game/sprites/runner-bean-run.png",
+  runner02: "assets/game/sprites/runner-bean-run.png",
+  runner03: "assets/game/sprites/runner-bean-run.png",
+  runner04: "assets/game/sprites/runner-bean-run.png",
+  runnerHop: "assets/game/sprites/runner-bean-hop.png",
+  runnerHop01: "assets/game/sprites/runner-bean-hop.png",
+  runnerHop02: "assets/game/sprites/runner-bean-hop.png",
+  runnerHop03: "assets/game/sprites/runner-bean-hop.png",
+  runnerHop04: "assets/game/sprites/runner-bean-hop.png",
   runnerLand: "assets/game/sprites/runner-land.png",
   runnerDeath: "assets/game/sprites/runner-death.png",
   hazardCupStack: "assets/game/sprites/hazard-cup-stack.png",
@@ -50,15 +50,15 @@ export const GAME_ATLAS_PATHS = {
 } as const;
 
 export const GAME_ATLAS: Record<keyof typeof GAME_ATLAS_PATHS, ImageSourcePropType> = {
-  runner01: require("../../assets/game/sprites/runner-01.png"),
-  runner02: require("../../assets/game/sprites/runner-02.png"),
-  runner03: require("../../assets/game/sprites/runner-03.png"),
-  runner04: require("../../assets/game/sprites/runner-04.png"),
-  runnerHop: require("../../assets/game/sprites/runner-hop.png"),
-  runnerHop01: require("../../assets/game/sprites/runner-hop-01.png"),
-  runnerHop02: require("../../assets/game/sprites/runner-hop-02.png"),
-  runnerHop03: require("../../assets/game/sprites/runner-hop-03.png"),
-  runnerHop04: require("../../assets/game/sprites/runner-hop-04.png"),
+  runner01: require("../../assets/game/sprites/runner-bean-run.png"),
+  runner02: require("../../assets/game/sprites/runner-bean-run.png"),
+  runner03: require("../../assets/game/sprites/runner-bean-run.png"),
+  runner04: require("../../assets/game/sprites/runner-bean-run.png"),
+  runnerHop: require("../../assets/game/sprites/runner-bean-hop.png"),
+  runnerHop01: require("../../assets/game/sprites/runner-bean-hop.png"),
+  runnerHop02: require("../../assets/game/sprites/runner-bean-hop.png"),
+  runnerHop03: require("../../assets/game/sprites/runner-bean-hop.png"),
+  runnerHop04: require("../../assets/game/sprites/runner-bean-hop.png"),
   runnerLand: require("../../assets/game/sprites/runner-land.png"),
   runnerDeath: require("../../assets/game/sprites/runner-death.png"),
   hazardCupStack: require("../../assets/game/sprites/hazard-cup-stack.png"),

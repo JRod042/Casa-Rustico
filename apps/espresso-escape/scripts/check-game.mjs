@@ -15,7 +15,7 @@ function aabbHits(a, b, pad = 0) {
 }
 
 const PLAYER_H = 38;
-const JUMP_V = -880;
+const JUMP_V = -800;
 const GRAVITY_UP = 2200;
 const BASE_SPEED = 280;
 const MAX_SPEED = 400;
@@ -314,17 +314,17 @@ if (!/WIRE_KEYS/.test(sources) || !/plate01/.test(sources) || !/plate06/.test(so
   throw new Error("WIRE-ready plates 01–06 keys must stay in kraftMap / craftAssets");
 }
 const appJson = JSON.parse(readFileSync(join(root, "app.json"), "utf8"));
-if (appJson.expo?.version !== "1.0.9") {
-  throw new Error("marketing version must stay 1.0.9");
+if (appJson.expo?.version !== "1.0.10") {
+  throw new Error("marketing version must stay 1.0.10");
 }
-if (String(appJson.expo?.ios?.buildNumber) !== "23") {
-  throw new Error("ios.buildNumber must be 23 so TF is newer than 22");
+if (String(appJson.expo?.ios?.buildNumber) !== "25") {
+  throw new Error("ios.buildNumber must be 25 so TF is newer than queued 24");
 }
-if (Number(appJson.expo?.android?.versionCode) !== 15) {
-  throw new Error("android.versionCode must be 15");
+if (Number(appJson.expo?.android?.versionCode) !== 16) {
+  throw new Error("android.versionCode must be 16");
 }
-if (!/IOS_BUILD = "23"/.test(sources) || !/BUILD_LABEL/.test(sources)) {
-  throw new Error("About must show BUILD_LABEL 1.0.9 · 23");
+if (!/IOS_BUILD = "25"/.test(sources) || !/BUILD_LABEL/.test(sources)) {
+  throw new Error("About must show BUILD_LABEL 1.0.10 · 25");
 }
 const eas = readFileSync(join(root, "eas.json"), "utf8");
 if (!/6809059605/.test(eas) || /6758108565/.test(eas)) {
@@ -342,11 +342,11 @@ if (!/USE_CRAFT_ART = true/.test(sources)) {
 if (/USE_CRAFT_ART = false/.test(sources)) {
   throw new Error("USE_CRAFT_ART must not stay false after Cacique GO");
 }
-if (!/assets\/game\/sprites\/runner-01/.test(sources) || !/pickup-honey-bean/.test(sources)) {
-  throw new Error("assets/game require() atlas must include charm runner-01 and honey-bean");
+if (!/runner-bean-run/.test(sources) || !/pickup-honey-bean/.test(sources)) {
+  throw new Error("assets/game require() atlas must include hessian bean puppet + honey-bean");
 }
-if (!/runner-hop/.test(sources) || !/runner-land/.test(sources) || !/runner-death/.test(sources)) {
-  throw new Error("assets/game require() atlas must prefer runner-01..04 plus hop/land/death frames");
+if (!/runner-bean-hop/.test(sources) || !/runner-land/.test(sources) || !/runner-death/.test(sources)) {
+  throw new Error("assets/game require() atlas must prefer bean-run/hop plus land/death frames");
 }
 if (!/hazard-cup-stack/.test(sources) || !/hazard-knockbox/.test(sources) || !/hazard-tamper/.test(sources)) {
   throw new Error("assets/game require() atlas must use real hazard names (not hazard-04/05/06)");
