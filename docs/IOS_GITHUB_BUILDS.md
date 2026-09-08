@@ -103,5 +103,5 @@ npm run eas:submit:ios
 
 ## Workflow
 
-Root workflow: `.github/workflows/ios-testflight.yml` (workflow_dispatch, chooses app + profile + submit).
+Root workflow: `.github/workflows/ios-testflight.yml` (workflow_dispatch, plus push to `cursor/escape-kraft-feel-menus-a233` when `assets/game/**` or `assets/sfx/**` change; gated on real craft PNGs + P0 wavs >4KB).
 Each app also has `.eas/workflows/build-ios.yml` for Expo-side triggers.

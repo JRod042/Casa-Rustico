@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import {
+  Image,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -7,21 +8,32 @@ import {
   Text,
   View,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import { SteamMark } from "../welcome/SteamMark";
 import { escapeWelcomeTheme as t } from "../welcome/theme";
+import { BUILD_LABEL } from "./buildMeta";
+import { type FeelPrefs, armFeel } from "./feel";
+import { kraftSource } from "./kraftAssets";
+import { PaperChip, PaperSheet, StickerButton } from "./MenuChrome";
 import { PlayField } from "./PlayField";
 import { KitThumb, type KitKind } from "./sprites";
-import { loadBestScore, loadSeenFirstRun, markFirstRunSeen } from "./storage";
+import {
+  clearFirstRun,
+  loadBestScore,
+  loadSeenFirstRun,
+  loadSettings,
+  markFirstRunSeen,
+  saveSettings,
+} from "./storage";
 
-type Screen = "menu" | "how" | "about" | "privacy" | "play";
+type Screen = "menu" | "how" | "about" | "privacy" | "settings" | "play";
 
 const HOW: { title: string; body: string; kit: KitKind }[] = [
-  { title: "Jump", body: "Tap the moment you want to hop. Hold a beat to float for high beans. Late taps still count if you just left the floor.", kit: "player" },
-  { title: "Dodge", body: "Grinders sit low. Portafilters are tall — hop both. Steam hangs — stay on the linen.", kit: "grinder" },
-  { title: "Collect", body: "Honey beans sit on the safe line. +5 each. The run itself scores as you go.", kit: "bean" },
-  { title: "Brew again", body: "One hit ends the roast. Tap to go again. No lives to buy. Pause anytime.", kit: "portafilter" },
+  { title: "Jump", body: "Tap when you want the hop. The bean skips like a stuffed toy — plant, then hop. Hold a beat only for high honey. Late taps still count if you just left the floor.", kit: "player" },
+  { title: "Dodge", body: "Read the kits. Soft danger: grinders sit low, portafilters are tall, steam is a warm cardboard cloud. Stay on the linen.", kit: "grinder" },
+  { title: "Pop", body: "Crema bubbles trail the hop. Pop them. Five in a row starts a multiplier. Prize bubbles score extra.", kit: "bubble" },
+  { title: "Collect", body: "Honey beans sit on the safe line. Flamboyán, plantain, pineapple, cacao, and drying beds dress the highland box. Brush hanging fruit for a rustle.", kit: "bean" },
+  { title: "Brew again", body: "One soft roast ends the line. Tap to go again — the café invites another hop. Pause anytime and look around.", kit: "portafilter" },
 ];
 
 const BAR: { kit: KitKind; label: string }[] = [
@@ -34,18 +46,25 @@ export function GameApp() {
   const [screen, setScreen] = useState<Screen>("menu");
   const [best, setBest] = useState(0);
   const [booted, setBooted] = useState(false);
+  const [tutorial, setTutorial] = useState(false);
+  const [prefs, setPrefs] = useState<FeelPrefs>({ haptics: true, sfx: true });
 
   useEffect(() => {
+    armFeel();
     let alive = true;
-    Promise.all([loadBestScore(), loadSeenFirstRun()]).then(([n, seen]) => {
-      if (!alive) return;
-      setBest(n);
-      if (!seen) {
-        void markFirstRunSeen();
-        setScreen("play");
+    Promise.all([loadBestScore(), loadSeenFirstRun(), loadSettings()]).then(
+      ([n, seen, nextPrefs]) => {
+        if (!alive) return;
+        setBest(n);
+        setPrefs(nextPrefs);
+        if (!seen) {
+          void markFirstRunSeen();
+          setTutorial(true);
+          setScreen("play");
+        }
+        setBooted(true);
       }
-      setBooted(true);
-    });
+    );
     return () => {
       alive = false;
     };
@@ -55,8 +74,26 @@ export function GameApp() {
 
   const leaveHow = useCallback((next: Screen) => {
     void markFirstRunSeen();
+    setTutorial(false);
     setScreen(next);
   }, []);
+
+  const play = useCallback((firstBrew = false) => {
+    void markFirstRunSeen();
+    setTutorial(firstBrew);
+    setScreen("play");
+  }, []);
+
+  const togglePref = useCallback(async (key: keyof FeelPrefs) => {
+    const next = { ...prefs, [key]: !prefs[key] };
+    setPrefs(next);
+    await saveSettings(next);
+  }, [prefs]);
+
+  const replayBrew = useCallback(async () => {
+    await clearFirstRun();
+    play(true);
+  }, [play]);
 
   if (!booted) {
     return <View style={styles.root} />;
@@ -64,27 +101,27 @@ export function GameApp() {
 
   return (
     <View style={styles.root}>
-      <StatusBar style="light" />
-      <LinearGradient
-        colors={[t.wood, t.bg, t.espressoDeep]}
-        locations={[0, 0.48, 1]}
-        style={StyleSheet.absoluteFill}
-      />
+      <StatusBar style={screen === "play" ? "light" : "dark"} />
       {screen === "play" ? (
         <PlayField
           best={best}
           onBest={onBest}
+          tutorial={tutorial}
           onMenu={() => setScreen("menu")}
         />
       ) : (
         <Menu
           screen={screen}
           best={best}
-          onPlay={() => leaveHow("play")}
+          prefs={prefs}
+          onPlay={() => play(false)}
           onHow={() => setScreen("how")}
           onAbout={() => setScreen("about")}
           onPrivacy={() => setScreen("privacy")}
+          onSettings={() => setScreen("settings")}
           onBack={() => leaveHow("menu")}
+          onToggle={togglePref}
+          onReplay={replayBrew}
         />
       )}
     </View>
@@ -94,19 +131,27 @@ export function GameApp() {
 function Menu({
   screen,
   best,
+  prefs,
   onPlay,
   onHow,
   onAbout,
   onPrivacy,
+  onSettings,
   onBack,
+  onToggle,
+  onReplay,
 }: {
   screen: Screen;
   best: number;
+  prefs: FeelPrefs;
   onPlay: () => void;
   onHow: () => void;
   onAbout: () => void;
   onPrivacy: () => void;
+  onSettings: () => void;
   onBack: () => void;
+  onToggle: (key: keyof FeelPrefs) => void;
+  onReplay: () => void;
 }) {
   if (screen === "how") {
     return (
@@ -115,9 +160,11 @@ function Menu({
           contentContainerStyle={styles.menu}
           showsVerticalScrollIndicator={false}
         >
+        <PaperSheet>
         <Text style={styles.panelTitle}>How to play</Text>
         <Text style={styles.legendLabel}>Meet the bar</Text>
         <View style={styles.legend}>
+          <View style={styles.stampRing} />
           {BAR.map((item) => (
             <View key={item.label} style={styles.legendItem}>
               <KitThumb kind={item.kit} size={40} />
@@ -127,6 +174,7 @@ function Menu({
         </View>
         {HOW.map((step, i) => (
           <View key={step.title} style={styles.step}>
+            <View style={styles.stampRing} />
             <View style={styles.stepKit}>
               <KitThumb kind={step.kit} size={36} />
             </View>
@@ -137,22 +185,14 @@ function Menu({
             </View>
           </View>
         ))}
-        <Pressable
-          accessibilityRole="button"
+        </PaperSheet>
+        <StickerButton
+          primary
+          label="Play"
           accessibilityLabel="Play Espresso Escape"
           onPress={onPlay}
-          style={styles.primary}
-        >
-          <Text style={styles.primaryText}>Play</Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Back to menu"
-          onPress={onBack}
-          style={styles.ghost}
-        >
-          <Text style={styles.ghostText}>Menu</Text>
-        </Pressable>
+        />
+        <StickerButton label="Menu" accessibilityLabel="Back to menu" onPress={onBack} />
         </ScrollView>
       </SafeAreaView>
     );
@@ -164,11 +204,13 @@ function Menu({
           contentContainerStyle={styles.menu}
           showsVerticalScrollIndicator={false}
         >
+        <PaperSheet>
         <Text style={styles.panelTitle}>About</Text>
         <View style={styles.copyCard}>
+        <View style={styles.stampRing} />
         <Text style={styles.panelBody}>
           Espresso Escape is a free Casa Rústico coffee mini-game — a playable
-          run through the café line.
+          hop through a living highland café of cream paper and kraft kits.
         </Text>
         <Text style={styles.panelBody}>
           No accounts. No ads. No in-app purchases. This game does not sell coffee
@@ -176,17 +218,11 @@ function Menu({
         </Text>
         <Text style={styles.panelBodyLast}>
           Physical bags stay in the Casa Rústico shop. This app is only the
-          game — there is no checkout here.
+          game — there is no checkout here. Build {BUILD_LABEL} — not the 1.0.5 / 12 line.
         </Text>
         </View>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Back to menu"
-          onPress={onBack}
-          style={styles.primary}
-        >
-          <Text style={styles.primaryText}>Back</Text>
-        </Pressable>
+        </PaperSheet>
+        <StickerButton primary label="Back" accessibilityLabel="Back to menu" onPress={onBack} />
         </ScrollView>
       </SafeAreaView>
     );
@@ -198,8 +234,10 @@ function Menu({
           contentContainerStyle={styles.menu}
           showsVerticalScrollIndicator={false}
         >
+        <PaperSheet>
         <Text style={styles.panelTitle}>Privacy</Text>
         <View style={styles.copyCard}>
+        <View style={styles.stampRing} />
         <Text style={styles.panelBody}>
           Espresso Escape keeps a high score and a welcome flag on this device.
         </Text>
@@ -212,73 +250,114 @@ function Menu({
           payments.
         </Text>
         </View>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Back to menu"
-          onPress={onBack}
-          style={styles.primary}
+        </PaperSheet>
+        <StickerButton primary label="Back" accessibilityLabel="Back to menu" onPress={onBack} />
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+  if (screen === "settings") {
+    return (
+      <SafeAreaView style={styles.safe} testID="escape-settings">
+        <ScrollView
+          contentContainerStyle={styles.menu}
+          showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.primaryText}>Back</Text>
+        <PaperSheet>
+        <Text style={styles.panelTitle}>Settings</Text>
+        <Text style={styles.tag}>Cloth hops, cardboard landings. Nothing to buy.</Text>
+        <Pressable
+          accessibilityRole="switch"
+          accessibilityState={{ checked: prefs.haptics }}
+          accessibilityLabel="Haptics"
+          onPress={() => onToggle("haptics")}
+          style={styles.toggleRow}
+        >
+          <View style={styles.stampRing} />
+          <Text style={styles.toggleLabel}>Haptics</Text>
+          <Text style={styles.toggleValue}>{prefs.haptics ? "On" : "Off"}</Text>
         </Pressable>
+        <Pressable
+          accessibilityRole="switch"
+          accessibilityState={{ checked: prefs.sfx }}
+          accessibilityLabel="Sound"
+          onPress={() => onToggle("sfx")}
+          style={styles.toggleRow}
+        >
+          <View style={styles.stampRing} />
+          <Text style={styles.toggleLabel}>Sound</Text>
+          <Text style={styles.toggleValue}>{prefs.sfx ? "On" : "Off"}</Text>
+        </Pressable>
+        </PaperSheet>
+        <StickerButton
+          primary
+          label="Replay first brew"
+          accessibilityLabel="Replay first brew"
+          onPress={onReplay}
+        />
+        <StickerButton label="About" accessibilityLabel="About this game" onPress={onAbout} />
+        <StickerButton label="Privacy" accessibilityLabel="Privacy" onPress={onPrivacy} />
+        <StickerButton label="Menu" accessibilityLabel="Back to menu" onPress={onBack} />
         </ScrollView>
       </SafeAreaView>
     );
   }
   return (
     <SafeAreaView style={styles.safe} testID="escape-menu">
+      <Image source={kraftSource("titleBg")} style={styles.titleBg} resizeMode="cover" />
+      <View style={styles.titleWash} />
       <ScrollView
         contentContainerStyle={styles.menu}
         showsVerticalScrollIndicator={false}
       >
-      <View style={styles.heroMark}>
-        <SteamMark size={88} />
+      <View style={styles.heroStack}>
+        <View style={styles.heroBlot} />
+        <View style={styles.heroMark}>
+          <View style={styles.heroStitch} />
+          <SteamMark size={88} />
+        </View>
       </View>
       <Text style={styles.brand}>CASA RÚSTICO</Text>
       <Text style={styles.title}>Espresso Escape</Text>
-      <Text style={styles.tag}>Dodge the grinders. Chase the beans.</Text>
-      <View style={styles.bestChip}>
-        <Text style={styles.best}>Best run {best}</Text>
+      <Text style={styles.tag}>A handmade hop through a living highland café.</Text>
+      <View style={styles.kitRow}>
+        <KitThumb kind="player" size={42} />
+        <KitThumb kind="bean" size={36} />
+        <KitThumb kind="grinder" size={36} />
       </View>
-      <Pressable
-        accessibilityRole="button"
+      <PaperChip ink>Best run {best}</PaperChip>
+      <StickerButton
+        primary
+        label="Play"
         accessibilityLabel="Play Espresso Escape"
         onPress={onPlay}
-        style={styles.primary}
-      >
-        <Text style={styles.primaryText}>Play</Text>
-      </Pressable>
-      <Pressable
-        accessibilityRole="button"
+      />
+      <StickerButton
+        label="How to play"
         accessibilityLabel="How to play"
         onPress={onHow}
-        style={styles.ghost}
-      >
-        <Text style={styles.ghostText}>How to play</Text>
-      </Pressable>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="About this game"
-        onPress={onAbout}
-        style={styles.ghost}
-      >
-        <Text style={styles.ghostText}>About</Text>
-      </Pressable>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Privacy"
-        onPress={onPrivacy}
-        style={styles.ghost}
-      >
-        <Text style={styles.ghostText}>Privacy</Text>
-      </Pressable>
+      />
+      <StickerButton
+        label="Settings"
+        accessibilityLabel="Settings"
+        onPress={onSettings}
+      />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: t.bg },
-  safe: { flex: 1 },
+  root: { flex: 1, backgroundColor: t.cream },
+  safe: { flex: 1, backgroundColor: t.cream },
+  titleBg: {
+    ...StyleSheet.absoluteFill,
+    opacity: 0.28,
+  },
+  titleWash: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: "rgba(247,243,236,0.72)",
+  },
   menu: {
     flexGrow: 1,
     alignItems: "center",
@@ -287,19 +366,47 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     gap: 10,
   },
+  heroStack: {
+    width: 128,
+    height: 128,
+    marginBottom: 4,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  heroBlot: {
+    position: "absolute",
+    left: 8,
+    right: -4,
+    top: 10,
+    bottom: -4,
+    backgroundColor: t.espresso,
+    borderRadius: 20,
+    opacity: 0.14,
+    transform: [{ rotate: "1.2deg" }],
+  },
   heroMark: {
     width: 120,
     height: 120,
-    borderRadius: 60,
-    backgroundColor: t.espresso,
-    borderWidth: 1,
-    borderColor: t.kraft,
+    borderRadius: 18,
+    backgroundColor: t.cream,
+    borderWidth: 2,
+    borderColor: t.kraftDeep,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 4,
+    transform: [{ rotate: "-1.4deg" }],
+    borderStyle: "dashed",
+  },
+  heroStitch: {
+    ...StyleSheet.absoluteFill,
+    margin: 7,
+    borderWidth: 1,
+    borderColor: t.kraft,
+    borderStyle: "dashed",
+    borderRadius: 12,
+    opacity: 0.5,
   },
   brand: {
-    color: t.brand,
+    color: t.kraftDeep,
     letterSpacing: 4,
     fontSize: 12,
     fontFamily: "SourceSans3_700Bold",
@@ -307,68 +414,27 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   title: {
-    color: t.linen,
+    color: t.ink,
     fontFamily: "Fraunces_700Bold",
     fontSize: 34,
     fontWeight: "800",
     textAlign: "center",
   },
   tag: {
-    color: t.glow,
+    color: t.muted,
     fontFamily: "SourceSans3_600SemiBold",
     fontSize: 16,
     textAlign: "center",
     marginBottom: 4,
   },
-  bestChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 999,
-    backgroundColor: "rgba(245,234,216,0.1)",
-    borderWidth: 1,
-    borderColor: t.line,
-    marginBottom: 8,
-  },
-  best: {
-    color: t.linenDim,
-    fontFamily: "SourceSans3_400Regular",
-    fontSize: 16,
-  },
-  primary: {
-    alignSelf: "stretch",
-    backgroundColor: t.kraft,
-    borderRadius: 16,
-    paddingVertical: 16,
-    alignItems: "center",
-    marginTop: 6,
-    minHeight: 52,
-    justifyContent: "center",
-  },
-  primaryText: {
-    color: t.cream,
-    fontFamily: "SourceSans3_700Bold",
-    fontSize: 17,
-    fontWeight: "800",
-  },
-  ghost: {
-    alignSelf: "stretch",
-    borderRadius: 16,
-    paddingVertical: 14,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: t.brand,
-    backgroundColor: "rgba(36,24,15,0.55)",
-    minHeight: 48,
-    justifyContent: "center",
-  },
-  ghostText: {
-    color: t.linen,
-    fontFamily: "SourceSans3_700Bold",
-    fontSize: 16,
-    fontWeight: "700",
+  kitRow: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 12,
+    marginVertical: 6,
   },
   panelTitle: {
-    color: t.linen,
+    color: t.ink,
     fontFamily: "Fraunces_700Bold",
     fontSize: 28,
     fontWeight: "800",
@@ -378,13 +444,25 @@ const styles = StyleSheet.create({
   },
   copyCard: {
     alignSelf: "stretch",
-    backgroundColor: t.panel,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: t.line,
+    backgroundColor: t.cream,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderStyle: "dashed",
+    borderColor: t.kraftDeep,
     paddingHorizontal: 18,
     paddingVertical: 16,
     marginBottom: 8,
+    overflow: "hidden",
+    transform: [{ rotate: "-0.3deg" }],
+  },
+  stampRing: {
+    ...StyleSheet.absoluteFill,
+    margin: 4,
+    borderWidth: 1,
+    borderColor: t.kraft,
+    borderStyle: "dashed",
+    borderRadius: 8,
+    opacity: 0.55,
   },
   panelBody: {
     color: t.muted,
@@ -404,7 +482,7 @@ const styles = StyleSheet.create({
   },
   legendLabel: {
     alignSelf: "stretch",
-    color: t.brand,
+    color: t.kraftDeep,
     fontFamily: "SourceSans3_700Bold",
     fontSize: 12,
     letterSpacing: 1.4,
@@ -414,17 +492,20 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     flexDirection: "row",
     justifyContent: "space-between",
-    backgroundColor: t.panel,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: t.kraft,
+    backgroundColor: t.cream,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderStyle: "dashed",
+    borderColor: t.kraftDeep,
     paddingHorizontal: 10,
     paddingVertical: 12,
     marginBottom: 4,
+    overflow: "hidden",
+    transform: [{ rotate: "0.4deg" }],
   },
   legendItem: { flex: 1, alignItems: "center", gap: 6 },
   legendText: {
-    color: t.linenDim,
+    color: t.ink,
     fontFamily: "SourceSans3_600SemiBold",
     fontSize: 11,
   },
@@ -433,12 +514,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    backgroundColor: t.panel,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: t.line,
+    backgroundColor: t.cream,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderStyle: "dashed",
+    borderColor: t.kraftDeep,
     paddingHorizontal: 12,
     paddingVertical: 12,
+    overflow: "hidden",
+    transform: [{ rotate: "-0.25deg" }],
   },
   stepKit: {
     width: 40,
@@ -447,7 +531,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   stepNum: {
-    color: t.kraft,
+    color: t.kraftDeep,
     fontFamily: "Fraunces_700Bold",
     fontSize: 20,
     width: 20,
@@ -455,7 +539,7 @@ const styles = StyleSheet.create({
   },
   stepCopy: { flex: 1, gap: 2 },
   stepTitle: {
-    color: t.linen,
+    color: t.ink,
     fontFamily: "SourceSans3_700Bold",
     fontSize: 16,
   },
@@ -464,5 +548,31 @@ const styles = StyleSheet.create({
     fontFamily: "SourceSans3_400Regular",
     fontSize: 15,
     lineHeight: 21,
+  },
+  toggleRow: {
+    alignSelf: "stretch",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: t.cream,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderStyle: "dashed",
+    borderColor: t.kraftDeep,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    minHeight: 52,
+    overflow: "hidden",
+    transform: [{ rotate: "0.3deg" }],
+  },
+  toggleLabel: {
+    color: t.ink,
+    fontFamily: "SourceSans3_700Bold",
+    fontSize: 16,
+  },
+  toggleValue: {
+    color: t.kraftDeep,
+    fontFamily: "SourceSans3_700Bold",
+    fontSize: 16,
   },
 });

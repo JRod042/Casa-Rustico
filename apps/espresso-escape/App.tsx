@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { WelcomeGate } from "./src/welcome/WelcomeGate";
 import { GameApp } from "./src/game/GameApp";
 import { useBrandFonts } from "./src/welcome/fonts";
@@ -13,8 +14,10 @@ export default function App() {
   }
 
   return (
-    <WelcomeGate>
-      <GameApp />
-    </WelcomeGate>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <WelcomeGate>
+        <GameApp />
+      </WelcomeGate>
+    </GestureHandlerRootView>
   );
 }

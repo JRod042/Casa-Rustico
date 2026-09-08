@@ -104,7 +104,7 @@ export function EscapeWelcome({ onFinished }: Props) {
         </View>
 
         <Text style={styles.wordmark}>Espresso Escape</Text>
-        <Text style={styles.tagline}>Dodge the grinders. Chase the beans.</Text>
+        <Text style={styles.tagline}>A handmade hop through a living highland café.</Text>
 
         <View style={styles.actions}>
           <Pressable
@@ -114,6 +114,7 @@ export function EscapeWelcome({ onFinished }: Props) {
             onPress={onFinished}
             style={[styles.primary, !canInteract && styles.disabled]}
           >
+            <View style={styles.primaryStitch} />
             <Text style={styles.primaryText}>Start brewing</Text>
           </Pressable>
           <Text style={styles.house}>A Casa Rústico game</Text>
@@ -176,7 +177,7 @@ const styles = StyleSheet.create({
     left: 32,
     right: 32,
     bottom: 196,
-    color: t.glow,
+    color: t.linenDim,
     fontFamily: "SourceSans3_600SemiBold",
     fontSize: 16,
     textAlign: "center",
@@ -192,9 +193,21 @@ const styles = StyleSheet.create({
   primary: {
     alignSelf: "stretch",
     backgroundColor: t.kraft,
-    borderRadius: 16,
+    borderRadius: 12,
     paddingVertical: 17,
     alignItems: "center",
+    borderWidth: 2,
+    borderColor: t.kraftDeep,
+    overflow: "hidden",
+    transform: [{ rotate: "-0.6deg" }],
+  },
+  primaryStitch: {
+    ...StyleSheet.absoluteFill,
+    margin: 5,
+    borderWidth: 1,
+    borderColor: "rgba(247,243,236,0.35)",
+    borderStyle: "dashed",
+    borderRadius: 8,
   },
   primaryText: {
     color: t.cream,

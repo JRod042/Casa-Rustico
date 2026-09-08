@@ -43,7 +43,7 @@
     "production": {
       "distribution": "store",
       "ios": {
-        "resourceClass": "m-medium",
+        "resourceClass": "m-large",
         "image": "latest",
         "simulator": false
       },
