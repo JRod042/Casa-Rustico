@@ -27,6 +27,7 @@ import {
   COYOTE_S,
   GYRO_DAMP,
   GYRO_K,
+  HANG_KINDS,
   HEEL_MERCY_S,
   JUMP_CUT,
   JUMP_V,
@@ -353,7 +354,7 @@ function stepRun(run: Run, step: number): void {
 
   for (let i = 0; i < run.scenery.length; i += 1) {
     const s = run.scenery[i];
-    if (s.kind !== "coconuts" || s.rustled) continue;
+    if (!HANG_KINDS.includes(s.kind) || s.rustled) continue;
     if (aabbHits(me, { x: s.x, y: s.y, w: s.w, h: s.h })) {
       s.rustled = true;
       run.score += 3;

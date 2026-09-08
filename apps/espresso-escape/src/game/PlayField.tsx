@@ -70,6 +70,12 @@ const SCENERY_CODE: Record<SceneryKind, number> = {
   palm: 1,
   banana: 2,
   coconuts: 3,
+  flamboyan: 4,
+  plantain: 5,
+  pineapple: 6,
+  cacao: 7,
+  dryingBed: 8,
+  tinaja: 9,
 };
 
 const ROAST: Record<DeathKind, string> = {
@@ -260,6 +266,12 @@ const ScenerySprite = memo(function ScenerySprite({ slot }: { slot: Slot }) {
   const palm = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 1 ? 1 : 0) }));
   const banana = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 2 ? 1 : 0) }));
   const nuts = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 3 ? 1 : 0) }));
+  const flamboyan = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 4 ? 1 : 0) }));
+  const plantain = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 5 ? 1 : 0) }));
+  const pineapple = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 6 ? 1 : 0) }));
+  const cacao = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 7 ? 1 : 0) }));
+  const dryingBed = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 8 ? 1 : 0) }));
+  const tinaja = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 9 ? 1 : 0) }));
   return (
     <Animated.View pointerEvents="none" style={[styles.sprite, styles.cutout, anim]}>
       <Animated.View style={[styles.artFill, tree]}>
@@ -273,6 +285,24 @@ const ScenerySprite = memo(function ScenerySprite({ slot }: { slot: Slot }) {
       </Animated.View>
       <Animated.View style={[styles.artFill, nuts]}>
         <SceneryArt kind="coconuts" />
+      </Animated.View>
+      <Animated.View style={[styles.artFill, flamboyan]}>
+        <SceneryArt kind="flamboyan" />
+      </Animated.View>
+      <Animated.View style={[styles.artFill, plantain]}>
+        <SceneryArt kind="plantain" />
+      </Animated.View>
+      <Animated.View style={[styles.artFill, pineapple]}>
+        <SceneryArt kind="pineapple" />
+      </Animated.View>
+      <Animated.View style={[styles.artFill, cacao]}>
+        <SceneryArt kind="cacao" />
+      </Animated.View>
+      <Animated.View style={[styles.artFill, dryingBed]}>
+        <SceneryArt kind="dryingBed" />
+      </Animated.View>
+      <Animated.View style={[styles.artFill, tinaja]}>
+        <SceneryArt kind="tinaja" />
       </Animated.View>
     </Animated.View>
   );
@@ -433,7 +463,7 @@ export function PlayField({
           withTiming(0, { duration: 200 })
         );
         stepPaper(squashX, 1.22, 1.1);
-        stepPaper(squashY, 0.72, 0.88);
+        stepPaper(squashY, 1 / 1.22, 0.92);
       }
       const next = await saveBestScore(finalScore);
       onBest(next);
@@ -484,14 +514,14 @@ export function PlayField({
         hopTick();
         if (!reduceMotion) {
           stepPaper(squashX, 0.92, 0.96);
-          stepPaper(squashY, 1.08, 1.04);
+          stepPaper(squashY, 1 / 0.92, 1.04);
         }
       } else if (landed) {
         if (run.landFromHop) {
           landTick();
           if (!reduceMotion) {
             stepPaper(squashX, 1.32, 1.16);
-            stepPaper(squashY, 0.62, 0.84);
+            stepPaper(squashY, 1 / 1.32, 0.88);
           }
         } else if (!reduceMotion) {
           stepPaper(squashX, 1.08, 1.02);

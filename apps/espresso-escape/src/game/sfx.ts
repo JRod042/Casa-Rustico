@@ -30,9 +30,18 @@ const bank: Partial<Record<Tone, Loaded>> = {};
 const pending = new Set<Tone>();
 let booted = false;
 let muted = false;
+let music: { play: () => void; pause: () => void; loop?: boolean; volume?: number } | null = null;
 
 export function muteSfx(next: boolean): void {
   muted = next;
+  if (music) {
+    try {
+      if (next) music.pause();
+      else music.play();
+    } catch {
+      /* native audio may be absent */
+    }
+  }
 }
 
 export function bootSfx(): void {
@@ -86,6 +95,15 @@ export function bootSfx(): void {
         // Soft-fail one clip — haptics still fire.
       }
     });
+    try {
+      const player = audio.createAudioPlayer(require("../../assets/sfx/theme.mp3"));
+      player.volume = 0.28;
+      (player as { loop?: boolean }).loop = true;
+      music = player;
+      if (!muted) player.play();
+    } catch {
+      music = null;
+    }
   } catch {
     // Native module not present (web / unit). Haptics still fire.
   }

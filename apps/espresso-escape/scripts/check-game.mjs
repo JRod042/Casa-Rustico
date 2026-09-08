@@ -314,17 +314,17 @@ if (!/WIRE_KEYS/.test(sources) || !/plate01/.test(sources) || !/plate06/.test(so
   throw new Error("WIRE-ready plates 01–06 keys must stay in kraftMap / craftAssets");
 }
 const appJson = JSON.parse(readFileSync(join(root, "app.json"), "utf8"));
-if (appJson.expo?.version !== "1.0.8") {
-  throw new Error("marketing version must stay 1.0.8");
+if (appJson.expo?.version !== "1.0.9") {
+  throw new Error("marketing version must stay 1.0.9");
 }
-if (String(appJson.expo?.ios?.buildNumber) !== "22") {
-  throw new Error("ios.buildNumber must be 22 so TF is newer than queued 21");
+if (String(appJson.expo?.ios?.buildNumber) !== "23") {
+  throw new Error("ios.buildNumber must be 23 so TF is newer than 22");
 }
-if (Number(appJson.expo?.android?.versionCode) !== 14) {
-  throw new Error("android.versionCode must be 14");
+if (Number(appJson.expo?.android?.versionCode) !== 15) {
+  throw new Error("android.versionCode must be 15");
 }
-if (!/IOS_BUILD = "22"/.test(sources) || !/BUILD_LABEL/.test(sources)) {
-  throw new Error("About must show BUILD_LABEL 1.0.8 · 22");
+if (!/IOS_BUILD = "23"/.test(sources) || !/BUILD_LABEL/.test(sources)) {
+  throw new Error("About must show BUILD_LABEL 1.0.9 · 23");
 }
 const eas = readFileSync(join(root, "eas.json"), "utf8");
 if (!/6809059605/.test(eas) || /6758108565/.test(eas)) {

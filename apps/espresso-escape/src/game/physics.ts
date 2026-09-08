@@ -21,7 +21,17 @@ export type Bubble = Rect & {
   phase: number;
 };
 
-export type SceneryKind = "coffeeTree" | "palm" | "coconuts" | "banana";
+export type SceneryKind =
+  | "coffeeTree"
+  | "palm"
+  | "coconuts"
+  | "banana"
+  | "flamboyan"
+  | "plantain"
+  | "pineapple"
+  | "cacao"
+  | "dryingBed"
+  | "tinaja";
 
 export type Scenery = {
   id: number;
@@ -67,7 +77,7 @@ export const COMBO_STEP = 5;
 export const COMBO_WINDOW = 1.28;
 export const MAX_MULT = 8;
 export const MAX_BUBBLES = 16;
-export const MAX_SCENERY = 9;
+export const MAX_SCENERY = 11;
 
 export const FEEL_QA_LOCKED = true;
 export const CONTROL_FAIRNESS = true;
@@ -179,7 +189,15 @@ export const SCENERY_SPEC: Record<
   palm: { w: 46, h: 158, par: 0.48, hang: false, plant: 24 },
   banana: { w: 56, h: 102, par: 0.8, hang: false, plant: 10 },
   coconuts: { w: 40, h: 56, par: 0.34, hang: true, plant: 0 },
+  flamboyan: { w: 56, h: 128, par: 0.5, hang: false, plant: 16 },
+  plantain: { w: 52, h: 120, par: 0.7, hang: false, plant: 10 },
+  pineapple: { w: 40, h: 66, par: 0.88, hang: false, plant: 4 },
+  cacao: { w: 38, h: 48, par: 0.36, hang: true, plant: 0 },
+  dryingBed: { w: 88, h: 34, par: 0.94, hang: false, plant: 2 },
+  tinaja: { w: 28, h: 40, par: 0.9, hang: false, plant: 0 },
 };
+
+export const HANG_KINDS: readonly SceneryKind[] = ["coconuts", "cacao"];
 
 export function phaseFor(time: number): Phase {
   if (time < 8) return 0;

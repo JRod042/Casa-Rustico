@@ -78,7 +78,19 @@ export function SceneryArt({ kind }: { kind: SceneryKind }) {
         ? GAME_ATLAS.banana
         : kind === "coconuts"
           ? GAME_ATLAS.coconuts
-          : GAME_ATLAS.coffeeTree;
+          : kind === "flamboyan"
+            ? GAME_ATLAS.flamboyan
+            : kind === "plantain"
+              ? GAME_ATLAS.plantain
+              : kind === "pineapple"
+                ? GAME_ATLAS.pineapple
+                : kind === "cacao"
+                  ? GAME_ATLAS.cacao
+                  : kind === "dryingBed"
+                    ? GAME_ATLAS.dryingBed
+                    : kind === "tinaja"
+                      ? GAME_ATLAS.tinaja
+                      : GAME_ATLAS.coffeeTree;
   return (
     <View style={sprite.fill}>
       <Image source={src} style={sprite.img} resizeMode="contain" accessibilityIgnoresInvertColors />
