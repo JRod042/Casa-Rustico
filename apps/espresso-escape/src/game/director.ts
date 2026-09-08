@@ -61,13 +61,14 @@ type Course = {
 export function dressStage(run: Course): void {
   const ground = run.world.groundY;
   const kinds: SceneryKind[] = [
+    "bunting",
     "palm",
     "flamboyan",
     "coffeeTree",
     "plantain",
-    "pineapple",
-    "tinaja",
-    "coconuts",
+    "cherries",
+    "crate",
+    "coqui",
   ];
   kinds.forEach((kind, i) => {
     const x = 28 + i * 108 + run.rng() * 18;
@@ -263,25 +264,31 @@ function sprinkleScenery(run: Course): void {
   if (run.scenery.length >= MAX_SCENERY) return;
   const roll = run.rng();
   const kind: SceneryKind =
-    roll < 0.16
+    roll < 0.12
       ? "coffeeTree"
-      : roll < 0.28
+      : roll < 0.22
         ? "flamboyan"
-        : roll < 0.4
+        : roll < 0.32
           ? "palm"
-          : roll < 0.52
+          : roll < 0.42
             ? "plantain"
-            : roll < 0.62
+            : roll < 0.5
               ? "banana"
-              : roll < 0.72
+              : roll < 0.58
                 ? "pineapple"
-                : roll < 0.8
-                  ? "dryingBed"
-                  : roll < 0.88
-                    ? "tinaja"
-                    : roll < 0.95
-                      ? "coconuts"
-                      : "cacao";
+                : roll < 0.66
+                  ? "crate"
+                  : roll < 0.74
+                    ? "dryingBed"
+                    : roll < 0.8
+                      ? "tinaja"
+                      : roll < 0.86
+                        ? "coqui"
+                        : roll < 0.92
+                          ? "cherries"
+                          : roll < 0.97
+                            ? "coconuts"
+                            : "bunting";
   const x = run.world.width + 16 + run.rng() * 90;
   run.scenery.push(makeScenery(run.nextId++, kind, x, run.world.groundY, run.rng()));
 }

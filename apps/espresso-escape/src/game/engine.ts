@@ -186,6 +186,7 @@ export function createRun(world: World, playerX: number, seed = Date.now(), opts
     sim: createMatterWorld(world, playerX),
   };
   dressStage(run);
+  bounceSkip(run, 0);
   return run;
 }
 
@@ -267,7 +268,10 @@ function stepRun(run: Run, step: number): void {
 
   const wantLean = Math.max(
     -LEAN_MAX,
-    Math.min(LEAN_MAX, run.vy * 0.00022 + (run.skipping ? -0.07 : 0) + (run.hopping ? -0.04 : 0)),
+    Math.min(
+      LEAN_MAX,
+      0.09 + run.vy * 0.00018 + (run.skipping ? 0.05 : 0) + (run.hopping ? 0.04 : 0),
+    ),
   );
   run.leanV += (wantLean - run.lean) * GYRO_K * step;
   run.leanV *= Math.exp(-GYRO_DAMP * step);
@@ -305,7 +309,7 @@ function stepRun(run: Run, step: number): void {
         tryJump(run);
       } else {
         const plant = PLANT_S[run.mat];
-        if (plant > 0) {
+        if (plant > 0 && run.landFromHop) {
           run.vy = 0;
           run.airborne = false;
           run.skipping = false;

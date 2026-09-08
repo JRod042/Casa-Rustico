@@ -31,7 +31,11 @@ export type SceneryKind =
   | "pineapple"
   | "cacao"
   | "dryingBed"
-  | "tinaja";
+  | "tinaja"
+  | "crate"
+  | "cherries"
+  | "bunting"
+  | "coqui";
 
 export type Scenery = {
   id: number;
@@ -77,7 +81,7 @@ export const COMBO_STEP = 5;
 export const COMBO_WINDOW = 1.28;
 export const MAX_MULT = 8;
 export const MAX_BUBBLES = 16;
-export const MAX_SCENERY = 11;
+export const MAX_SCENERY = 14;
 
 export const FEEL_QA_LOCKED = true;
 export const CONTROL_FAIRNESS = true;
@@ -87,18 +91,18 @@ export const APPSTORE_CONTROLS_BRIEF = "2026-09-05-escape-appstore-controls-feel
  * Stuffed-toy hop — Media Molecule skip + Animal Crossing plant.
  * Soft rise, long hang, pillowy hold, light skip-run between hops.
  */
-export const JUMP_V = -880;
-export const GRAVITY_UP = 2200;
+export const JUMP_V = -800;
+export const GRAVITY_UP = 1480;
 export const GRAVITY_APEX = 520;
-export const GRAVITY_DOWN = 3600;
-export const GRAVITY_HANG = 2400;
-export const GRAVITY_SKIP = 1850;
-export const JUMP_CUT = 0.48;
+export const GRAVITY_DOWN = 2480;
+export const GRAVITY_HANG = 760;
+export const GRAVITY_SKIP = 1680;
+export const JUMP_CUT = 0.38;
 export const APEX_V = 90;
-export const JUMP_AIR_S = 0.644;
-export const HEEL_MERCY_S = 0.1;
-export const MAX_FALL = 980;
-export const SKIP_V = -210;
+export const JUMP_AIR_S = 0.86;
+export const HEEL_MERCY_S = 0.14;
+export const MAX_FALL = 820;
+export const SKIP_V = -320;
 
 export const COYOTE_S = 0.13;
 export const BUFFER_S = 0.15;
@@ -134,22 +138,22 @@ export type Addon = Rect & {
 };
 
 export const SKIP_FOR: Record<FloorMat, number> = {
-  burlap: -248,
-  sponge: -410,
-  cardboard: -168,
+  burlap: -320,
+  sponge: -430,
+  cardboard: -210,
 };
 
 export const SKIP_G_FOR: Record<FloorMat, number> = {
-  burlap: 1720,
-  sponge: 1080,
-  cardboard: 2280,
+  burlap: 1580,
+  sponge: 980,
+  cardboard: 2100,
 };
 
 /** Animal Crossing foot-plant before the next hop. Sponge is an LBP bounce pad — no plant. */
 export const PLANT_S: Record<FloorMat, number> = {
-  burlap: 0.055,
+  burlap: 0.04,
   sponge: 0,
-  cardboard: 0.1,
+  cardboard: 0.08,
 };
 
 /** LBP sponge restitution vs cardboard dead-stop. Extra bounce on incoming speed. */
@@ -195,9 +199,13 @@ export const SCENERY_SPEC: Record<
   cacao: { w: 38, h: 48, par: 0.36, hang: true, plant: 0 },
   dryingBed: { w: 88, h: 34, par: 0.94, hang: false, plant: 2 },
   tinaja: { w: 28, h: 40, par: 0.9, hang: false, plant: 0 },
+  crate: { w: 58, h: 42, par: 0.92, hang: false, plant: 0 },
+  cherries: { w: 34, h: 70, par: 0.3, hang: true, plant: 0 },
+  bunting: { w: 148, h: 34, par: 0.2, hang: true, plant: 0 },
+  coqui: { w: 40, h: 34, par: 0.9, hang: false, plant: 2 },
 };
 
-export const HANG_KINDS: readonly SceneryKind[] = ["coconuts", "cacao"];
+export const HANG_KINDS: readonly SceneryKind[] = ["coconuts", "cacao", "cherries", "bunting"];
 
 export function phaseFor(time: number): Phase {
   if (time < 8) return 0;

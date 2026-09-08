@@ -76,6 +76,10 @@ const SCENERY_CODE: Record<SceneryKind, number> = {
   cacao: 7,
   dryingBed: 8,
   tinaja: 9,
+  crate: 10,
+  cherries: 11,
+  bunting: 12,
+  coqui: 13,
 };
 
 const ROAST: Record<DeathKind, string> = {
@@ -272,6 +276,10 @@ const ScenerySprite = memo(function ScenerySprite({ slot }: { slot: Slot }) {
   const cacao = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 7 ? 1 : 0) }));
   const dryingBed = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 8 ? 1 : 0) }));
   const tinaja = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 9 ? 1 : 0) }));
+  const crate = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 10 ? 1 : 0) }));
+  const cherries = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 11 ? 1 : 0) }));
+  const bunting = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 12 ? 1 : 0) }));
+  const coqui = useAnimatedStyle(() => ({ opacity: slot.on.value * (slot.kind.value === 13 ? 1 : 0) }));
   return (
     <Animated.View pointerEvents="none" style={[styles.sprite, styles.cutout, anim]}>
       <Animated.View style={[styles.artFill, tree]}>
@@ -303,6 +311,18 @@ const ScenerySprite = memo(function ScenerySprite({ slot }: { slot: Slot }) {
       </Animated.View>
       <Animated.View style={[styles.artFill, tinaja]}>
         <SceneryArt kind="tinaja" />
+      </Animated.View>
+      <Animated.View style={[styles.artFill, crate]}>
+        <SceneryArt kind="crate" />
+      </Animated.View>
+      <Animated.View style={[styles.artFill, cherries]}>
+        <SceneryArt kind="cherries" />
+      </Animated.View>
+      <Animated.View style={[styles.artFill, bunting]}>
+        <SceneryArt kind="bunting" />
+      </Animated.View>
+      <Animated.View style={[styles.artFill, coqui]}>
+        <SceneryArt kind="coqui" />
       </Animated.View>
     </Animated.View>
   );
@@ -366,7 +386,7 @@ export function PlayField({
       { translateX: playerX },
       { translateY: playerY.value },
       { rotate: `${lean.value}rad` },
-      { scaleX: squashX.value },
+      { scaleX: -squashX.value },
       { scaleY: squashY.value * bob.value },
     ],
   }));
